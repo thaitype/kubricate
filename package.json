@@ -1,0 +1,63 @@
+{
+  "name": "typescript-npm-boilerplate-esm-cjs",
+  "type": "module",
+  "version": "0.0.0",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./calculator": {
+      "types": "./dist/dts/calculator.d.ts",
+      "import": "./dist/esm/calculator.js",
+      "default": "./dist/cjs/calculator.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "src",
+    "package.json"
+  ],
+  "scripts": {
+    "check": "tsc -b tsconfig.json",
+    "check:watch": "tsc -b tsconfig.json -w",
+    "prepublishOnly": "bun run build",
+    "release": "bun run build && release-it",
+    "format": "prettier --write src",
+    "build": "bun format && bun build-esm && bun build-cjs && bun build-annotate",
+    "build-esm": "tsc -b tsconfig.build.json",
+    "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@babel/cli": "^7.24.5",
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-transform-export-namespace-from": "^7.24.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
+    "@type-challenges/utils": "^0.1.1",
+    "babel-plugin-annotate-pure-calls": "^0.4.0",
+    "release-it": "^17.3.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/typescript-npm-boilerplate-esm-cjs.git"
+  },
+  "homepage": "https://github.com/thaitype/typescript-npm-boilerplate-esm-cjs",
+  "dependencies": {
+    "prettier": "^3.4.2"
+  }
+}
