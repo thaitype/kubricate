@@ -31,7 +31,7 @@
     "build-esm": "tsc -b tsconfig.build.json",
     "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
     "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-    "prepublishOnly": "bun run build && bun scripts/remove-type-key.ts",
+    "prepublishOnly": "bun scripts/remove-type-key.ts",
     "postpublish": "git checkout -- package.json"
   },
   "devDependencies": {
