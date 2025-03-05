@@ -2,7 +2,7 @@
   "name": "kubricate",
   "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/dts/index.d.ts",
