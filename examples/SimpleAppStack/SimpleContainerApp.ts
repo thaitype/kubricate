@@ -41,7 +41,6 @@ export function createSimpleAppStack(data: ISimpleContainerApp) {
         }
       }
     })
-    // .addInstance('labels', labels)
     .add('service', Service, {
       metadata,
       spec: {

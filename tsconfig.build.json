@@ -9,6 +9,7 @@
     "noEmit": false
   },
   "exclude": [
+    "scripts",
     "node_modules",
     "dist",
     "doc",
