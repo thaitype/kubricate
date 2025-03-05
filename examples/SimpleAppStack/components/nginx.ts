@@ -12,15 +12,3 @@ export default createSimpleAppStack(
     }
   })
   .build();
-
-// export default new SimpleAppStack({
-//   imageName: "nginx",
-// })
-//   .create()
-//   .overrideResources({
-//     service: {
-//       spec: {
-//         type: "ClusterIP"
-//       }
-//     }
-//   }).build();
