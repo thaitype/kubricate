@@ -31,7 +31,9 @@
     "build": "bun format && bun build-esm && bun build-cjs && bun build-annotate",
     "build-esm": "tsc -b tsconfig.build.json",
     "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps"
+    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+    "prepublish": "bun scripts/remove-type-key.ts",
+    "postpublish": "git checkout -- package.json"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.5",
@@ -58,9 +60,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thaitype/typescript-npm-boilerplate-esm-cjs.git"
+    "url": "https://github.com/thaitype/kubricate.git"
   },
-  "homepage": "https://github.com/thaitype/typescript-npm-boilerplate-esm-cjs",
+  "homepage": "https://github.com/thaitype/kubricate",
   "dependencies": {
     "@kosko/generate": "^5.2.0",
     "lodash.merge": "^4.6.2",
