@@ -4,5 +4,16 @@
     "before:npm:release": "bun run prepublishOnly",
     "after:npm:release": "bun run postpublish",
     "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  },
+  "git": {
+    "commitMessage": "chore(release): Release v${version}",
+    "push": true
+  },
+  "github": {
+    "releaseName": "Release v${version}",
+    "release": true
+  },
+  "npm": {
+    "publish": true
   }
 }
