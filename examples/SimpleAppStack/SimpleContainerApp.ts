@@ -1,6 +1,6 @@
 import { Deployment } from "kubernetes-models/apps/v1/Deployment";
 import { Service } from "kubernetes-models/v1/Service";
-import { ResourceBuilder } from "kubricate";
+import { KubricateController } from "kubricate";
 
 export interface ISimpleContainerApp {
   imageName: string;
@@ -8,16 +8,6 @@ export interface ISimpleContainerApp {
   imageRegistry?: string;
   port?: number;
 }
-
-// export class SimpleAppStack extends ResourceBuilder {
-//   constructor(public data: ISimpleContainerApp) {
-//     super();
-//   }
-
-//   create(){
-//     return createSimpleAppStack(this.data);
-//   }
-// }
 
 export function createSimpleAppStack(data: ISimpleContainerApp) {
   const port = data.port || 80;
@@ -27,7 +17,7 @@ export function createSimpleAppStack(data: ISimpleContainerApp) {
   const metadata = { name: "nginx" };
   const labels = { app: "nginx" };
 
-  return new ResourceBuilder()
+  return new KubricateController()
     .add('deployment', Deployment, {
       metadata,
       spec: {
@@ -65,97 +55,3 @@ export function createSimpleAppStack(data: ISimpleContainerApp) {
       }
     })
 }
-
-// export class SimpleContainerAppStack extends StackBase<ISimpleContainerApp, InferResourceBuilderFunction<typeof defineResources>> {
-
-//   constructor(public data: ISimpleContainerApp) {
-//     super(data);
-//   }
-
-//   defineResources() {
-//     return defineResources(this.data);
-//   }
-
-// }
-
-
-// const metadata = { name: "nginx" };
-// const labels = { app: "nginx" };
-
-// return new ResourceBuilder()
-//   .add('deployment', Deployment, {
-//     metadata,
-//     spec: {
-//       replicas: this.replicas,
-//       selector: {
-//         matchLabels: labels
-//       },
-//       template: {
-//         metadata: {
-//           labels
-//         },
-//         spec: {
-//           containers: [
-//             {
-//               image: this.imageRegistry + "nginx",
-//               name: "nginx",
-//               ports: [{ containerPort: this.port }]
-//             }
-//           ]
-//         }
-//       }
-//     }
-//   })
-//   .add('service', Service, {
-//     metadata,
-//     spec: {
-//       selector: labels,
-//       type: "LoadBalancer",
-//       ports: [
-//         {
-//           port: this.port,
-//           targetPort: this.port,
-//         }
-//       ]
-//     }
-//   })
-// .build();
-// const deployment = new Deployment({
-//   metadata,
-//   spec: {
-//     replicas: this.replicas,
-//     selector: {
-//       matchLabels: labels
-//     },
-//     template: {
-//       metadata: {
-//         labels
-//       },
-//       spec: {
-//         containers: [
-//           {
-//             image: this.imageRegistry + "nginx",
-//             name: "nginx",
-//             ports: [{ containerPort: this.port }]
-//           }
-//         ]
-//       }
-//     }
-//   }
-// });
-
-// const service = new Service(deepmerge({
-//   metadata,
-//   spec: {
-//     selector: labels,
-//     type: "LoadBalancer",
-//     ports: [
-//       {
-//         port: this.port,
-//         targetPort: this.port,
-//       }
-//     ]
-//   }
-// }, this.data.override?.service ?? {}));
-
-// return { deployment, service };

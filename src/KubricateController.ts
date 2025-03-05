@@ -4,7 +4,7 @@ export type AnyClass = { new (...args: any[]): any };
 
 export type ResourceStore = Record<string, { type: AnyClass; data: Record<string, unknown> }>;
 
-export class ResourceBuilder<Resource extends Record<string, unknown> = {}> {
+export class KubricateController<Resource extends Record<string, unknown> = {}> {
   resources: ResourceStore = {};
   override: Record<string, unknown> = {};
   // constructor(public type: Type, data: ConstructorParameters<Type>[0], override?: ConstructorParameters<Type>[0]) {}
@@ -20,7 +20,7 @@ export class ResourceBuilder<Resource extends Record<string, unknown> = {}> {
 
   add<Name extends string, T extends AnyClass>(name: Name, type: T, data: ConstructorParameters<T>[0]) {
     this.resources[name] = { type, data };
-    return this as ResourceBuilder<Resource & Record<Name, ConstructorParameters<T>[0]>>;
+    return this as KubricateController<Resource & Record<Name, ConstructorParameters<T>[0]>>;
   }
 
   public overrideResources(override: Partial<Resource>) {

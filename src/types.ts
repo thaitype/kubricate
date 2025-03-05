@@ -1,4 +1,4 @@
-import { ResourceBuilder } from './ResourceBuilder.js';
+import { KubricateController } from './KubricateController.js';
 
-export type InferResourceBuilder<T> = T extends ResourceBuilder<infer R> ? R : never;
-export type InferResourceBuilderFunction<T> = T extends (...args: any[]) => ResourceBuilder<infer R> ? R : never;
+export type InferResourceBuilder<T> = T extends KubricateController<infer R> ? R : never;
+export type InferResourceBuilderFunction<T> = T extends (...args: any[]) => KubricateController<infer R> ? R : never;

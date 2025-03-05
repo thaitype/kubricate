@@ -1,2 +1,2 @@
-export * from './ResourceBuilder.js';
+export * from './KubricateController.js';
 export * from './types.js';
