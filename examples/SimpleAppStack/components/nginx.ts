@@ -1,9 +1,10 @@
-import { createSimpleAppStack } from "../SimpleContainerApp.js";
+import { SimpleAppStack } from "../SimpleAppStack.js";
 
-export default createSimpleAppStack(
+export default new SimpleAppStack(
   {
     imageName: "nginx",
   })
+  .configureStack()
   .overrideResources({
     service: {
       spec: {
