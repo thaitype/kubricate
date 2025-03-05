@@ -12,11 +12,6 @@
       "types": "./dist/dts/index.d.ts",
       "import": "./dist/esm/index.js",
       "default": "./dist/cjs/index.js"
-    },
-    "./calculator": {
-      "types": "./dist/dts/calculator.d.ts",
-      "import": "./dist/esm/calculator.js",
-      "default": "./dist/cjs/calculator.js"
     }
   },
   "files": [
@@ -26,25 +21,33 @@
     "package.json"
   ],
   "scripts": {
+    "kosko": "cross-env NODE_NO_WARNINGS=1 kosko",
     "check": "tsc -b tsconfig.json",
     "check:watch": "tsc -b tsconfig.json -w",
     "prepublishOnly": "bun run build",
     "release": "bun run build && release-it",
     "format": "prettier --write src",
+    "build:watch": "tsc -b tsconfig.build.json -w",
     "build": "bun format && bun build-esm && bun build-cjs && bun build-annotate",
     "build-esm": "tsc -b tsconfig.build.json",
     "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
     "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@babel/cli": "^7.24.5",
     "@babel/core": "^7.24.5",
     "@babel/plugin-transform-export-namespace-from": "^7.24.1",
     "@babel/plugin-transform-modules-commonjs": "^7.24.1",
+    "@kosko/env": "^5.1.0",
     "@type-challenges/utils": "^0.1.1",
+    "@types/bun": "latest",
+    "@types/lodash.merge": "^4.6.9",
     "babel-plugin-annotate-pure-calls": "^0.4.0",
-    "release-it": "^17.3.0"
+    "cross-env": "^7.0.3",
+    "kosko": "^4.3.0",
+    "kubernetes-models": "^4.4.2",
+    "release-it": "^17.3.0",
+    "ts-node": "^10.9.2"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
@@ -59,6 +62,8 @@
   },
   "homepage": "https://github.com/thaitype/typescript-npm-boilerplate-esm-cjs",
   "dependencies": {
+    "@kosko/generate": "^5.2.0",
+    "lodash.merge": "^4.6.2",
     "prettier": "^3.4.2"
   }
 }
