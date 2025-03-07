@@ -6,7 +6,7 @@ export type ResourceStore = Record<
   string,
   {
     type?: AnyClass;
-    data: Record<string, unknown>;
+    config: Record<string, unknown>;
   }
 >;
 
@@ -17,12 +17,12 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
   build() {
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(this.resources)) {
-      const { type, data } = this.resources[key];
+      const { type, config } = this.resources[key];
       if (!type) {
-        result[key] = data;
+        result[key] = config;
         continue;
       }
-      result[key] = new type(merge({}, data, this.override ? this.override[key] : {}));
+      result[key] = new type(merge({}, config, this.override ? this.override[key] : {}));
     }
     return Object.values(result);
   }
@@ -31,18 +31,18 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
    * Add a resource to the controller, extracting the type and data from the arguments.
    */
 
-  add<Name extends string, T extends AnyClass>(name: Name, type: T, data: ConstructorParameters<T>[0]) {
-    this.resources[name] = { type, data };
-    return this as KubricateController<Resource & Record<Name, ConstructorParameters<T>[0]>>;
+  add<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
+    this.resources[params.id] = { type: params.type, config: params.config };
+    return this as KubricateController<Resource & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
   /**
    * Add an instance to the controller directly. Using this method will not support overriding the resource.
    */
 
-  addInstance<Name extends string, T extends object = object>(name: Name, data: T) {
-    this.resources[name] = { data: data as Record<string, unknown> };
-    return this as KubricateController<Resource & Record<Name, T>>;
+  addInstance<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
+    this.resources[params.id] = { config: params.config as Record<string, unknown> };
+    return this as KubricateController<Resource & Record<Id, T>>;
   }
 
   public overrideResources(override: Partial<Resource>) {
