@@ -5,7 +5,7 @@ export default new SimpleAppStack(
     imageName: "nginx",
   })
   .configureStack()
-  .overrideResources({
+  .overrideStack({
     service: {
       spec: {
         type: "LoadBalancer"

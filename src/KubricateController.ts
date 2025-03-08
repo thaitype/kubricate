@@ -62,7 +62,7 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
     return this as KubricateController<Resource & Record<Id, T>>;
   }
 
-  public overrideResources(override: Partial<Resource>) {
+  public overrideStack(override: Partial<Resource>) {
     this.override = override;
     return this;
   }

@@ -75,5 +75,5 @@ export const appStack = new SimpleAppStack({
   imageName: "nginx",
 })
   .configureStack()
-  .overrideResources({})
+  .overrideStack({})
   .build();
