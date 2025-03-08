@@ -1,6 +1,6 @@
 import { Deployment } from "kubernetes-models/apps/v1/Deployment";
 import { Service } from "kubernetes-models/v1/Service";
-import { KubricateController, KubricateStack } from "kubricate";
+import { KubricateController } from "kubricate";
 
 export interface ISimpleAppStack {
   imageName: string;
@@ -9,71 +9,57 @@ export interface ISimpleAppStack {
   port?: number;
 }
 
-export class SimpleAppStack extends KubricateStack {
+export const createSimpleAppStack = (data: ISimpleAppStack) => {
+  const port = data.port || 80;
+  const replicas = data.replicas || 1;
+  const imageRegistry = data.imageRegistry || '';
 
-  constructor(private data: ISimpleAppStack) {
-    super();
-  }
+  const metadata = { name: "nginx" };
+  const labels = { app: "nginx" };
 
-  configureStack() {
-    const port = this.data.port || 80;
-    const replicas = this.data.replicas || 1;
-    const imageRegistry = this.data.imageRegistry || '';
-
-    const metadata = { name: "nginx" };
-    const labels = { app: "nginx" };
-
-    return new KubricateController()
-      .add({
-        id: 'deployment',
-        type: Deployment,
-        config: {
-          metadata,
-          spec: {
-            replicas: replicas,
-            selector: {
-              matchLabels: labels
+  return new KubricateController()
+    .add({
+      id: 'deployment',
+      type: Deployment,
+      config: {
+        metadata,
+        spec: {
+          replicas: replicas,
+          selector: {
+            matchLabels: labels
+          },
+          template: {
+            metadata: {
+              labels
             },
-            template: {
-              metadata: {
-                labels
-              },
-              spec: {
-                containers: [
-                  {
-                    image: imageRegistry + "nginx",
-                    name: "nginx",
-                    ports: [{ containerPort: port }]
-                  }
-                ]
-              }
+            spec: {
+              containers: [
+                {
+                  image: imageRegistry + "nginx",
+                  name: "nginx",
+                  ports: [{ containerPort: port }]
+                }
+              ]
             }
           }
         }
-      })
-      .add({
-        id: 'service',
-        type: Service,
-        config: {
-          metadata,
-          spec: {
-            selector: labels,
-            type: "ClusterIP",
-            ports: [
-              {
-                port,
-                targetPort: port,
-              }
-            ]
-          }
+      }
+    })
+    .add({
+      id: 'service',
+      type: Service,
+      config: {
+        metadata,
+        spec: {
+          selector: labels,
+          type: "ClusterIP",
+          ports: [
+            {
+              port,
+              targetPort: port,
+            }
+          ]
         }
-      })
-  }
+      }
+    })
 }
-
-export const appStack = new SimpleAppStack({
-  imageName: "nginx",
-})
-  .configureStack()
-  .overrideStack({})
-  .build();
