@@ -1,5 +1,11 @@
 # @kubricate/stacks
 
+## 0.0.6
+
+### Patch Changes
+
+- b953e0a: Test on Github actions
+
 ## 0.0.5
 
 ### Patch Changes
