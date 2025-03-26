@@ -1,5 +1,11 @@
 # @kubricate/stacks
 
+## 0.0.4
+
+### Patch Changes
+
+- a6690c9: Release 0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
