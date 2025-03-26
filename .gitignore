@@ -39,3 +39,6 @@ generated
 .env
 
 coverage.json
+
+
+.nx
