@@ -1,5 +1,11 @@
 # @kubricate/stacks
 
+## 0.0.5
+
+### Patch Changes
+
+- b1ca226: Fix release on npm
+
 ## 0.0.4
 
 ### Patch Changes
