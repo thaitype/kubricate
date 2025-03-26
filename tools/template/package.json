@@ -1,10 +1,16 @@
 {
   "name": "@kubricate/template",
   "type": "module",
+  "version": "0.0.0",
   "exports": {
     ".": "./src/index.ts"
   },
-  "private": true,
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "dev": "mono dev",
     "start": "mono start",
