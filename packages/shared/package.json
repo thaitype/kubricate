@@ -1,0 +1,21 @@
+{
+  "name": "@kubricate/shared",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "private": true,
+  "scripts": {
+    "test": "mono test",
+    "test:watch": "mono test:watch",
+    "lint:check": "mono lint:check",
+    "lint:fix": "mono lint:fix",
+    "check-types": "mono check-types"
+  },
+  "devDependencies": {
+    "@kubricate/mono": "workspace:*",
+    "@kubricate/config-eslint": "workspace:*",
+    "@kubricate/config-typescript": "workspace:*",
+    "@kubricate/config-vitest": "workspace:*"
+  }
+}

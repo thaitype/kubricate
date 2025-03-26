@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": false,
+    "lib": ["ES2015"],
+    "jsx": "preserve",
+    "noEmit": true
+  }
+}

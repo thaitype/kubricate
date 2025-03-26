@@ -1,0 +1,48 @@
+name: Test and Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  NODE_VERSION: 20.18.x
+  # PNPM_VERSION: 10.5.x
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        # with:
+        #   version: ${{ env.PNPM_VERSION }}
+
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint:check
+
+      # - name: Run tests
+      #   run: pnpm test
+      
+      - name: Prepare .env file
+        run: cp apps/nextjs/.env.default apps/nextjs/.env
+
+      # Ignore build until fix server action build in Next.js
+      # - name: Build project
+      #   run: pnpm build

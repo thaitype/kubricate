@@ -1,0 +1,37 @@
+{
+  "name": "@kubricate/root",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint:check": "turbo lint:check check-types && npm run format",
+    "lint:fix": "turbo lint:fix && npm run format:fix",
+    "format": "prettier --check ./**/*.{ts,tsx,js}",
+    "format:fix": "prettier --write ./**/*.{ts,tsx,js}",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage-report": "turbo run view-report"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.5.2",
+  "devDependencies": {
+    "turbo": "^2.4.4",
+    "@vitest/coverage-istanbul": "^3.0.9",
+    "typescript": "^5.8.2",
+    "eslint": "^9.22.0",
+    "esbuild": "^0.25.1",
+    "prettier": "^3.5.3",
+    "vitest": "^3.0.9"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "arrowParens": "avoid"
+  }
+}
