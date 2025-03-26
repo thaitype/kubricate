@@ -5,7 +5,7 @@ on:
     branches:
       - main.migrate-to-monorepo # Temporary branch to migrate to monorepo
 
-# concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 env:
   NODE_VERSION: 22.14.x
