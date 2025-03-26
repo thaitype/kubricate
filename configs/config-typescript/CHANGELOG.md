@@ -1,5 +1,11 @@
 # @kubricate/config-typescript
 
+## 0.2.1
+
+### Patch Changes
+
+- feb9668: Fix Build TypeScript Output for ESM
+
 ## 0.2.0
 
 ### Minor Changes
