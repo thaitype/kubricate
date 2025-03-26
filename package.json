@@ -10,7 +10,8 @@
     "format:fix": "prettier --write ./**/*.{ts,tsx,js}",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "test:coverage-report": "turbo run view-report"
+    "test:coverage-report": "turbo run view-report",
+    "publish-packages": "turbo run build lint:check test && changeset version && changeset publish"
   },
   "engines": {
     "node": ">=22"

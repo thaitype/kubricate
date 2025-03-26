@@ -1,13 +1,13 @@
 {
   "name": "@kubricate/mono",
   "type": "module",
+  "private": true,
   "exports": {
     ".": "./src/cli.ts"
   },
   "bin": {
     "mono": "dist/cli.js"
   },
-  "private": true,
   "scripts": {
     "build": "tsc",
     "lint:check": "eslint ./src",
