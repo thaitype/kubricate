@@ -1,5 +1,11 @@
 # @kubricate/config-typescript
 
+## 0.2.0
+
+### Minor Changes
+
+- 6af0194: Migrate kubricate main package to monorepo & Support dual npm publish
+
 ## 0.1.0
 
 ### Minor Changes
