@@ -1,11 +1,11 @@
 {
   "name": "@kubricate/stacks",
-  "type": "module",
+  "version": "0.3.0.alpha.0",
   "exports": {
     ".": "./src/index.ts"
   },
-  "private": true,
   "scripts": {
+    "build": "tsc",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
