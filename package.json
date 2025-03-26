@@ -2,6 +2,7 @@
   "name": "@kubricate/root",
   "private": true,
   "scripts": {
+    "prepare": "turbo run @kubricate/mono#build --output-logs=errors-only",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint:check": "turbo lint:check check-types && npm run format",
