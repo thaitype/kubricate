@@ -4,11 +4,7 @@
   "commit": true,
   "fixed": [
     [
-      "@kubricate/stacks",
-      "@kubricate/mono",
-      "@kubricate/config-vitest",
-      "@kubricate/config-typescript",
-      "@kubricate/config-eslint"
+      "@kubricate/stacks"
     ]
   ],
   "linked": [],
