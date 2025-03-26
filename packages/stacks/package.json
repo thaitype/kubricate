@@ -4,6 +4,12 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "mono test",
