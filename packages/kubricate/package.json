@@ -45,5 +45,11 @@
     "type": "git",
     "url": "https://github.com/thaitype/kubricate.git"
   },
-  "homepage": "https://github.com/thaitype/kubricate"
+  "homepage": "https://github.com/thaitype/kubricate",
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ]
 }
