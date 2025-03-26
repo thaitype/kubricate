@@ -1,6 +1,7 @@
 {
   "name": "@kubricate/config-vitest",
   "type": "module",
+  "version": "0.0.2",
   "private": true,
   "exports": {
     "./base": "./dist/configs/base-config.js",

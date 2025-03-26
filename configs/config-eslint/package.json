@@ -1,6 +1,7 @@
 {
   "name": "@kubricate/config-eslint",
   "type": "module",
+  "version": "0.0.2",
   "private": true,
   "exports": {
     "./base": "./base.js",

@@ -2,7 +2,15 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": true,
-  "fixed": [["@kubricate/stacks", "@kubricate/mono"]],
+  "fixed": [
+    [
+      "@kubricate/stacks",
+      "@kubricate/mono",
+      "@kubricate/config-vitest",
+      "@kubricate/config-typescript",
+      "@kubricate/config-eslint"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main.migrate-to-monorepo",
