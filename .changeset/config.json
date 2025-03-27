@@ -5,7 +5,8 @@
   "fixed": [
     [
       "kubricate",
-      "@kubricate/stacks"
+      "@kubricate/stacks",
+      "@kubricate/toolkit"
     ]
   ],
   "linked": [],
