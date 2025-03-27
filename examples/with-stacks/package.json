@@ -1,0 +1,39 @@
+{
+  "name": "@examples/stacks",
+  "type": "module",
+  "version": "0.0.2",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "mono dev",
+    "start": "mono start",
+    "build": "mono build",
+    "test": "mono test",
+    "test:watch": "mono test:watch",
+    "check-types": "mono check-types"
+  },
+  "peerDependencies": {
+    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+  },
+  "devDependencies": {
+    "@kosko/env": "^5.1.0",
+    "@kubernetes-models/base": "^5.0.1",
+    "@kubricate/config-eslint": "workspace:*",
+    "@kubricate/config-typescript": "workspace:*",
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*",
+    "kosko": "^4.3.0",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "@kubricate/stacks": "workspace:*"
+  }
+}

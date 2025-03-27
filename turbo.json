@@ -1,0 +1,40 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "generate": {
+      "dependsOn": ["^generate"],
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["build-tools", "^test"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint:check": {
+      "dependsOn": ["build-tools", "^lint:check"]
+    },
+    "lint:fix": {},
+    "format:check": {
+      "dependsOn": ["^format:check"]
+    },
+    "format:fix": {},
+    "check-types": {
+      "dependsOn": ["build-tools", "^check-types"]
+    },
+    "build-tools": {
+      "dependsOn": ["@kubricate/config-vitest#build" , "@kubricate/mono#build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@kubricate/config-vitest",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    "./base": "./dist/configs/base-config.js",
+    "./ui": "./dist/configs/ui-config.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "collect-json-reports": "node dist/scripts/collect-json-outputs.js",
+    "merge-json-reports": "nyc merge coverage/raw coverage/merged/merged-coverage.json",
+    "report": "nyc report -t coverage/merged --report-dir coverage/report --reporter=html --exclude-after-remap false",
+    "view-report": "open coverage/report/index.html"
+  },
+  "devDependencies": {
+    "@kubricate/config-typescript": "workspace:*",
+    "@vitest/coverage-istanbul": "^3.0.9",
+    "@vitest/ui": "3.0.9",
+    "glob": "^11.0.1",
+    "jsdom": "^26.0.0",
+    "nyc": "^17.1.0",
+    "vitest": "^3.0.9"
+  }
+}

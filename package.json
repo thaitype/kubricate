@@ -1,70 +1,41 @@
 {
-  "name": "kubricate",
-  "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
-  "type": "module",
-  "version": "0.2.0",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/dts/index.d.ts",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/dts/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "src",
-    "package.json"
-  ],
+  "name": "@kubricate/root",
+  "private": true,
   "scripts": {
-    "kosko": "cross-env NODE_NO_WARNINGS=1 kosko",
-    "check": "tsc -b tsconfig.json",
-    "check:watch": "tsc -b tsconfig.json -w",
-    "release": "bun run build && release-it",
-    "format": "prettier --write src",
-    "build:watch": "tsc -b tsconfig.build.json -w",
-    "build": "bun format && bun build-esm && bun build-cjs && bun build-annotate",
-    "build-esm": "tsc -b tsconfig.build.json",
-    "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-    "prepublishOnly": "bun scripts/remove-type-key.ts",
-    "postpublish": "git checkout -- package.json"
+    "prepare": "turbo run @kubricate/mono#build --output-logs=errors-only",
+    "build": "turbo run build --filter=!./tools/template --filter=!./examples/*",
+    "all": "npm run build && npm run lint:check && npm run test",
+    "dev": "turbo run dev --filter=!./tools/template --filter=!./examples/*",
+    "lint:check": "turbo lint:check check-types && npm run format",
+    "lint:fix": "turbo lint:fix && npm run format:fix",
+    "format": "prettier --check ./**/*.{ts,js}",
+    "format:fix": "prettier --write ./**/*.{ts,js}",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:coverage-report": "turbo run view-report",
+    "release": "npm run all && changeset version && changeset publish"
   },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.5.2",
   "devDependencies": {
-    "@babel/cli": "^7.24.5",
-    "@babel/core": "^7.24.5",
-    "@babel/plugin-transform-export-namespace-from": "^7.24.1",
-    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
-    "@kosko/env": "^5.1.0",
-    "@type-challenges/utils": "^0.1.1",
-    "@types/bun": "latest",
-    "@types/lodash.merge": "^4.6.9",
-    "babel-plugin-annotate-pure-calls": "^0.4.0",
-    "cross-env": "^7.0.3",
-    "kosko": "^4.3.0",
-    "kubernetes-models": "^4.4.2",
-    "release-it": "^17.3.0",
-    "ts-node": "^10.9.2"
+    "@changesets/cli": "^2.28.1",
+    "@vitest/coverage-istanbul": "^3.0.9",
+    "esbuild": "^0.25.1",
+    "eslint": "^9.22.0",
+    "prettier": "^3.5.3",
+    "turbo": "^2.4.4",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
   },
-  "peerDependencies": {
-    "typescript": "^5.7.2"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thaitype/kubricate.git"
-  },
-  "homepage": "https://github.com/thaitype/kubricate",
-  "dependencies": {
-    "@kosko/generate": "^5.2.0",
-    "lodash.merge": "^4.6.2",
-    "prettier": "^3.4.2"
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120,
+    "arrowParens": "avoid"
   }
 }

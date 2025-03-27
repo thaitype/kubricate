@@ -1,0 +1,50 @@
+{
+  "name": "@kubricate/stacks",
+  "version": "0.3.1",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "mono dev",
+    "start": "mono start",
+    "build": "mono build",
+    "test": "mono test",
+    "test:watch": "mono test:watch",
+    "lint:check": "mono lint:check",
+    "lint:fix": "mono lint:fix",
+    "check-types": "mono check-types"
+  },
+  "devDependencies": {
+    "@kubricate/config-eslint": "workspace:*",
+    "@kubricate/config-typescript": "workspace:*",
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/kubricate.git"
+  },
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/stacks",
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+  },
+  "dependencies": {
+    "@kubernetes-models/base": "^5.0.1",
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
+  }
+}
