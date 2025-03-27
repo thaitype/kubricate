@@ -126,7 +126,7 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.11)(typescript@5.8.2)
 
-  packages/kubricate:
+  packages/core:
     dependencies:
       lodash.merge:
         specifier: ^4.6.2
@@ -153,12 +153,12 @@ importers:
       '@kubernetes-models/base':
         specifier: ^5.0.1
         version: 5.0.1
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../core
       kubernetes-models:
         specifier: ^4.4.2
         version: 4.4.2
-      kubricate:
-        specifier: workspace:*
-        version: link:../kubricate
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*

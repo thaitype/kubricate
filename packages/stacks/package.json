@@ -45,6 +45,6 @@
   "dependencies": {
     "@kubernetes-models/base": "^5.0.1",
     "kubernetes-models": "^4.4.2",
-    "kubricate": "workspace:*"
+    "@kubricate/core": "workspace:*"
   }
 }
