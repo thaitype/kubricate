@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     branches:
-      - main.migrate-to-monorepo # Temporary branch to migrate to monorepo
+      - main
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 

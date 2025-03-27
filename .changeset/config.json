@@ -11,7 +11,7 @@
   ],
   "linked": [],
   "access": "public",
-  "baseBranch": "main.migrate-to-monorepo",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []
 }
