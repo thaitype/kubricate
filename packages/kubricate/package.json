@@ -14,12 +14,9 @@
     }
   },
   "scripts": {
-    "dev": "tsc -w",
+    "dev": "mono dev",
     "start": "mono start",
-    "build": "npm run build-esm && npm run  build-cjs && npm run build-annotate",
-    "build-esm": "tsc",
-    "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+    "build": "mono build",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
