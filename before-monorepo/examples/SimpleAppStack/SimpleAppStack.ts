@@ -1,6 +1,6 @@
-import { Deployment } from "kubernetes-models/apps/v1/Deployment";
-import { Service } from "kubernetes-models/v1/Service";
-import { KubricateController } from "kubricate";
+import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
+import { Service } from 'kubernetes-models/v1/Service';
+import { KubricateController } from 'kubricate';
 
 export interface ISimpleAppStack {
   imageName: string;
@@ -14,8 +14,8 @@ export const createSimpleAppStack = (data: ISimpleAppStack) => {
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
 
-  const metadata = { name: "nginx" };
-  const labels = { app: "nginx" };
+  const metadata = { name: 'nginx' };
+  const labels = { app: 'nginx' };
 
   return new KubricateController()
     .add({
@@ -26,24 +26,24 @@ export const createSimpleAppStack = (data: ISimpleAppStack) => {
         spec: {
           replicas: replicas,
           selector: {
-            matchLabels: labels
+            matchLabels: labels,
           },
           template: {
             metadata: {
-              labels
+              labels,
             },
             spec: {
               containers: [
                 {
-                  image: imageRegistry + "nginx",
-                  name: "nginx",
-                  ports: [{ containerPort: port }]
-                }
-              ]
-            }
-          }
-        }
-      }
+                  image: imageRegistry + 'nginx',
+                  name: 'nginx',
+                  ports: [{ containerPort: port }],
+                },
+              ],
+            },
+          },
+        },
+      },
     })
     .add({
       id: 'service',
@@ -52,14 +52,14 @@ export const createSimpleAppStack = (data: ISimpleAppStack) => {
         metadata,
         spec: {
           selector: labels,
-          type: "ClusterIP",
+          type: 'ClusterIP',
           ports: [
             {
               port,
               targetPort: port,
-            }
-          ]
-        }
-      }
-    })
-}
+            },
+          ],
+        },
+      },
+    });
+};

@@ -40,7 +40,7 @@ export class SimpleAppStack {
                 containers: [
                   {
                     image: imageRegistry + data.name,
-                    name:  data.name,
+                    name: data.name,
                     ports: [{ containerPort: port }],
                   },
                 ],

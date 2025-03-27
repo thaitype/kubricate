@@ -1,14 +1,13 @@
-import { createSimpleAppStack } from "../SimpleAppStack.js";
+import { createSimpleAppStack } from '../SimpleAppStack.js';
 
-export default createSimpleAppStack(
-  {
-    imageName: "nginx",
-  })
+export default createSimpleAppStack({
+  imageName: 'nginx',
+})
   .overrideStack({
     service: {
       spec: {
-        type: "LoadBalancer"
-      }
-    }
+        type: 'LoadBalancer',
+      },
+    },
   })
   .build();

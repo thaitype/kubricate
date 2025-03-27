@@ -7,7 +7,7 @@ export interface INamespaceStack {
 
 export class NamespaceStack {
   constructor() {}
-  
+
   configureStack(data: INamespaceStack) {
     return new KubricateController().add({
       id: 'namespace',
@@ -20,5 +20,3 @@ export class NamespaceStack {
     });
   }
 }
-
-
