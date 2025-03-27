@@ -1,8 +1,16 @@
 {
   "name": "@kubricate/stacks",
   "version": "0.0.6",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
   },
   "scripts": {
     "dev": "tsc -w",
@@ -39,6 +47,9 @@
     "package.json",
     "README.md"
   ],
+  "peerDependencies": {
+    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+  },
   "dependencies": {
     "@kubernetes-models/base": "^5.0.1",
     "kubernetes-models": "^4.4.2",

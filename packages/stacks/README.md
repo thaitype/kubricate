@@ -1,32 +1,38 @@
 # @kubricate/stacks
 
-install official stacks from the kubricate projects
+Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes manifests in a structured and reusable way.
 
-## Install
+## Installation
 
 ```bash
-npm install @kubricate/stacks
+pnpm install @kubricate/stacks 
+pnpm install -D @kubernetes-models/base@^5.0.1 kosko @kosko/env ts-node
 ```
+
+`@kubernetes-models/base` is a required peer dependency.
+Please install it manually to ensure compatibility.
 
 ## Usage
 
-Currently, kubricate needs `kosko` to build the output into kube manifests yaml files. See the [kosko documentation](https://kosko.dev) for more information.
+Currently, kubricate uses Kosko to compile stacks into Kubernetes manifest YAML files.
 
-place this file in to `components/MyApp.ts`:
+Create a component file at `components/MyApp.ts`:
 
-```ts
+```typescript
 import { SimpleAppStack, NamespaceStack } from "@kubricate/stacks";
 
 const namespace = new NamespaceStack()
   .configureStack({
     name: "my-namespace"
-  }).build();
+  })
+  .build();
 
 const myApp = new SimpleAppStack()
   .configureStack({
     imageName: "nginx",
+    name: "my-app"
   })
-  .overrideResources({
+  .overrideStack({
     service: {
       spec: {
         type: "LoadBalancer"
@@ -38,17 +44,27 @@ const myApp = new SimpleAppStack()
 export default [namespace, myApp];
 ```
 
-setup cosko config at `kosko.toml`, P.S. This for CommonJS
+### Kosko Configuration
+
+For CommonJS
+
+In your kosko.toml:
 
 ```toml
 require = ["ts-node/register"]
 ```
 
-for the ESM, using
+For ESM
 
 ```toml
 loaders = ["ts-node/esm"]
 extensions = ["ts", "mts", "cjs", "mjs", "js", "json"]
 ```
 
-then run `npx kosko generate "*"` to generate all components into the kube manifests.
+### Generate Kubernetes Manifests
+
+Run the following command to generate manifests from all components:
+
+```
+npx kosko generate "*"
+```

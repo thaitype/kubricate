@@ -11,15 +11,15 @@ export interface ISimpleAppStack {
 }
 
 export class SimpleAppStack {
-  constructor(private data: ISimpleAppStack) {}
+  constructor() {}
 
-  configureStack() {
-    const port = this.data.port || 80;
-    const replicas = this.data.replicas || 1;
-    const imageRegistry = this.data.imageRegistry || '';
+  configureStack(data: ISimpleAppStack) {
+    const port = data.port || 80;
+    const replicas = data.replicas || 1;
+    const imageRegistry = data.imageRegistry || '';
 
-    const metadata = { name: this.data.name };
-    const labels = { app: this.data.name };
+    const metadata = { name: data.name };
+    const labels = { app: data.name };
 
     return new KubricateController()
       .add({
@@ -39,8 +39,8 @@ export class SimpleAppStack {
               spec: {
                 containers: [
                   {
-                    image: imageRegistry + 'nginx',
-                    name: 'nginx',
+                    image: imageRegistry + data.name,
+                    name:  data.name,
                     ports: [{ containerPort: port }],
                   },
                 ],
