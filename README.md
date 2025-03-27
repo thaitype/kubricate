@@ -1,6 +1,6 @@
 # Kubricate
 
-[![Release](https://github.com/thaitype/kubricate/actions/workflows/release.yml/badge.svg?branch=main.migrate-to-monorepo)](https://github.com/thaitype/kubricate/actions/workflows/release.yml)
+[![Release](https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml)
 
 A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach
 
