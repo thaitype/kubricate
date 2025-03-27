@@ -1,0 +1,2 @@
+loaders = ["ts-node/esm"]
+extensions = ["ts", "mts", "cjs", "mjs", "js", "json"]
