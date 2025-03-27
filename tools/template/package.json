@@ -1,6 +1,5 @@
 {
   "name": "@kubricate/template",
-  "type": "module",
   "version": "0.0.0",
   "private": true,
   "main": "./dist/cjs/index.js",
