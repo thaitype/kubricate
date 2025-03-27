@@ -15,6 +15,12 @@ Run exmaple
 bun kosko generate nginx  --cwd examples/SimpleAppStack 
 ```
 
+## Development
+
+This manual for development of Kubricate package.
+
+Before start, `pnpm install && pnpm dev` for install dependencies and start build typescript in watch mode.
+
 ## How to publish
 
 1. pnpm changeset -> select the package you want to publish

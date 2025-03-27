@@ -14,7 +14,7 @@
     }
   },
   "scripts": {
-    "dev": "mono dev",
+    "dev": "tsc -w",
     "start": "mono start",
     "build": "npm run build-esm && npm run  build-cjs && npm run build-annotate",
     "build-esm": "tsc",
