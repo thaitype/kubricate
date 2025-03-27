@@ -1,5 +1,13 @@
 # @kubricate/stacks
 
+## 0.3.1
+
+### Patch Changes
+
+- 844449b: Refactor Toolchain: Centralize Dual Output Build for both ESM and CJS with Mono Package
+- Updated dependencies [844449b]
+  - kubricate@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
