@@ -1,4 +1,4 @@
-# kubricate
+# @kubricate/core
 
 ## 0.4.0
 
