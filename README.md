@@ -10,7 +10,7 @@ Leverage [kosko](https://kosko.dev/) generate feature to generate k8s manifests 
 
 ## Example
 
-Run exmaple
+Run example
 ```bash
 bun kosko generate nginx  --cwd examples/SimpleAppStack 
 ```
