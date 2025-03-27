@@ -1,9 +1,16 @@
 {
   "name": "@kubricate/toolkit",
-  "type": "module",
   "version": "0.3.1",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
   },
   "files": [
     "dist",
