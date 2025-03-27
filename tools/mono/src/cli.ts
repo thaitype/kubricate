@@ -27,6 +27,7 @@ const scripts: MonoScripts = {
 
 (async () => {
   for (const command of processArgs(process.argv[2], scripts)) {
+    console.log(`${command.join(' ')}`);
     await runCommand(command, {
       preferLocal: true,
     });

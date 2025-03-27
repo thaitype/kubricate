@@ -15,6 +15,13 @@
     "lint:fix": "eslint --fix ./src",
     "check-types": "tsc --noEmit"
   },
+  "peerDependencies": {
+    "@babel/cli": ">=7.24.5 <8.0.0",
+    "@babel/core": ">=7.24.5 <8.0.0",
+    "@babel/plugin-transform-export-namespace-from": ">=7.24.1 <8.0.0",
+    "@babel/plugin-transform-modules-commonjs": ">=7.24.1 <8.0.0",
+    "babel-plugin-annotate-pure-calls": ">=0.4.0 <1.0.0"
+  },
   "dependencies": {
     "execa": "^9.5.2"
   },
