@@ -148,6 +148,21 @@ importers:
         specifier: ^4.6.9
         version: 4.6.9
 
+  packages/kubricate:
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+
   packages/stacks:
     dependencies:
       '@kubernetes-models/base':
