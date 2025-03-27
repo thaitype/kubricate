@@ -12,8 +12,5 @@
     "declarationMap": true,
     "sourceMap": true,
     "noEmit": false,
-
-    "outDir": "dist/esm",
-    "declarationDir": "dist/dts",
   }
 }

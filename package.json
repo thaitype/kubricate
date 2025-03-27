@@ -3,8 +3,8 @@
   "private": true,
   "scripts": {
     "prepare": "turbo run @kubricate/mono#build --output-logs=errors-only",
-    "build": "turbo run build",
-    "dev": "turbo run dev --filter=!./tools/template",
+    "build": "turbo run build --filter=!./examples/*",
+    "dev": "turbo run dev --filter=!./tools/template --filter=!./examples/*",
     "lint:check": "turbo lint:check check-types && npm run format",
     "lint:fix": "turbo lint:fix && npm run format:fix",
     "format": "prettier --check ./**/*.{ts,tsx,js}",
