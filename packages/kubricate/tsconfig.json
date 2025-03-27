@@ -1,8 +1,4 @@
 {
   "extends": "@kubricate/config-typescript/dual.json",
-  "compilerOptions": {
-    "outDir": "dist/esm",
-    "declarationDir": "dist/dts",
-  },
-  "exclude": ["node_modules", "*.config.ts"]
+  "exclude": ["node_modules", "*.config.ts", "dist"]
 }
