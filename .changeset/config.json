@@ -5,12 +5,13 @@
   "fixed": [
     [
       "kubricate",
-      "@kubricate/stacks"
+      "@kubricate/stacks",
+      "@kubricate/toolkit"
     ]
   ],
   "linked": [],
   "access": "public",
-  "baseBranch": "main.migrate-to-monorepo",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []
 }
