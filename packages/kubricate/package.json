@@ -1,7 +1,7 @@
 {
   "name": "kubricate",
   "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/dts/index.d.ts",
@@ -14,12 +14,9 @@
     }
   },
   "scripts": {
-    "dev": "tsc -w",
+    "dev": "mono dev",
     "start": "mono start",
-    "build": "npm run build-esm && npm run  build-cjs && npm run build-annotate",
-    "build-esm": "tsc",
-    "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+    "build": "mono build",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
@@ -34,12 +31,7 @@
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@babel/cli": "^7.24.5",
-    "@babel/core": "^7.24.5",
-    "@babel/plugin-transform-export-namespace-from": "^7.24.1",
-    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
-    "@types/lodash.merge": "^4.6.9",
-    "babel-plugin-annotate-pure-calls": "^0.4.0"
+    "@types/lodash.merge": "^4.6.9"
   },
   "repository": {
     "type": "git",
