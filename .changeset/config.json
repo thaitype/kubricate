@@ -4,6 +4,7 @@
   "commit": true,
   "fixed": [
     [
+      "kubricate",
       "@kubricate/stacks"
     ]
   ],

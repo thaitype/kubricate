@@ -1,17 +1,23 @@
 {
   "name": "@kubricate/stacks",
-  "version": "0.0.6",
+  "version": "0.2.2",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
   },
-  "files": [
-    "dist",
-    "src",
-    "package.json",
-    "README.md"
-  ],
   "scripts": {
-    "build": "tsc",
+    "dev": "tsc -w",
+    "build": "npm run build-esm && npm run  build-cjs && npm run build-annotate",
+    "build-esm": "tsc",
+    "build-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+    "build-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
@@ -19,9 +25,34 @@
     "check-types": "mono check-types"
   },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
+    "@babel/cli": "^7.24.5",
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-transform-export-namespace-from": "^7.24.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@kubricate/config-vitest": "workspace:*"
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*",
+    "@types/lodash.merge": "^4.6.9",
+    "babel-plugin-annotate-pure-calls": "^0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/kubricate.git"
+  },
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/stacks",
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+  },
+  "dependencies": {
+    "@kubernetes-models/base": "^5.0.1",
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
   }
 }
