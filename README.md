@@ -8,12 +8,10 @@ A TypeScript framework for building, managing, and compiling Kubernetes manifest
 
 Leverage [kosko](https://kosko.dev/) generate feature to generate k8s manifests from a structured TypeScript codebase.
 
-## Example
 
-Run example
-```bash
-bun kosko generate nginx  --cwd examples/SimpleAppStack 
-```
+## Usages
+
+See in the [examples](./examples) folder.
 
 ## Development
 
