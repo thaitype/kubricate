@@ -1,7 +1,7 @@
 import { execa, ExecaError } from 'execa';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import pc from "picocolors"
+import pc from 'picocolors';
 
 export type MonoScripts = Record<string, string | string[]>;
 
@@ -22,21 +22,22 @@ export async function runScript(scripts: MonoScripts, options?: RunCommandOption
 
 export interface RunCommandOptions {
   /**
-    * Whether to prefer local binaries over global ones
-    * @default true
-    */
+   * Whether to prefer local binaries over global ones
+   * @default true
+   */
   preferLocal?: boolean;
 }
 
-export async function runCommand(
-  commands: string[],
-  options?: RunCommandOptions
-) {
-
+export async function runCommand(commands: string[], options?: RunCommandOptions) {
   // Use `curl -o /dev/null https://proof.ovh.net/files/10Gb.dat` to test download speed
   const preferLocal = options?.preferLocal ?? true;
   const execaOptions = preferLocal ? { preferLocal: true, localDir: binDir } : {};
-  const subprocess = execa({ env: { FORCE_COLOR: 'true' }, stdout: 'inherit', stderr: 'inherit', ...execaOptions })`${[...commands]}`;
+  const subprocess = execa({
+    env: { FORCE_COLOR: 'true' },
+    stdout: 'inherit',
+    stderr: 'inherit',
+    ...execaOptions,
+  })`${[...commands]}`;
   // subprocess.stdout.pipe(process.stdout);
   // subprocess.stderr.pipe(process.stderr);
   await subprocess.catch(error => {
