@@ -1,7 +1,6 @@
 {
   "name": "kubricate",
-  "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
-  "version": "0.4.0",
+  "version": "0.0.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/dts/index.d.ts",
@@ -13,35 +12,31 @@
       "default": "./dist/cjs/index.js"
     }
   },
+  "bin": {
+    "kubricate": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "dev": "mono dev",
     "start": "mono start",
-    "build": "mono build",
+    "build": "npm run build:cli && npm run build:library",
+    "build:cli": "mono build:cli",
+    "build:library": "mono build",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
     "lint:fix": "mono lint:fix",
     "check-types": "mono check-types"
   },
-  "dependencies": {
-    "lodash.merge": "^4.6.2"
-  },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@types/lodash.merge": "^4.6.9"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thaitype/kubricate.git"
-  },
-  "homepage": "https://github.com/thaitype/kubricate",
-  "files": [
-    "dist",
-    "src",
-    "package.json",
-    "README.md"
-  ]
+    "@kubricate/mono": "workspace:*"
+  }
 }

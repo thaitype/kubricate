@@ -1,4 +1,4 @@
-import { type MonoScripts, processArgs, runCommand } from './libs.js';
+import { type MonoScripts, runScript } from './libs.js';
 
 const binName = 'mono';
 
@@ -17,6 +17,8 @@ const scripts: MonoScripts = {
   'build-esm': 'tsc',
   'build-cjs': 'babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps',
   'build-annotate': 'babel dist --plugins annotate-pure-calls --out-dir dist --source-maps',
+  // Build CLI
+  'build:cli': 'esbuild ./src/cli.ts --bundle --minify --platform=node --outfile=dist/cli.js',
   // Compile TypeScript in watch mode
   'dev': 'tsc -w',
   // Check TypeScript types
@@ -25,11 +27,4 @@ const scripts: MonoScripts = {
   'start': 'echo "No start script"',
 };
 
-(async () => {
-  for (const command of processArgs(process.argv[2], scripts)) {
-    console.log(`${command.join(' ')}`);
-    await runCommand(command, {
-      preferLocal: true,
-    });
-  }
-})();
+runScript(scripts, { preferLocal: true });

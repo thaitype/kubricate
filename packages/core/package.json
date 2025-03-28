@@ -1,5 +1,6 @@
 {
-  "name": "@kubricate/stacks",
+  "name": "@kubricate/core",
+  "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
   "version": "0.4.0",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -22,29 +23,25 @@
     "lint:fix": "mono lint:fix",
     "check-types": "mono check-types"
   },
+  "dependencies": {
+    "lodash.merge": "^4.6.2"
+  },
   "devDependencies": {
+    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*"
+    "@types/lodash.merge": "^4.6.9"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/thaitype/kubricate.git"
   },
-  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/stacks",
+  "homepage": "https://github.com/thaitype/kubricate",
   "files": [
     "dist",
     "src",
     "package.json",
     "README.md"
-  ],
-  "peerDependencies": {
-    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
-  },
-  "dependencies": {
-    "@kubernetes-models/base": "^5.0.1",
-    "kubernetes-models": "^4.4.2",
-    "@kubricate/core": "workspace:*"
-  }
+  ]
 }

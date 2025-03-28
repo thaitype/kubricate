@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { KubricateController } from 'kubricate';
+import { KubricateController } from '@kubricate/core';
 
 export interface ISimpleAppStack {
   name: string;

@@ -1,5 +1,5 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { KubricateController } from 'kubricate';
+import { KubricateController } from '@kubricate/core';
 
 export interface INamespaceStack {
   name: string;

@@ -1,16 +1,17 @@
-# Kubricate
+# Kubricate CLI
 
-A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach
+Kubricate is a CLI tool that helps you manage Kubernetes configurations.
 
-Leverage [kosko](https://kosko.dev/) generate feature to generate k8s manifests from a structured TypeScript codebase.
+> This package is in progress, and it is not ready for use.
 
-## Example
+> This package preserve for kubricate CLI, replacement for kosko CLI.
 
-Run example
-```bash
-bun kosko generate nginx  --cwd examples/SimpleAppStack 
-```
-
-## Usages
-
-See in the [examples](./examples) folder.
+## Planned Features
+- command `generate` -- for generate into k8s yaml files, currenctly, we still use `kosko generate` for this feature
+- command `apply` -- for apply into k8s cluster
+- command `delete` -- for delete from k8s cluster
+- command `diff` -- for diff between local and k8s cluster
+- command `init` -- for init kubricate project
+- command `plan` -- for plan kubricate project, like terraform plan
+- command `secrets` -- for manage secrets into k8s cluster
+  - `secrets load` -- for load secrets from configuration in SecretManger 
