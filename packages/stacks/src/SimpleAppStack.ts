@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { KubricateController } from '@kubricate/core';
+import { KubricateController, KubricateStack } from '@kubricate/core';
 
 export interface ISimpleAppStack {
   name: string;
@@ -10,8 +10,10 @@ export interface ISimpleAppStack {
   port?: number;
 }
 
-export class SimpleAppStack {
-  constructor() {}
+export class SimpleAppStack extends KubricateStack {
+  constructor() {
+    super();
+  }
 
   configureStack(data: ISimpleAppStack) {
     const port = data.port || 80;

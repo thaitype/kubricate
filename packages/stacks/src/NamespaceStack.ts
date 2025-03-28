@@ -1,12 +1,14 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { KubricateController } from '@kubricate/core';
+import { KubricateController, KubricateStack  } from '@kubricate/core';
 
-export interface INamespaceStack {
+export interface INamespaceStack  {
   name: string;
 }
 
-export class NamespaceStack {
-  constructor() {}
+export class NamespaceStack extends KubricateStack {
+  constructor() {
+    super();
+  }
 
   configureStack(data: INamespaceStack) {
     return new KubricateController().add({
