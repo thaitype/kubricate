@@ -1,6 +1,7 @@
-import { execa } from 'execa';
+import { execa, ExecaError } from 'execa';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import pc from "picocolors"
 
 export type MonoScripts = Record<string, string | string[]>;
 
@@ -22,13 +23,17 @@ export async function runCommand(
     preferLocal?: boolean;
   }
 ) {
+
+  // Use `curl -o /dev/null https://proof.ovh.net/files/10Gb.dat` to test download speed
   const preferLocal = options?.preferLocal ?? true;
   const execaOptions = preferLocal ? { preferLocal: true, localDir: binDir } : {};
-  const subprocess = execa({ env: { FORCE_COLOR: 'true' }, stdout: 'pipe', ...execaOptions })`${[...commands]}`;
-  subprocess.stdout.pipe(process.stdout);
-  subprocess.stderr.pipe(process.stderr);
+  const subprocess = execa({ env: { FORCE_COLOR: 'true' }, stdout: 'inherit', stderr: 'inherit', ...execaOptions })`${[...commands]}`;
+  // subprocess.stdout.pipe(process.stdout);
+  // subprocess.stderr.pipe(process.stderr);
   await subprocess.catch(error => {
-    console.error(error);
+    if (error instanceof ExecaError) {
+      console.error(pc.red(`Command failed: ${error.command}`));
+    }
     process.exit(1);
   });
 }

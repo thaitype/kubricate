@@ -28,6 +28,7 @@
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@types/node": "^22.13.9"
+    "@types/node": "^22.13.9",
+    "picocolors": "^1.1.1"
   }
 }

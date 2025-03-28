@@ -29,9 +29,10 @@
     "check-types": "mono check-types"
   },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@kubricate/config-vitest": "workspace:*"
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*",
+    "tsx": "^4.19.3"
   }
 }
