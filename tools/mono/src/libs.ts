@@ -13,15 +13,24 @@ const rootFile = path.resolve(dirname, '..');
 const nodeModules = path.resolve(rootFile, 'node_modules');
 const binDir = path.resolve(nodeModules, '.bin');
 
+export async function runScript(scripts: MonoScripts, options?: RunCommandOptions) {
+  for (const command of processArgs(process.argv[2], scripts)) {
+    console.log(`Exectuing: ${command.join(' ')}`);
+    await runCommand(command, options);
+  }
+}
+
+export interface RunCommandOptions {
+  /**
+    * Whether to prefer local binaries over global ones
+    * @default true
+    */
+  preferLocal?: boolean;
+}
+
 export async function runCommand(
   commands: string[],
-  options?: {
-    /**
-     * Whether to prefer local binaries over global ones
-     * @default true
-     */
-    preferLocal?: boolean;
-  }
+  options?: RunCommandOptions
 ) {
 
   // Use `curl -o /dev/null https://proof.ovh.net/files/10Gb.dat` to test download speed

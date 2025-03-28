@@ -1,5 +1,4 @@
-import { type MonoScripts, processArgs, runCommand } from './libs.js';
-import pc from 'picocolors';
+import { type MonoScripts, runScript } from './libs.js';
 
 const binName = 'mono';
 
@@ -26,11 +25,4 @@ const scripts: MonoScripts = {
   'start': 'echo "No start script"',
 };
 
-(async () => {
-  for (const command of processArgs(process.argv[2], scripts)) {
-    console.log(`Exectuing: ${command.join(' ')}`);
-    await runCommand(command, {
-      preferLocal: true,
-    });
-  }
-})();
+runScript(scripts, { preferLocal: true });
