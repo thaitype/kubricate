@@ -38,5 +38,9 @@
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
     "@kubricate/mono": "workspace:*"
+  },
+  "dependencies": {
+    "@kubricate/core": "workspace:*",
+    "unconfig": "^7.3.1"
   }
 }

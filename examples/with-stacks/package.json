@@ -31,11 +31,11 @@
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
     "@kubricate/mono": "workspace:*",
-    "kubricate": "workspace:*",
     "kosko": "^4.3.0",
     "ts-node": "^10.9.2"
   },
   "dependencies": {
+    "kubricate": "workspace:*",
     "@kubricate/stacks": "workspace:*"
   }
 }
