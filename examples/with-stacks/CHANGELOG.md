@@ -1,5 +1,11 @@
 # @examples/stacks
 
+## 0.0.5
+
+### Patch Changes
+
+- @kubricate/stacks@0.5.1
+
 ## 0.0.4
 
 ### Patch Changes

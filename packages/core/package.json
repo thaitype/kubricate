@@ -1,7 +1,7 @@
 {
   "name": "@kubricate/core",
   "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/dts/index.d.ts",
