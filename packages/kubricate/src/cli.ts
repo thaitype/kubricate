@@ -1,1 +1,1 @@
-console.log(`Running with Args: ${process.argv.slice(2).join(' ')}`);
+console.log('Executing kubricate CLI... (The real implementation is not available in this demo)');
