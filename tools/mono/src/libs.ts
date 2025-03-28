@@ -15,7 +15,7 @@ const binDir = path.resolve(nodeModules, '.bin');
 
 export async function runScript(scripts: MonoScripts, options?: RunCommandOptions) {
   for (const command of processArgs(process.argv[2], scripts)) {
-    console.log(`Exectuing: ${command.join(' ')}`);
+    console.log(`mono-scripts > ${command.join(' ')}`);
     await runCommand(command, options);
   }
 }

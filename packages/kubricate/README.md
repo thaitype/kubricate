@@ -1,3 +1,3 @@
-# template
+# Kubricate CLI
 
-Use for creating new projects.
+Kubricate is a CLI tool that helps you manage Kubernetes configurations.

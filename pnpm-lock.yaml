@@ -13,7 +13,7 @@ importers:
         version: 2.28.1
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
-        version: 3.0.9(vitest@3.0.9(@types/node@22.13.11)(@vitest/ui@3.0.9)(jsdom@26.0.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 3.0.9(vitest@3.0.9)
       esbuild:
         specifier: ^0.25.1
         version: 0.25.1
@@ -78,7 +78,7 @@ importers:
         version: link:../config-typescript
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
-        version: 3.0.9(vitest@3.0.9(@types/node@22.13.11)(@vitest/ui@3.0.9)(jsdom@26.0.0)(tsx@4.19.3)(yaml@2.7.0))
+        version: 3.0.9(vitest@3.0.9)
       '@vitest/ui':
         specifier: 3.0.9
         version: 3.0.9(vitest@3.0.9)
@@ -122,6 +122,9 @@ importers:
       kosko:
         specifier: ^4.3.0
         version: 4.3.0(@kosko/yaml@5.1.0(kubernetes-models@4.4.2))(kubernetes-models@4.4.2)
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.11)(typescript@5.8.2)
@@ -162,9 +165,6 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
-      tsx:
-        specifier: ^4.19.3
-        version: 4.19.3
 
   packages/stacks:
     dependencies:
@@ -236,6 +236,9 @@ importers:
       '@types/node':
         specifier: ^22.13.9
         version: 22.13.11
+      esbuild:
+        specifier: ^0.25.1
+        version: 0.25.1
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -1264,7 +1267,7 @@ packages:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
   concat-map@0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   convert-source-map@1.9.0:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
@@ -3998,7 +4001,7 @@ snapshots:
       '@typescript-eslint/types': 8.26.0
       eslint-visitor-keys: 4.2.0
 
-  '@vitest/coverage-istanbul@3.0.9(vitest@3.0.9(@types/node@22.13.11)(@vitest/ui@3.0.9)(jsdom@26.0.0)(tsx@4.19.3)(yaml@2.7.0))':
+  '@vitest/coverage-istanbul@3.0.9(vitest@3.0.9)':
     dependencies:
       '@istanbuljs/schema': 0.1.3
       debug: 4.4.0
@@ -4916,6 +4919,7 @@ snapshots:
   get-tsconfig@4.10.0:
     dependencies:
       resolve-pkg-maps: 1.0.0
+    optional: true
 
   glob-parent@5.1.2:
     dependencies:
@@ -5801,7 +5805,8 @@ snapshots:
 
   resolve-from@5.0.0: {}
 
-  resolve-pkg-maps@1.0.0: {}
+  resolve-pkg-maps@1.0.0:
+    optional: true
 
   resolve@2.0.0-next.5:
     dependencies:
@@ -6157,6 +6162,7 @@ snapshots:
       get-tsconfig: 4.10.0
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   turbo-darwin-64@2.4.4:
     optional: true

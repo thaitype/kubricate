@@ -12,6 +12,9 @@
       "default": "./dist/cjs/index.js"
     }
   },
+  "bin": {
+    "kubricate": "dist/cli.js"
+  },
   "files": [
     "dist",
     "src",
@@ -21,7 +24,9 @@
   "scripts": {
     "dev": "mono dev",
     "start": "mono start",
-    "build": "mono build",
+    "build": "npm run build:cli && npm run build:library",
+    "build:cli": "mono build:cli",
+    "build:library": "mono build",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
@@ -32,7 +37,6 @@
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*",
-    "tsx": "^4.19.3"
+    "@kubricate/mono": "workspace:*"
   }
 }

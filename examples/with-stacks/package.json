@@ -13,6 +13,7 @@
     "README.md"
   ],
   "scripts": {
+    "kubricate": "kubricate",
     "dev": "mono dev",
     "start": "mono start",
     "build": "mono build",
@@ -30,6 +31,7 @@
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
     "@kubricate/mono": "workspace:*",
+    "kubricate": "workspace:*",
     "kosko": "^4.3.0",
     "ts-node": "^10.9.2"
   },

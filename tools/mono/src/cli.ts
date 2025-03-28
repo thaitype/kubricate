@@ -17,6 +17,8 @@ const scripts: MonoScripts = {
   'build-esm': 'tsc',
   'build-cjs': 'babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps',
   'build-annotate': 'babel dist --plugins annotate-pure-calls --out-dir dist --source-maps',
+  // Build CLI
+  'build:cli': 'esbuild ./src/cli.ts --bundle --minify --platform=node --outfile=dist/cli.js',
   // Compile TypeScript in watch mode
   'dev': 'tsc -w',
   // Check TypeScript types
