@@ -156,6 +156,9 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../core
+      ansis:
+        specifier: ^3.17.0
+        version: 3.17.0
       cac:
         specifier: ^6.7.14
         version: 6.7.14
@@ -181,9 +184,6 @@ importers:
       '@types/node':
         specifier: ^22.13.9
         version: 22.13.11
-      ansis:
-        specifier: ^3.17.0
-        version: 3.17.0
 
   packages/stacks:
     dependencies:
