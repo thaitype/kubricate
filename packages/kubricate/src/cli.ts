@@ -2,7 +2,7 @@ import { cac } from 'cac';
 import c from 'ansis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { GenerateCommand, GenerateCommandOptions } from './commands/generate.js';
+import { GenerateCommand, type GenerateCommandOptions } from './commands/generate.js';
 
 const pkg = {
   version: '0.0.0',

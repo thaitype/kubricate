@@ -1,7 +1,7 @@
 import c from 'ansis';
 import { MARK_CHECK, MARK_ERROR, MARK_INFO, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
-import { getConfig, getMatchConfigFile, LoadConfigOptions } from '../load-config.js';
+import { getConfig, getMatchConfigFile, type LoadConfigOptions } from '../load-config.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';

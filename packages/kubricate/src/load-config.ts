@@ -1,6 +1,6 @@
 import { loadConfig } from 'unconfig';
 import { MARK_CHECK } from './constant.js';
-import { KubricateConfig } from './config.js';
+import type { KubricateConfig } from './config.js';
 import c from 'ansis';
 
 export interface LoadConfigOptions {
