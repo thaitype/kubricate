@@ -3,8 +3,9 @@ import { MARK_CHECK, MARK_ERROR, MARK_INFO, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
 import { getConfig, LoadConfigOptions } from '../load-config.js';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GenerateCommandOptions extends LoadConfigOptions {}
+export interface GenerateCommandOptions extends LoadConfigOptions {
+  outDir: string;
+}
 
 export class GenerateCommand {
   constructor(private options: GenerateCommandOptions) { }
@@ -32,6 +33,15 @@ export class GenerateCommand {
     for(const [name, stack] of Object.entries(config.stacks)) {
       console.log(c.blue`    ${MARK_NODE} ${name}: ${getClassName(stack)}`);
     }
+
+    for(const [name, stack] of Object.entries(config.stacks)) {
+      console.log(c.blue`${MARK_NODE} Generating stack ${name}...`);
+      console.log(JSON.stringify(stack, null, 2));
+      console.log('---')
+      console.log(c.green`${MARK_CHECK} Stack ${name} generated successfully`);
+    }
+    console.log(c.green`${MARK_CHECK} All stacks generated successfully`);
+    console.info(c.green`${MARK_CHECK} Done!`);
 
   }
 }

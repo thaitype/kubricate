@@ -6,7 +6,6 @@ import c from 'ansis';
 export interface LoadConfigOptions {
   root: string;
   config?: string;
-  outDir: string;
 }
 
 export async function getConfig(options: LoadConfigOptions): Promise<KubricateConfig> {
