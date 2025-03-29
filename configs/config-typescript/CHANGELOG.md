@@ -1,5 +1,11 @@
 # @kubricate/config-typescript
 
+## 0.2.2
+
+### Patch Changes
+
+- fbe95a5: Use ESM module for all projects
+
 ## 0.2.1
 
 ### Patch Changes
