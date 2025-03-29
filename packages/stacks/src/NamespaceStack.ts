@@ -1,12 +1,12 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { KubricateController, KubricateStack } from '@kubricate/core';
+import { KubricateComposer, KubricateStack } from '@kubricate/core';
 
 export interface INamespaceStack {
   name: string;
 }
 
-function configureController(data: INamespaceStack) {
-  return new KubricateController().add({
+function configureComposer(data: INamespaceStack) {
+  return new KubricateComposer().add({
     id: 'namespace',
     type: Namespace,
     config: {
@@ -17,13 +17,13 @@ function configureController(data: INamespaceStack) {
   });
 }
 
-export class NamespaceStack extends KubricateStack<typeof configureController> {
+export class NamespaceStack extends KubricateStack<typeof configureComposer> {
   constructor() {
     super();
   }
 
   configureStack(data: INamespaceStack) {
-    this.controller = configureController(data);
+    this.composer = configureComposer(data);
     return this;
   }
 }

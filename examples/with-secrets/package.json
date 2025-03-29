@@ -1,5 +1,5 @@
 {
-  "name": "@examples/with-stacks",
+  "name": "@examples/with-secrets",
   "type": "module",
   "version": "0.0.5",
   "private": true,
@@ -29,7 +29,10 @@
     "ts-node": "^10.9.2"
   },
   "dependencies": {
-    "kubricate": "workspace:*",
-    "@kubricate/stacks": "workspace:*"
+    "@kubricate/core": "workspace:*",
+    "@kubricate/stacks": "workspace:*",
+    "@kubricate/env": "workspace:*",
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
   }
 }

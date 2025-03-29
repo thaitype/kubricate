@@ -1,16 +1,18 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { KubricateComposer, KubricateStack } from '@kubricate/core';
+import { AnySecretManager, EnvOptions, ExtractSecretManager, KubricateComposer, KubricateStack } from '@kubricate/core';
 
-export interface ISimpleAppStack {
+export interface IAppStack<EnvSecretRef extends keyof any = string> {
+  namespace: string;
   name: string;
   imageName: string;
   replicas?: number;
   imageRegistry?: string;
   port?: number;
+  env?: EnvOptions<EnvSecretRef>[];
 }
 
-function configureComposer(data: ISimpleAppStack) {
+function configureComposer(data: IAppStack) {
   const port = data.port || 80;
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
@@ -19,7 +21,17 @@ function configureComposer(data: ISimpleAppStack) {
   const labels = { app: data.name };
 
   return new KubricateComposer()
-    .add({
+    .addObject({
+      id: 'namespace',
+      config: {
+        apiVersion: 'v1',
+        kind: 'Namespace',
+        metadata: {
+          name: data.namespace,
+        },
+      },
+    })
+    .addClass({
       id: 'deployment',
       type: Deployment,
       config: {
@@ -46,7 +58,7 @@ function configureComposer(data: ISimpleAppStack) {
         },
       },
     })
-    .add({
+    .addClass({
       id: 'service',
       type: Service,
       config: {
@@ -65,13 +77,15 @@ function configureComposer(data: ISimpleAppStack) {
     });
 }
 
-export class SimpleAppStack extends KubricateStack<typeof configureComposer> {
-  constructor() {
+export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends KubricateStack<
+  typeof configureComposer
+> {
+  constructor(private secretStore?: SecretManager) {
     super();
   }
 
-  configureStack(data: ISimpleAppStack) {
-    this.composer = configureComposer(data);
+  configureStack(data: IAppStack<keyof ExtractSecretManager<SecretManager>['secretEntries']>) {
+    this.composer = configureComposer(data as IAppStack);
     return this;
   }
 }

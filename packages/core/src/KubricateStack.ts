@@ -1,21 +1,21 @@
-import { KubricateController } from './KubricateController.js';
+import { KubricateComposer } from './KubricateComposer.js';
 import type { FunctionLike, InferResourceBuilderFunction } from './types.js';
 
 export abstract class KubricateStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends FunctionLike<any[], KubricateController> = FunctionLike<any, KubricateController>,
+  T extends FunctionLike<any[], KubricateComposer> = FunctionLike<any, KubricateComposer>,
 > {
-  controller!: ReturnType<T>;
+  composer!: ReturnType<T>;
 
   /**
    * Configure the stack with the provided data.
    * @param data The configuration data for the stack.
-   * @returns The Kubricate Controller instance.
+   * @returns The Kubricate Composer instance.
    */
   abstract configureStack(data: unknown): unknown;
 
   overrideStack(data: Partial<InferResourceBuilderFunction<T>>) {
-    this.controller.override(data);
+    this.composer.override(data);
     return this;
   }
 
@@ -24,6 +24,6 @@ export abstract class KubricateStack<
    * @returns The resources in the stack.
    */
   build() {
-    return this.controller.build();
+    return this.composer.build();
   }
 }
