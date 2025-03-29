@@ -1,1 +1,1 @@
-pnpm lint:all && pnpm format:fix
+pnpm format:fix && pnpm lint:all

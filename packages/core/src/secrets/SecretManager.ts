@@ -1,5 +1,13 @@
 import type { BaseLoader } from './loaders/BaseLoader.js';
 import type { BaseProvider } from './providers/BaseProvider.js';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface SecretOptions<NewSecret extends string, Loader extends keyof any, Provider extends keyof any> {
+  name: NewSecret;
+  loader?: Loader;
+  provider?: Provider;
+}
+
 /**
  * SecretManager is a type-safe registry for managing secret providers and their secrets.
  *
@@ -103,11 +111,7 @@ export class SecretManager<
    *   - `name`: Name of the new secret.
    * @returns A new SecretManager instance with the secret added.
    */
-  addSecret<NewSecret extends string>(options: {
-    name: NewSecret;
-    loader?: keyof LoaderInstances;
-    provider?: keyof ProviderInstances;
-  }) {
+  addSecret<NewSecret extends string>(options: SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>) {
     this._secrets[options.name] = '';
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries & Record<NewSecret, string>>;
   }
