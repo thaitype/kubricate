@@ -4,7 +4,7 @@ export const config = {
   namespace: 'my-namespace',
 }
 
-export const secretRegistry = new SecretManager<KubernetesSecretProvider>()
+export const secretManager = new SecretManager<KubernetesSecretProvider>()
   .addProvider('Kubernetes.Secret', {
     name: 'secret-application',
   })

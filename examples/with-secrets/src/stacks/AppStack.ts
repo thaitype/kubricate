@@ -1,14 +1,30 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { KubricateController, KubricateStack } from '@kubricate/core';
+import { AnySecretManager, ExtractSecretManager, KubricateController, KubricateStack } from '@kubricate/core';
 
-export interface IAppStack {
+export interface IAppStack<EnvSecretRef extends keyof any = string> {
   namespace: string;
   name: string;
   imageName: string;
   replicas?: number;
   imageRegistry?: string;
   port?: number;
+  env?: EnvironmentOptions<EnvSecretRef>[];
+}
+
+export interface EnvironmentOptions<EnvSecretRef extends keyof any = string> {
+  /**
+   * Environment variable name
+   */
+  name: string;
+  /**
+   * Environment variable value
+   */
+  value?: string;
+  /**
+   * Environment variable value from a secret
+   */
+  secretRef?: EnvSecretRef;
 }
 
 function configureController(data: IAppStack) {
@@ -66,13 +82,13 @@ function configureController(data: IAppStack) {
     });
 }
 
-export class AppStack extends KubricateStack<typeof configureController> {
-  constructor() {
+export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends KubricateStack<typeof configureController> {
+  constructor(private secretStore?: SecretManager) {
     super();
   }
 
-  configureStack(data: IAppStack) {
-    this.controller = configureController(data);
+  configureStack(data: IAppStack<keyof ExtractSecretManager<SecretManager>['secretEntries']>) {
+    this.controller = configureController(data as IAppStack);
     return this;
   }
 }
