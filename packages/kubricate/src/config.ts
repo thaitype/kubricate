@@ -1,7 +1,7 @@
 import { KubricateStack } from '@kubricate/core';
 
 export interface KubricateConfig {
-  stacks: Record<string, KubricateStack>;
+  stacks?: Record<string, KubricateStack>;
 }
 
 export function defineConfig(config: KubricateConfig): KubricateConfig {
