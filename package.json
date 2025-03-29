@@ -13,7 +13,8 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:coverage-report": "turbo run view-report",
-    "release": "npm run all && changeset version && changeset publish"
+    "release": "npm run all && changeset version && changeset publish",
+    "graph": "npx nx graph"
   },
   "engines": {
     "node": ">=22"
