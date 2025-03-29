@@ -39,7 +39,7 @@ export class SecretManager<
   private _providers: Record<string, string> = {};
   private _loaders: Record<string, string> = {};
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Registers a new provider instance using a valid provider name
@@ -55,6 +55,20 @@ export class SecretManager<
   }
 
   /**
+   * Sets the default provider for the SecretManager.
+   * This provider will be used if no specific provider is specified when adding a secret.
+   * 
+   * Providers support multiple instances, so this is a way to set a default.
+   * 
+   * @param provider - The unique name of the provider (e.g., 'Kubernetes.Secret').
+   * @returns A SecretManager instance with the provider added.
+   */
+  setDefaultProvider(provider: keyof ProviderInstances) {
+    console.log(`Default provider set to: ${String(provider)}`);
+    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries>;
+  }
+
+  /**
    * Adds a new loader instance using a valid loader name
    *
    * @param loader - The unique name of the loader (e.g., 'EnvLoader').
@@ -65,6 +79,20 @@ export class SecretManager<
   addLoader<NewLoader extends string>(loader: NewLoader, options: BaseLoader) {
     console.log(`Loader ${loader} added with options:`, options);
     return this as SecretManager<LoaderInstances & Record<NewLoader, string>, ProviderInstances, SecretEntries>;
+  }
+
+  /**
+   * Sets the default loader for the SecretManager.
+   * This loader will be used if no specific loader is specified when adding a secret.
+   * 
+   * Loaders support multiple instances, so this is a way to set a default.
+   * 
+   * @param loader - The unique name of the loader (e.g., 'EnvLoader').
+   * @returns A SecretManager instance with the loader added.
+  */
+  setDefaultLoader(loader: keyof LoaderInstances) {
+    console.log(`Default loader set to: ${String(loader)}`);
+    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries>;
   }
 
   /**
