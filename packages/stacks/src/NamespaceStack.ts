@@ -6,20 +6,18 @@ export interface INamespaceStack {
 }
 
 function configureController(data: INamespaceStack) {
-  return new KubricateController()
-    .add({
-      id: 'namespace',
-      type: Namespace,
-      config: {
-        metadata: {
-          name: data.name,
-        },
+  return new KubricateController().add({
+    id: 'namespace',
+    type: Namespace,
+    config: {
+      metadata: {
+        name: data.name,
       },
-    });
+    },
+  });
 }
 
 export class NamespaceStack extends KubricateStack<typeof configureController> {
-
   constructor() {
     super();
   }

@@ -1,4 +1,4 @@
-import { KubricateStack } from "@kubricate/core";
+import { KubricateStack } from '@kubricate/core';
 
 export interface KubricateConfig {
   stacks: Record<string, KubricateStack>;
