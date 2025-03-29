@@ -13,13 +13,7 @@
     "README.md"
   ],
   "scripts": {
-    "kubricate": "kubricate",
-    "dev": "mono dev",
-    "start": "mono start",
-    "build": "mono build",
-    "test": "mono test",
-    "test:watch": "mono test:watch",
-    "check-types": "mono check-types"
+    "kubricate": "kubricate"
   },
   "peerDependencies": {
     "@kubernetes-models/base": ">=5.0.1 <6.0.0"
