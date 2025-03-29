@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { KubricateController, KubricateStack } from '@kubricate/core';
+import { KubricateComposer, KubricateStack } from '@kubricate/core';
 
 export interface ISimpleAppStack {
   name: string;
@@ -10,7 +10,7 @@ export interface ISimpleAppStack {
   port?: number;
 }
 
-function configureController(data: ISimpleAppStack) {
+function configureComposer(data: ISimpleAppStack) {
   const port = data.port || 80;
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
@@ -18,7 +18,7 @@ function configureController(data: ISimpleAppStack) {
   const metadata = { name: data.name };
   const labels = { app: data.name };
 
-  return new KubricateController()
+  return new KubricateComposer()
     .add({
       id: 'deployment',
       type: Deployment,
@@ -65,13 +65,13 @@ function configureController(data: ISimpleAppStack) {
     });
 }
 
-export class SimpleAppStack extends KubricateStack<typeof configureController> {
+export class SimpleAppStack extends KubricateStack<typeof configureComposer> {
   constructor() {
     super();
   }
 
   configureStack(data: ISimpleAppStack) {
-    this.controller = configureController(data);
+    this.composer = configureComposer(data);
     return this;
   }
 }

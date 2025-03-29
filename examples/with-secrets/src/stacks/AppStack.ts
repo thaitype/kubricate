@@ -1,12 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import {
-  AnySecretManager,
-  EnvOptions,
-  ExtractSecretManager,
-  KubricateController,
-  KubricateStack,
-} from '@kubricate/core';
+import { AnySecretManager, EnvOptions, ExtractSecretManager, KubricateComposer, KubricateStack } from '@kubricate/core';
 
 export interface IAppStack<EnvSecretRef extends keyof any = string> {
   namespace: string;
@@ -18,7 +12,7 @@ export interface IAppStack<EnvSecretRef extends keyof any = string> {
   env?: EnvOptions<EnvSecretRef>[];
 }
 
-function configureController(data: IAppStack) {
+function configureComposer(data: IAppStack) {
   const port = data.port || 80;
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
@@ -26,7 +20,7 @@ function configureController(data: IAppStack) {
   const metadata = { name: data.name };
   const labels = { app: data.name };
 
-  return new KubricateController()
+  return new KubricateComposer()
     .add({
       id: 'deployment',
       type: Deployment,
@@ -74,14 +68,14 @@ function configureController(data: IAppStack) {
 }
 
 export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends KubricateStack<
-  typeof configureController
+  typeof configureComposer
 > {
   constructor(private secretStore?: SecretManager) {
     super();
   }
 
   configureStack(data: IAppStack<keyof ExtractSecretManager<SecretManager>['secretEntries']>) {
-    this.controller = configureController(data as IAppStack);
+    this.composer = configureComposer(data as IAppStack);
     return this;
   }
 }

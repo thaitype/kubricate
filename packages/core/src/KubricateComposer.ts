@@ -13,7 +13,7 @@ export const LABEL_MANAGED_BY_KEY = 'thaitype.dev/managed-by';
 export const LABEL_MANAGED_BY_VALUE = 'kubricate';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export class KubricateController<Resource extends Record<string, unknown> = {}> {
+export class KubricateComposer<Resource extends Record<string, unknown> = {}> {
   _resources: ResourceStore = {};
   _override: Record<string, unknown> = {};
 
@@ -46,21 +46,21 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
   }
 
   /**
-   * Add a resource to the controller, extracting the type and data from the arguments.
+   * Add a resource to the composer, extracting the type and data from the arguments.
    */
 
   add<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
     this._resources[params.id] = { type: params.type, config: params.config };
-    return this as KubricateController<Resource & Record<Id, ConstructorParameters<T>[0]>>;
+    return this as KubricateComposer<Resource & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
   /**
-   * Add an instance to the controller directly. Using this method will not support overriding the resource.
+   * Add an instance to the composer directly. Using this method will not support overriding the resource.
    */
 
   addInstance<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
     this._resources[params.id] = { config: params.config as Record<string, unknown> };
-    return this as KubricateController<Resource & Record<Id, T>>;
+    return this as KubricateComposer<Resource & Record<Id, T>>;
   }
 
   public override(overrideResources: Partial<Resource>) {
