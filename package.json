@@ -2,7 +2,7 @@
   "name": "@kubricate/root",
   "private": true,
   "scripts": {
-    "prepare": "turbo run @kubricate/mono#build --output-logs=errors-only",
+    "prepare": "husky",
     "build": "turbo run build --filter=!./examples/*",
     "all": "npm run build && npm run lint:check && npm run test",
     "dev": "turbo run dev --filter=!./tools/template --filter=!./examples/*",
@@ -24,6 +24,7 @@
     "@changesets/cli": "^2.28.1",
     "@vitest/coverage-istanbul": "^3.0.9",
     "eslint": "^9.22.0",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "turbo": "^2.4.4",
     "typescript": "^5.8.2",
