@@ -37,7 +37,7 @@
     "type": "git",
     "url": "https://github.com/thaitype/kubricate.git"
   },
-  "homepage": "https://github.com/thaitype/kubricate",
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/core#readme",
   "files": [
     "dist",
     "src",

@@ -12,6 +12,11 @@
       "default": "./dist/cjs/index.js"
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/kubricate.git"
+  },
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/toolkit#readme",
   "files": [
     "dist",
     "src",

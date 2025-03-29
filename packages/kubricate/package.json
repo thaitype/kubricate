@@ -15,6 +15,11 @@
   "bin": {
     "kubricate": "bin.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/kubricate.git"
+  },
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/kubricate#readme",
   "files": [
     "bin.mjs",
     "dist",
