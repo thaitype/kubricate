@@ -1,5 +1,11 @@
 # kubricate
 
+## 0.6.1
+
+### Patch Changes
+
+- 980118f: Fix ansis deps missing in CLI
+
 ## 0.6.0
 
 ### Minor Changes
