@@ -1,4 +1,4 @@
-import cac from 'cac';
+import { cac } from 'cac';
 import c from 'ansis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

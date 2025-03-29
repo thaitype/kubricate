@@ -1,5 +1,5 @@
 import { loadConfig } from 'unconfig';
-import { MARK_CHECK, MARK_ERROR, MARK_INFO } from './constant.js';
+import { MARK_CHECK } from './constant.js';
 import { KubricateConfig } from './config.js';
 import c from 'ansis';
 
