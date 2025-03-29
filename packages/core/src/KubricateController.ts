@@ -1,5 +1,6 @@
 import merge from 'lodash.merge';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyClass = { new (...args: any[]): any };
 
 export type ResourceStore = Record<
@@ -13,10 +14,12 @@ export type ResourceStore = Record<
 export const LABEL_MANAGED_BY_KEY = 'thaitype.dev/managed-by';
 export const LABEL_MANAGED_BY_VALUE = 'kubricate';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export class KubricateController<Resource extends Record<string, unknown> = {}> {
   resources: ResourceStore = {};
   override: Record<string, unknown> = {};
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private attachLabels(config: Record<string, any>, labels: Record<string, string>) {
     if (!config.metadata?.labels) {
       config.metadata.labels = {};
