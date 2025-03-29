@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.6.0
+
+### Minor Changes
+
+- 7770677: Refactor Kubricate core and add new command "generate" for cli
+
 ## 0.5.1
 
 ## 0.5.0
