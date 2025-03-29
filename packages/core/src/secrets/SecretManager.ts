@@ -111,7 +111,9 @@ export class SecretManager<
    *   - `name`: Name of the new secret.
    * @returns A new SecretManager instance with the secret added.
    */
-  addSecret<NewSecret extends string>(options: SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>) {
+  addSecret<NewSecret extends string>(
+    options: SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>
+  ) {
     this._secrets[options.name] = '';
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries & Record<NewSecret, string>>;
   }

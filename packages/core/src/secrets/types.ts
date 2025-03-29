@@ -4,7 +4,7 @@ import type { SecretManager } from './SecretManager.js';
 ponents from a SecretManager instance.
  */
 export type ExtractSecretManager<Registry extends AnySecretManager> = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   loaderInstances: Registry extends SecretManager<infer LI, any, any> ? LI : never;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   providerInstances: Registry extends SecretManager<any, infer PI, any> ? PI : never;
