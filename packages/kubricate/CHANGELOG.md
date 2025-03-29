@@ -1,5 +1,11 @@
 # kubricate
 
+## 0.5.2
+
+### Patch Changes
+
+- ff66587: Fix cli entrypoint
+
 ## 0.5.1
 
 ### Patch Changes

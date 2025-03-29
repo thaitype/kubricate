@@ -1,6 +1,6 @@
 {
   "name": "kubricate",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/dts/index.d.ts",
@@ -13,9 +13,10 @@
     }
   },
   "bin": {
-    "kubricate": "dist/cli.js"
+    "kubricate": "bin.mjs"
   },
   "files": [
+    "bin.mjs",
     "dist",
     "src",
     "package.json",
@@ -24,9 +25,7 @@
   "scripts": {
     "dev": "mono dev",
     "start": "mono start",
-    "build": "npm run build:cli && npm run build:library",
-    "build:cli": "mono build:cli",
-    "build:library": "mono build",
+    "build": "mono build",
     "test": "mono test",
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
