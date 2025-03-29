@@ -1,5 +1,11 @@
 # @kubricate/mono
 
+## 0.3.1
+
+### Patch Changes
+
+- fbe95a5: Use ESM module for all projects
+
 ## 0.3.0
 
 ### Minor Changes

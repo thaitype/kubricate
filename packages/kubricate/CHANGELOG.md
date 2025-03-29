@@ -1,5 +1,13 @@
 # kubricate
 
+## 0.6.3
+
+### Patch Changes
+
+- fbe95a5: Use ESM module for all projects
+- Updated dependencies [fbe95a5]
+  - @kubricate/core@0.6.1
+
 ## 0.6.2
 
 ### Patch Changes
