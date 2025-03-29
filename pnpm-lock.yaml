@@ -97,6 +97,9 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@kubricate/env':
+        specifier: workspace:*
+        version: link:../../packages/env
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
