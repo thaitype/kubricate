@@ -1,5 +1,5 @@
 {
-  "name": "@examples/with-stacks",
+  "name": "@examples/with-secrets",
   "type": "module",
   "version": "0.0.5",
   "private": true,

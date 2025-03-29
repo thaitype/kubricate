@@ -92,6 +92,40 @@ importers:
         specifier: ^3.0.9
         version: 3.0.9(@types/node@22.13.11)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(tsx@4.19.3)(yaml@2.7.0)
 
+  examples/with-secrets:
+    dependencies:
+      '@kubricate/stacks':
+        specifier: workspace:*
+        version: link:../../packages/stacks
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
+    devDependencies:
+      '@kosko/env':
+        specifier: ^5.1.0
+        version: 5.1.0
+      '@kubernetes-models/base':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+      kosko:
+        specifier: ^4.3.0
+        version: 4.3.0(@kosko/yaml@5.1.0(kubernetes-models@4.4.2))(kubernetes-models@4.4.2)
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@22.13.11)(typescript@5.8.2)
+
   examples/with-stacks:
     dependencies:
       '@kubricate/stacks':
