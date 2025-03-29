@@ -82,7 +82,9 @@ function configureController(data: IAppStack) {
     });
 }
 
-export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends KubricateStack<typeof configureController> {
+export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends KubricateStack<
+  typeof configureController
+> {
   constructor(private secretStore?: SecretManager) {
     super();
   }

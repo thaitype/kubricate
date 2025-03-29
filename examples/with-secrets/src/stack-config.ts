@@ -18,9 +18,9 @@ const myApp = new AppStack(secretManager)
       },
       {
         name: 'my_app_key',
-        secretRef: 'my_app_key'
-      }
-    ]
+        secretRef: 'my_app_key',
+      },
+    ],
   })
   .overrideStack({
     service: {

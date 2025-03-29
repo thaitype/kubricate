@@ -1,7 +1,5 @@
 import merge from 'lodash.merge';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyClass = { new (...args: any[]): any };
+import type { AnyClass } from './types.js';
 
 export type ResourceStore = Record<
   string,
