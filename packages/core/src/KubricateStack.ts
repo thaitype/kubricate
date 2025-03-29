@@ -1,8 +1,11 @@
-import { InferResourceBuilderFunction } from "./types";
+import { KubricateController } from './KubricateController';
+import { FunctionLike, InferResourceBuilderFunction } from './types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export abstract class KubricateStack<T extends (...args: any[]) => any> {
 
+export abstract class KubricateStack<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends FunctionLike<any[], KubricateController> = FunctionLike<any, KubricateController>,
+> {
   controller!: ReturnType<T>;
 
   /**
