@@ -2,7 +2,7 @@ import cac from 'cac';
 import c from 'ansis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ApplyCommand, ApplyCommandOptions } from './commands/apply.js';
+import { GenerateCommand, GenerateCommandOptions } from './commands/generate.js';
 
 const pkg = {
   version: '0.0.0',
@@ -16,13 +16,13 @@ try {
 const cli = cac(c.bold(c.blue('kubricate')));
 
 cli
-  .command('apply', 'Apply a stack')
+  .command('generate', 'Generate a stack into yaml files')
   .option('--root <root>', 'Root directory', { default: process.cwd() })
   .option('--config <config>', 'Config file')
   .option('--outDir <dir>', 'Output directory', { default: '.kubricate' })
   // Action
-  .action(async (options: ApplyCommandOptions) => {
-    await new ApplyCommand(options).execute();
+  .action(async (options: GenerateCommandOptions) => {
+    await new GenerateCommand(options).execute();
   })
 
 cli.version(pkg.version);
