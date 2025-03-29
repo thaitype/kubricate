@@ -14,11 +14,11 @@ export class GenerateCommand {
   constructor(private options: GenerateCommandOptions) { }
 
   async execute() {
-    console.log(c.bold('Executing kubricate generates stacks...'));
+    console.log(c.bold('Executing: Generating Kubernetes stacks with Kubricate...'));
 
     if (!this.options.config) {
       console.log(
-        `${MARK_INFO} No config file provided, using default config file which is 'kubricate.config.{js,ts,mjs,cjs}'`
+        `${MARK_INFO} No config file provided. Falling back to default: 'kubricate.config.{js,ts,mjs,cjs}'`
       );
     } else {
       console.log(`${MARK_INFO} Using config file: ${this.options.config}`);
@@ -28,9 +28,12 @@ export class GenerateCommand {
 
     const config = await getConfig(this.options);
     if (!config) {
-      console.log(c.red`${MARK_ERROR} No config file found with matched pattern 'kubricate.config.{js,ts,mjs,cjs}'`);
-      console.log(c.red`${MARK_ERROR} Please make sure the config file in the root directory at ${this.options.root}`);
-      console.log(c.red`${MARK_ERROR} If the config is located is different root directory, please use '--root <dir>'`);
+      console.log(c.red`${MARK_ERROR} No config file found matching 'kubricate.config.{js,ts,mjs,cjs}'\n`);
+      console.log(c.red`${MARK_ERROR} Please ensure a config file exists in the root directory:\n   ${this.options.root}\n`);
+      console.log(c.red`${MARK_ERROR} If your config is located elsewhere, specify it using:\n   --root <dir>\n`);
+
+      console.log(c.red`${MARK_ERROR} Or specify a config file using:\n   --config <file>\n`);
+      console.log(c.red`${MARK_ERROR} Exiting...`);
       process.exit(1);
     }
     const stacksLength = Object.keys(config.stacks ?? {}).length;
@@ -45,6 +48,7 @@ export class GenerateCommand {
       console.log(c.blue`    ${MARK_NODE} ${name}: ${getClassName(stack)}`);
     }
 
+    console.log('');
     console.log('---------------------');
     console.log(c.bold`Generating stacks...`);
     console.log('---------------------');
@@ -52,12 +56,12 @@ export class GenerateCommand {
     let output = '';
 
     for (const [name, stack] of Object.entries(config.stacks)) {
-      console.log(c.blue`${MARK_NODE} Generating stack ${name}...`);
+      console.log(c.blue`${MARK_NODE} Generating stack: ${name}...`);
       for (const resource of stack.build()) {
         output += yamlStringify(resource);
         output += '---\n';
       }
-      console.log(c.green`${MARK_CHECK} Stack ${name} generated successfully`);
+      console.log(c.green`${MARK_CHECK} Successfully generated stack: ${name}`);
     }
     console.log(c.green`${MARK_CHECK} All stacks generated successfully`);
 
@@ -65,7 +69,8 @@ export class GenerateCommand {
     await fs.mkdir(this.options.outDir, { recursive: true });
     await fs.writeFile(outputPath, output);
 
-    console.log(`${MARK_INFO} Written stacks to '${path.resolve(outputPath)}'`);
+    console.log('');
+    console.log(`${MARK_INFO} YAML file successfully written to:\n   '${path.resolve(outputPath)}'\n`);
 
     console.info(c.green`${MARK_CHECK} Done!`);
   }
