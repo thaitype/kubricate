@@ -1,6 +1,7 @@
 {
   "extends": "@kubricate/config-typescript/dual.json",
   "compilerOptions": {
+    // "resolveJsonModule": true,
     "outDir": "dist/esm",
     "declarationDir": "dist/dts",
   },

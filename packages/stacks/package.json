@@ -32,7 +32,7 @@
     "type": "git",
     "url": "https://github.com/thaitype/kubricate.git"
   },
-  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/stacks",
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/stacks#readme",
   "files": [
     "dist",
     "src",

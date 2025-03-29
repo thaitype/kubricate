@@ -1,10 +1,8 @@
 import { SimpleAppStack, NamespaceStack } from '@kubricate/stacks';
 
-const namespace = new NamespaceStack()
-  .configureStack({
-    name: 'my-namespace',
-  })
-  .build();
+const namespace = new NamespaceStack().configureStack({
+  name: 'my-namespace',
+});
 
 const myApp = new SimpleAppStack()
   .configureStack({
@@ -17,7 +15,6 @@ const myApp = new SimpleAppStack()
         type: 'LoadBalancer',
       },
     },
-  })
-  .build();
+  });
 
-export default [namespace, myApp];
+export default { namespace, myApp };

@@ -15,6 +15,11 @@
   "bin": {
     "kubricate": "bin.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaitype/kubricate.git"
+  },
+  "homepage": "https://github.com/thaitype/kubricate/tree/main/packages/kubricate#readme",
   "files": [
     "bin.mjs",
     "dist",
@@ -36,6 +41,14 @@
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*"
+    "@kubricate/mono": "workspace:*",
+    "@types/node": "^22.13.9",
+    "ansis": "^3.17.0"
+  },
+  "dependencies": {
+    "@kubricate/core": "workspace:*",
+    "cac": "^6.7.14",
+    "unconfig": "^7.3.1",
+    "yaml": "^2.7.0"
   }
 }
