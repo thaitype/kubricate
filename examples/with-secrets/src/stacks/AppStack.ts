@@ -21,7 +21,17 @@ function configureComposer(data: IAppStack) {
   const labels = { app: data.name };
 
   return new KubricateComposer()
-    .add({
+    .addObject({
+      id: 'namespace',
+      config: {
+        apiVersion: 'v1',
+        kind: 'Namespace',
+        metadata: {
+          name: data.namespace,
+        },
+      },
+    })
+    .addClass({
       id: 'deployment',
       type: Deployment,
       config: {
@@ -48,7 +58,7 @@ function configureComposer(data: IAppStack) {
         },
       },
     })
-    .add({
+    .addClass({
       id: 'service',
       type: Service,
       config: {
