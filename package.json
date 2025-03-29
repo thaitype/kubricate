@@ -2,11 +2,12 @@
   "name": "@kubricate/root",
   "private": true,
   "scripts": {
-    "prepare": "husky",
+    "prepare": "husky && turbo run @kubricate/mono#build --output-logs=errors-only",
     "build": "turbo run build --filter=!./examples/*",
     "dev": "turbo run dev --filter=!./tools/template --filter=!./examples/*",
-    "all": "turbo lint:check check-types test",
-    "lint:all": "run-p all format",
+    "all": "run-s build lint:all",
+    "lint:husky": "run-p lint:all format",
+    "lint:all": "turbo lint:check check-types test",
     "lint:check": "turbo lint:check check-types",
     "lint:fix": "turbo lint:fix && npm run format:fix",
     "format": "prettier --check ./**/*.{ts,js}",
@@ -14,7 +15,7 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "test:coverage-report": "turbo run view-report",
-    "release": "npm run all && changeset version && changeset publish",
+    "release": "run-s all && changeset version && changeset publish",
     "graph": "npx nx graph"
   },
   "engines": {
