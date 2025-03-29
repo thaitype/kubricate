@@ -16,8 +16,8 @@ export const LABEL_MANAGED_BY_VALUE = 'kubricate';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export class KubricateController<Resource extends Record<string, unknown> = {}> {
-  resources: ResourceStore = {};
-  override: Record<string, unknown> = {};
+  _resources: ResourceStore = {};
+  _override: Record<string, unknown> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private attachLabels(config: Record<string, any>, labels: Record<string, string>) {
@@ -30,9 +30,9 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
 
   build() {
     const result: Record<string, unknown> = {};
-    for (const key of Object.keys(this.resources)) {
-      const { type } = this.resources[key];
-      let { config } = this.resources[key];
+    for (const key of Object.keys(this._resources)) {
+      const { type } = this._resources[key];
+      let { config } = this._resources[key];
       if (!type) {
         result[key] = config;
         continue;
@@ -42,7 +42,7 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
       injectedLabel[LABEL_MANAGED_BY_KEY] = LABEL_MANAGED_BY_VALUE;
       config = this.attachLabels(config, injectedLabel);
       // Create the resource
-      result[key] = new type(merge({}, config, this.override ? this.override[key] : {}));
+      result[key] = new type(merge({}, config, this._override ? this._override[key] : {}));
     }
     return Object.values(result);
   }
@@ -52,7 +52,7 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
    */
 
   add<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
-    this.resources[params.id] = { type: params.type, config: params.config };
+    this._resources[params.id] = { type: params.type, config: params.config };
     return this as KubricateController<Resource & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
@@ -61,12 +61,12 @@ export class KubricateController<Resource extends Record<string, unknown> = {}> 
    */
 
   addInstance<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
-    this.resources[params.id] = { config: params.config as Record<string, unknown> };
+    this._resources[params.id] = { config: params.config as Record<string, unknown> };
     return this as KubricateController<Resource & Record<Id, T>>;
   }
 
-  public overrideStack(override: Partial<Resource>) {
-    this.override = override;
+  public override(overrideResources: Partial<Resource>) {
+    this._override = overrideResources;
     return this;
   }
 }

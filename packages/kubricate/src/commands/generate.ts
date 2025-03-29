@@ -45,7 +45,7 @@ export class GenerateCommand {
 
     for(const [name, stack] of Object.entries(config.stacks)) {
       console.log(c.blue`${MARK_NODE} Generating stack ${name}...`);
-      for(const resource of stack.controller.build()){
+      for(const resource of stack.build()){
         output += yamlStringify(resource);
         output += '---\n';
       }

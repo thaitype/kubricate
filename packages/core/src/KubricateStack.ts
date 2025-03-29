@@ -15,7 +15,15 @@ export abstract class KubricateStack<
   abstract configureStack(data: unknown): unknown;
 
   overrideStack(data: Partial<InferResourceBuilderFunction<T>>) {
-    console.log('overriding stack', data);
+    this.controller.override(data);
     return this;
+  }
+
+  /**
+   * Build the stack and return the resources.
+   * @returns The resources in the stack.
+   */
+  build() {
+    return this.controller.build();
   }
 }
