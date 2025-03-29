@@ -1,13 +1,13 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { applyCommand } from './commands/apply.js';
-import ansis from 'ansis';
+import { colorCommand } from './lib/index.js';
 
 yargs(hideBin(process.argv))
-  .scriptName(ansis.blue(ansis.bold('kubricate')))
+  .scriptName(colorCommand('kubricate'))
   .usage('$0 <command>')
   .version('1.0.0')
-  .epilog(ansis.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
+  .epilog('Kubricate CLI - A CLI for managing Kubernetes stacks')
   .command(applyCommand)
   .help()
   .alias('h', 'help')
