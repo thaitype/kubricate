@@ -1,5 +1,11 @@
 # kubricate
 
+## 0.6.2
+
+### Patch Changes
+
+- 4068f00: Fix CLI load config and improve error message
+
 ## 0.6.1
 
 ### Patch Changes
