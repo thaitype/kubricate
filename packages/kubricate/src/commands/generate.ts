@@ -65,7 +65,7 @@ export class GenerateCommand {
     }
     console.log(c.green`${MARK_CHECK} All stacks generated successfully`);
 
-    const outputPath = path.join(this.options.outDir, 'stacks.yml');
+    const outputPath = path.join(this.options.root, this.options.outDir, 'stacks.yml');
     await fs.mkdir(this.options.outDir, { recursive: true });
     await fs.writeFile(outputPath, output);
 
