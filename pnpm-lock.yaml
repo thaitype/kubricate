@@ -162,6 +162,9 @@ importers:
       unconfig:
         specifier: ^7.3.1
         version: 7.3.1
+      yaml:
+        specifier: ^2.7.0
+        version: 2.7.0
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*

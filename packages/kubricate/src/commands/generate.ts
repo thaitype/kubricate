@@ -2,6 +2,7 @@ import c from 'ansis';
 import { MARK_CHECK, MARK_ERROR, MARK_INFO, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
 import { getConfig, LoadConfigOptions } from '../load-config.js';
+import { stringify as yamlStringify } from 'yaml'
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -44,13 +45,20 @@ export class GenerateCommand {
 
     for(const [name, stack] of Object.entries(config.stacks)) {
       console.log(c.blue`${MARK_NODE} Generating stack ${name}...`);
-      output += JSON.stringify(stack.controller.build(), null, 2);
-      output += '\n---\n';
+      for(const resource of stack.controller.build()){
+        output += yamlStringify(resource);
+        output += '---\n';
+      }
       console.log(c.green`${MARK_CHECK} Stack ${name} generated successfully`);
     }
     console.log(c.green`${MARK_CHECK} All stacks generated successfully`);
+
+    const outputPath = path.join(this.options.outDir, 'stacks.yml');
     await fs.mkdir(this.options.outDir, { recursive: true });
-    await fs.writeFile(path.join(this.options.outDir, 'stacks.json'), output);
+    await fs.writeFile(outputPath, output);
+
+    console.log(`${MARK_INFO} Written stacks to '${path.resolve(outputPath)}'`);
+
     console.info(c.green`${MARK_CHECK} Done!`);
 
   }
