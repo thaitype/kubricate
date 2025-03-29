@@ -32,9 +32,10 @@ jobs:
 
       - name: Install Dependencies
         run: pnpm i
+      
+      - name: Build
+        run: pnpm build
 
       - name: Lint, format, test
         run: pnpm all
 
-      - name: Build
-        run: pnpm build
