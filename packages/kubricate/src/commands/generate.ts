@@ -11,15 +11,13 @@ export interface GenerateCommandOptions extends LoadConfigOptions {
 }
 
 export class GenerateCommand {
-  constructor(private options: GenerateCommandOptions) { }
+  constructor(private options: GenerateCommandOptions) {}
 
   async execute() {
     console.log(c.bold('Executing: Generating Kubricate stacks for Kubernetes...'));
 
     if (!this.options.config) {
-      console.log(
-        `${MARK_INFO} No config file provided. Falling back to default: '${getMatchConfigFile()}'`
-      );
+      console.log(`${MARK_INFO} No config file provided. Falling back to default: '${getMatchConfigFile()}'`);
     } else {
       console.log(`${MARK_INFO} Using config file: ${this.options.config}`);
     }
@@ -29,7 +27,9 @@ export class GenerateCommand {
     const config = await getConfig(this.options);
     if (!config) {
       console.log(c.red`${MARK_ERROR} No config file found matching '${getMatchConfigFile()}'\n`);
-      console.log(c.red`${MARK_ERROR} Please ensure a config file exists in the root directory:\n   ${this.options.root}\n`);
+      console.log(
+        c.red`${MARK_ERROR} Please ensure a config file exists in the root directory:\n   ${this.options.root}\n`
+      );
       console.log(c.red`${MARK_ERROR} If your config is located elsewhere, specify it using:\n   --root <dir>\n`);
 
       console.log(c.red`${MARK_ERROR} Or specify a config file using:\n   --config <file>\n`);
