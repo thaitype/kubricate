@@ -3,7 +3,7 @@
   "changelog": "@changesets/cli/changelog",
   "commit": true,
   "fixed": [],
-  "linked": [["@kubricate/stacks", "@kubricate/core"]],
+  "linked": [["@kubricate/stacks", "@kubricate/core", "@kubricate/env"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
