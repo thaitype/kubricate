@@ -15,6 +15,4 @@ export const secretManager = new SecretManager()
   )
   .setDefaultLoader('EnvLoader')
   .setDefaultProvider('Kubernetes.Secret')
-  .addSecret({
-    name: 'my_app_key',
-  });
+  .addSecret('my_app_key');

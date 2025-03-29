@@ -3,8 +3,20 @@ import type { BaseProvider } from './providers/BaseProvider.js';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface SecretOptions<NewSecret extends string, Loader extends keyof any, Provider extends keyof any> {
+  /**
+   * Name of the secret to be added.
+   * This name must be unique within the SecretManager instance.
+   */
   name: NewSecret;
+  /**
+   * Loader instance to use for loading the secret.
+   * If not provided, the default loader will be used.
+   */
   loader?: Loader;
+  /**
+   * Key of a registered provider instance.
+   * If not provided, the default provider will be used.
+   */
   provider?: Provider;
 }
 
@@ -106,15 +118,17 @@ export class SecretManager<
   /**
    * Adds a new secret to the registry and links it to an existing provider.
    *
-   * @param options - Object with:
-   *   - `provider`: Key of a registered provider instance.
-   *   - `name`: Name of the new secret.
+   * @param optionsOrName - SecretOptions
    * @returns A new SecretManager instance with the secret added.
    */
   addSecret<NewSecret extends string>(
-    options: SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>
+    optionsOrName: NewSecret | SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>
   ) {
-    this._secrets[options.name] = '';
+    if (typeof optionsOrName === 'string') {
+      this._secrets[optionsOrName] = '';
+    } else {
+      this._secrets[optionsOrName.name] = '';
+    }
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries & Record<NewSecret, string>>;
   }
 }
