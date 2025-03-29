@@ -3,6 +3,7 @@ import { Service } from 'kubernetes-models/v1/Service';
 import { KubricateController, KubricateStack } from '@kubricate/core';
 
 export interface IAppStack {
+  namespace: string;
   name: string;
   imageName: string;
   replicas?: number;
