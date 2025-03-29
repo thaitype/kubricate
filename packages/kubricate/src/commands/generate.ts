@@ -11,7 +11,7 @@ export interface GenerateCommandOptions extends LoadConfigOptions {
 }
 
 export class GenerateCommand {
-  constructor(private options: GenerateCommandOptions) {}
+  constructor(private options: GenerateCommandOptions) { }
 
   async execute() {
     console.log(c.bold('Executing kubricate generates stacks...'));
@@ -27,6 +27,12 @@ export class GenerateCommand {
     console.log(`${MARK_INFO} Output directory: ${this.options.outDir}`);
 
     const config = await getConfig(this.options);
+    if (!config) {
+      console.log(c.red`${MARK_ERROR} No config file found with matched pattern 'kubricate.config.{js,ts,mjs,cjs}'`);
+      console.log(c.red`${MARK_ERROR} Please make sure the config file in the root directory at ${this.options.root}`);
+      console.log(c.red`${MARK_ERROR} If the config is located is different root directory, please use '--root <dir>'`);
+      process.exit(1);
+    }
     const stacksLength = Object.keys(config.stacks ?? {}).length;
 
     if (!config.stacks || stacksLength === 0) {
