@@ -5,5 +5,5 @@
 Run the following command to generate manifests from all components:
 
 ```bash
-pnpm --filter=@examples/with-stacks kubricate generate
+npx kubricate generate
 ```
