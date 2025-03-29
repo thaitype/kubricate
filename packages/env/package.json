@@ -30,7 +30,8 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
-    "@kubricate/core": "workspace:*"
+    "@kubricate/core": "workspace:*",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
