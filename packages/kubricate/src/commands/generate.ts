@@ -34,9 +34,13 @@ export class GenerateCommand {
       console.log(c.blue`    ${MARK_NODE} ${name}: ${getClassName(stack)}`);
     }
 
+    console.log('---------------------');
+    console.log(c.bold`Generating stacks...`);
+    console.log('---------------------');
+
     for(const [name, stack] of Object.entries(config.stacks)) {
       console.log(c.blue`${MARK_NODE} Generating stack ${name}...`);
-      console.log(JSON.stringify(stack, null, 2));
+      console.log(JSON.stringify(stack.controller.build(), null, 2));
       console.log('---')
       console.log(c.green`${MARK_CHECK} Stack ${name} generated successfully`);
     }
