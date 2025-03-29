@@ -14,9 +14,6 @@ importers:
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
         version: 3.0.9(vitest@3.0.9(@types/node@22.13.11)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(tsx@4.19.3)(yaml@2.7.0))
-      esbuild:
-        specifier: ^0.25.1
-        version: 0.25.1
       eslint:
         specifier: ^9.22.0
         version: 9.22.0(jiti@2.4.2)
@@ -255,9 +252,6 @@ importers:
       '@types/node':
         specifier: ^22.13.9
         version: 22.13.11
-      esbuild:
-        specifier: ^0.25.1
-        version: 0.25.1
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1

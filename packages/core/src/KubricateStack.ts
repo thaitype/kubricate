@@ -1,5 +1,5 @@
-import { KubricateController } from './KubricateController';
-import { FunctionLike, InferResourceBuilderFunction } from './types';
+import { KubricateController } from './KubricateController.js';
+import type { FunctionLike, InferResourceBuilderFunction } from './types.js';
 
 export abstract class KubricateStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
