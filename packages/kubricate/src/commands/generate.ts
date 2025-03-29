@@ -2,6 +2,8 @@ import c from 'ansis';
 import { MARK_CHECK, MARK_ERROR, MARK_INFO, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
 import { getConfig, LoadConfigOptions } from '../load-config.js';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 export interface GenerateCommandOptions extends LoadConfigOptions {
   outDir: string;
@@ -38,13 +40,17 @@ export class GenerateCommand {
     console.log(c.bold`Generating stacks...`);
     console.log('---------------------');
 
+    let output = '';
+
     for(const [name, stack] of Object.entries(config.stacks)) {
       console.log(c.blue`${MARK_NODE} Generating stack ${name}...`);
-      console.log(JSON.stringify(stack.controller.build(), null, 2));
-      console.log('---')
+      output += JSON.stringify(stack.controller.build(), null, 2);
+      output += '\n---\n';
       console.log(c.green`${MARK_CHECK} Stack ${name} generated successfully`);
     }
     console.log(c.green`${MARK_CHECK} All stacks generated successfully`);
+    await fs.mkdir(this.options.outDir, { recursive: true });
+    await fs.writeFile(path.join(this.options.outDir, 'stacks.json'), output);
     console.info(c.green`${MARK_CHECK} Done!`);
 
   }
