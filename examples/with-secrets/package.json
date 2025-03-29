@@ -29,7 +29,9 @@
     "ts-node": "^10.9.2"
   },
   "dependencies": {
-    "kubricate": "workspace:*",
-    "@kubricate/stacks": "workspace:*"
+    "@kubricate/core": "workspace:*",
+    "@kubricate/stacks": "workspace:*",
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
   }
 }

@@ -94,9 +94,15 @@ importers:
 
   examples/with-secrets:
     dependencies:
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
+      kubernetes-models:
+        specifier: ^4.4.2
+        version: 4.4.2
       kubricate:
         specifier: workspace:*
         version: link:../../packages/kubricate
