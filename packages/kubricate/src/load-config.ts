@@ -1,6 +1,6 @@
-import { loadConfig } from "unconfig";
-import { MARK_CHECK } from "./constant.js";
-import { KubricateConfig } from "./config.js";
+import { loadConfig } from 'unconfig';
+import { MARK_CHECK } from './constant.js';
+import { KubricateConfig } from './config.js';
 import c from 'ansis';
 
 export interface LoadConfigOptions {
@@ -20,7 +20,6 @@ export async function getConfig(options: LoadConfigOptions): Promise<KubricateCo
     ],
     merge: false,
   });
-  if (result.sources.length)
-    console.log(c.green`${MARK_CHECK} Config loaded from ${result.sources.join(', ')}`);
+  if (result.sources.length) console.log(c.green`${MARK_CHECK} Config loaded from ${result.sources.join(', ')}`);
   return result.config;
 }

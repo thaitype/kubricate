@@ -6,7 +6,7 @@ import { GenerateCommand, GenerateCommandOptions } from './commands/generate.js'
 
 const pkg = {
   version: '0.0.0',
-}
+};
 try {
   pkg.version = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf-8')).version;
 } catch {
@@ -23,7 +23,7 @@ cli
   // Action
   .action(async (options: GenerateCommandOptions) => {
     await new GenerateCommand(options).execute();
-  })
+  });
 
 cli.version(pkg.version);
 cli.help();
