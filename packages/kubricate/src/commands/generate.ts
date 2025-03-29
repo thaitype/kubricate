@@ -1,7 +1,7 @@
 import c from 'ansis';
 import { MARK_CHECK, MARK_ERROR, MARK_INFO, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
-import { getConfig, LoadConfigOptions } from '../load-config.js';
+import { getConfig, getMatchConfigFile, LoadConfigOptions } from '../load-config.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -14,11 +14,11 @@ export class GenerateCommand {
   constructor(private options: GenerateCommandOptions) { }
 
   async execute() {
-    console.log(c.bold('Executing: Generating Kubernetes stacks with Kubricate...'));
+    console.log(c.bold('Executing: Generating Kubricate stacks for Kubernetes...'));
 
     if (!this.options.config) {
       console.log(
-        `${MARK_INFO} No config file provided. Falling back to default: 'kubricate.config.{js,ts,mjs,cjs}'`
+        `${MARK_INFO} No config file provided. Falling back to default: '${getMatchConfigFile()}'`
       );
     } else {
       console.log(`${MARK_INFO} Using config file: ${this.options.config}`);
@@ -28,7 +28,7 @@ export class GenerateCommand {
 
     const config = await getConfig(this.options);
     if (!config) {
-      console.log(c.red`${MARK_ERROR} No config file found matching 'kubricate.config.{js,ts,mjs,cjs}'\n`);
+      console.log(c.red`${MARK_ERROR} No config file found matching '${getMatchConfigFile()}'\n`);
       console.log(c.red`${MARK_ERROR} Please ensure a config file exists in the root directory:\n   ${this.options.root}\n`);
       console.log(c.red`${MARK_ERROR} If your config is located elsewhere, specify it using:\n   --root <dir>\n`);
 
@@ -50,7 +50,7 @@ export class GenerateCommand {
 
     console.log('');
     console.log('---------------------');
-    console.log(c.bold`Generating stacks...`);
+    console.log(c.bold`Generating Kubricate stacks...`);
     console.log('---------------------');
 
     let output = '';
