@@ -17,3 +17,22 @@ export type ExtractSecretManager<Registry extends AnySecretManager> = {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnySecretManager = SecretManager<any, any>;
+
+/**
+ * Represents the options for environment variables in a Kubernetes deployment.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface EnvOptions<EnvSecretRef extends keyof any = string> {
+  /**
+   * Environment variable name
+   */
+  name: string;
+  /**
+   * Environment variable value
+   */
+  value?: string;
+  /**
+   * Environment variable value from a secret
+   */
+  secretRef?: EnvSecretRef;
+}

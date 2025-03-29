@@ -1,6 +1,12 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { AnySecretManager, ExtractSecretManager, KubricateController, KubricateStack } from '@kubricate/core';
+import {
+  AnySecretManager,
+  EnvOptions,
+  ExtractSecretManager,
+  KubricateController,
+  KubricateStack,
+} from '@kubricate/core';
 
 export interface IAppStack<EnvSecretRef extends keyof any = string> {
   namespace: string;
@@ -9,22 +15,7 @@ export interface IAppStack<EnvSecretRef extends keyof any = string> {
   replicas?: number;
   imageRegistry?: string;
   port?: number;
-  env?: EnvironmentOptions<EnvSecretRef>[];
-}
-
-export interface EnvironmentOptions<EnvSecretRef extends keyof any = string> {
-  /**
-   * Environment variable name
-   */
-  name: string;
-  /**
-   * Environment variable value
-   */
-  value?: string;
-  /**
-   * Environment variable value from a secret
-   */
-  secretRef?: EnvSecretRef;
+  env?: EnvOptions<EnvSecretRef>[];
 }
 
 function configureController(data: IAppStack) {
