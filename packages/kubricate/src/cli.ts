@@ -5,6 +5,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { generateCommand } from './cli-interfaces/generate.js';
+import { secretsCommand } from './cli-interfaces/secrets/index.js';
 import { logger } from './bootstrap.js';
 
 const pkg = {
@@ -17,11 +18,12 @@ try {
 }
 
 yargs(hideBin(process.argv))
-  .scriptName(c.blue(c.bold('kubricate')))
+  .scriptName('kubricate')
   .usage('$0 <command>')
   .version(pkg.version)
   .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
   .command(generateCommand)
+  .command(secretsCommand)
   .help()
   .alias('h', 'help')
   .alias('v', 'version')
