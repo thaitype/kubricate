@@ -21,7 +21,7 @@ export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretPr
     const encoded = Base64.encode(value);
     return [
       {
-        composerId: `secret-${name}`, // Composer ID used in `addObject` or `addClass`
+        type: 'kubectl',
         value: {
           apiVersion: 'v1',
           kind: 'Secret',

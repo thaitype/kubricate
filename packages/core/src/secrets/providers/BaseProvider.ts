@@ -1,3 +1,5 @@
+import type { AnyString } from '../../types.js';
+
 export interface BaseProvider<Config extends object = object> {
   config: Config;
 
@@ -8,13 +10,26 @@ export interface BaseProvider<Config extends object = object> {
   prepare(name: string, value: string): PreparedEffect[];
 }
 
-export interface PreparedEffect {
+export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;
+
+export interface BaseEffect<Type extends string, T = unknown> {
+  type: Type;
+  value: T;
+}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface AnyEffect extends BaseEffect<AnyString> {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ManualEffect extends BaseEffect<'manual'> {}
+/**
+ * KubricateEffect is used to apply a value to a manifest using Kubricate.
+ * This will apply automatically to the manifest when it is created.
+ */
+export interface KubricateEffect extends BaseEffect<'kubricate'> {
   /**
    * ID of the resource as defined in KubricateComposer.
    * Example: `deployment`, `service`, `secret-mykey`
    */
   composerId: string;
-
   /**
    * Dot path inside the manifest to apply this value to.
    * Example: 'spec.template.metadata.annotations'
@@ -28,9 +43,7 @@ export interface PreparedEffect {
    * @default '' means the value will be applied to the root of the manifest.
    */
   path?: string;
-
-  /**
-   * Value to deep-merge into the specified path
-   */
-  value: unknown;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface KubectlEffect extends BaseEffect<'kubectl', object> {}

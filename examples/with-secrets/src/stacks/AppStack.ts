@@ -50,6 +50,8 @@ function configureComposer(data: IAppStack) {
                   image: imageRegistry + data.name,
                   name: data.name,
                   ports: [{ containerPort: port }],
+                  // TODO: Add env variables from secret manager
+                  env: [],
                 },
               ],
             },

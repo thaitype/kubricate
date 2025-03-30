@@ -15,3 +15,7 @@ export type AnyKey = string | number | symbol;
 export type InferResourceBuilder<T> = T extends ManifestComposer<infer R> ? R : never;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InferResourceBuilderFunction<T> = T extends (...args: any[]) => ManifestComposer<infer R> ? R : never;
+/**
+ * Any String for literal types without losing autocompletion.
+ */
+export type AnyString = string & {};
