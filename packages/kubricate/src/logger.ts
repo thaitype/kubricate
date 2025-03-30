@@ -9,7 +9,7 @@ export interface ILogger {
   success(message: string): void;
 }
 
-export class Logger implements ILogger {
+export class ConsoleLogger implements ILogger {
   log(message: string): void {
     console.log(message);
   }
@@ -23,7 +23,7 @@ export class Logger implements ILogger {
   }
 
   warn(message: string): void {
-    console.warn(message);
+    console.warn(c.yellow`${message}`);
   }
 
   error(message: string): void {
