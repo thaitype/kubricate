@@ -1,3 +1,4 @@
+import type { AnyKey } from '../types.js';
 import type { SecretManager } from './SecretManager.js';
 
 /**
@@ -21,8 +22,7 @@ export type AnySecretManager = SecretManager<any, any>;
 /**
  * Represents the options for environment variables in a Kubernetes deployment.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface EnvOptions<EnvSecretRef extends keyof any = string> {
+export interface EnvOptions<EnvSecretRef extends AnyKey = string> {
   /**
    * Environment variable name
    */

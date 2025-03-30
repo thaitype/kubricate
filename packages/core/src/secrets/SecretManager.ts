@@ -1,8 +1,24 @@
 import type { BaseLoader } from './loaders/BaseLoader.js';
-import type { BaseProvider } from './providers/BaseProvider.js';
+import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
+import type { AnyKey } from '../types.js';
+import { validateString } from '../utils.js';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface SecretOptions<NewSecret extends string, Loader extends keyof any, Provider extends keyof any> {
+export interface SecretManagerEffect {
+  name: string;
+  value: string;
+  effects: PreparedEffect[];
+}
+
+/**
+ * SecretOptions defines the structure of a secret entry in the SecretManager.
+ * It includes the name of the secret, the loader to use for loading it,
+ * and the provider to use for resolving it.
+ */
+export interface SecretOptions<
+  NewSecret extends string = string,
+  Loader extends AnyKey = AnyKey,
+  Provider extends AnyKey = AnyKey,
+> {
   /**
    * Name of the secret to be added.
    * This name must be unique within the SecretManager instance.
@@ -55,9 +71,9 @@ export class SecretManager<
    * Internal runtime storage for secret values (not type-safe).
    * Intended for use in actual secret resolution or access.
    */
-  private _secrets: Record<string, string> = {};
-  private _providers: Record<string, string> = {};
-  private _loaders: Record<string, string> = {};
+  private _secrets: Record<string, SecretOptions> = {};
+  private _providers: Record<string, BaseProvider> = {};
+  private _loaders: Record<string, BaseLoader> = {};
 
   constructor() {}
 
@@ -69,7 +85,7 @@ export class SecretManager<
    * @returns A SecretManager instance with the provider added.
    */
   addProvider<NewProvider extends string>(provider: NewProvider, options: BaseProvider) {
-    this._providers[provider] = '';
+    this._providers[provider] = options;
     console.log(`Provider ${provider} added with options:`, options);
     return this as SecretManager<LoaderInstances, ProviderInstances & Record<NewProvider, string>, SecretEntries>;
   }
@@ -125,10 +141,91 @@ export class SecretManager<
     optionsOrName: NewSecret | SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>
   ) {
     if (typeof optionsOrName === 'string') {
-      this._secrets[optionsOrName] = '';
+      this._secrets[optionsOrName] = {
+        name: optionsOrName,
+      };
     } else {
-      this._secrets[optionsOrName.name] = '';
+      this._secrets[optionsOrName.name] = optionsOrName;
     }
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries & Record<NewSecret, string>>;
+  }
+
+  /**
+   * @interal Internal method to get the current secrets in the manager.
+   * This is not intended for public use.
+   *
+   * @returns The current secrets in the registry.
+   */
+
+  getSecrets() {
+    return this._secrets;
+  }
+
+  /**
+   * @internal Internal method to get the current providers in the manager.
+   * This is not intended for public use.
+   *
+   * @param key - The unique name of the loader (e.g., 'EnvLoader').
+   * @returns The loader instance associated with the given key.
+   * @throws Error if the loader is not found.
+   */
+  getLoader<Config extends object = object>(key?: AnyKey): BaseLoader<Config> {
+    validateString(key);
+    if (!this._loaders[key]) {
+      throw new Error(`Loader ${key} not found`);
+    }
+    return this._loaders[key] as BaseLoader<Config>;
+  }
+
+  /**
+   * @internal Internal method to get the current providers in the manager.
+   * This is not intended for public use.
+   *
+   * @param key - The unique name of the provider (e.g., 'Kubernetes.Secret').
+   * @returns The provider instance associated with the given key.
+   * @throws Error if the provider is not found.
+   */
+
+  getProvider<Config extends object = object>(key?: AnyKey): BaseProvider<Config> {
+    validateString(key);
+    if (!this._providers[key]) {
+      throw new Error(`Provider ${key} not found`);
+    }
+    return this._providers[key] as BaseProvider<Config>;
+  }
+
+  /**
+   * @internal Internal method to get the current providers in the manager.
+   * This is not intended for public use.
+   *
+   * Prepares secrets using registered loaders and providers.
+   * This does not perform any side-effects like `kubectl`.
+   *
+   * @returns An array of SecretManagerEffect objects, each containing the name, value, and effects of the secret.
+   * @throws Error if a loader or provider is not found for a secret.
+   */
+  async prepare(): Promise<SecretManagerEffect[]> {
+    const secrets = this.getSecrets();
+    const resolved: Record<string, string> = {};
+
+    for (const secret of Object.values(secrets)) {
+      const loader = this.getLoader(secret.loader);
+      const provider = this.getProvider(secret.provider);
+      if (!loader || !provider) throw new Error(`Missing loader or provider for ${secret.name}`);
+
+      if (!resolved[secret.name]) {
+        await loader.load([secret.name]);
+        resolved[secret.name] = loader.get(secret.name);
+      }
+    }
+
+    return Object.values(secrets).map(secret => {
+      const provider = this.getProvider(secret.provider)!;
+      return {
+        name: secret.name,
+        value: resolved[secret.name],
+        effects: provider.prepare(secret.name, resolved[secret.name]),
+      };
+    });
   }
 }

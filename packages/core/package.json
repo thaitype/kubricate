@@ -25,13 +25,14 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
+    "js-base64": "^3.7.7",
     "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*",
     "@types/lodash.merge": "^4.6.9"
   },
   "repository": {
