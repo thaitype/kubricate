@@ -1,5 +1,5 @@
 import c from 'ansis';
-import { MARK_ERROR, MARK_INFO } from './constant.js';
+import { MARK_ERROR, MARK_INFO, MARK_WARNING } from './constant.js';
 import type { BaseLogger } from '@kubricate/core';
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
@@ -29,7 +29,7 @@ export class ConsoleLogger implements BaseLogger {
   }
 
   warn(message: string) {
-    if (this.shouldLog('warn')) console.warn(c.yellow(`${MARK_INFO} ${message}`));
+    if (this.shouldLog('warn')) console.warn(c.yellow(`${MARK_WARNING} ${message}`));
   }
 
   error(message: string) {
