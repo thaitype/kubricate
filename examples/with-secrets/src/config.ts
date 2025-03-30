@@ -11,6 +11,8 @@ export const secretManager = new SecretManager()
     'Kubernetes.Secret',
     new KubernetesSecretProvider({
       name: 'secret-application',
+      // TODO: namespace: config.namespace,
+      // TODO: isInjected: true, If true the framework will into injected into the container env;
     })
   )
   .setDefaultLoader('EnvLoader')
