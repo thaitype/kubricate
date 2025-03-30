@@ -43,11 +43,12 @@
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
     "@kubricate/mono": "workspace:*",
+    "@types/yargs": "^17.0.33",
     "@types/node": "^22.13.9"
   },
   "dependencies": {
     "@kubricate/core": "workspace:*",
-    "cac": "^6.7.14",
+    "yargs": "^17.7.2",
     "unconfig": "^7.3.1",
     "ansis": "^3.17.0",
     "yaml": "^2.7.0"

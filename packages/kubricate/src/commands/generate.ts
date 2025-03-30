@@ -6,6 +6,36 @@ import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { ILogger } from '../logger.js';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
+import { logger } from '../bootstrap.js';
+
+export const generateCommand: CommandModule<
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  {}, // global args (none for now)
+  GenerateCommandOptions
+> = {
+  command: 'generate',
+  describe: 'Generate a stack into yaml files',
+  builder: yargs =>
+    yargs
+      .option('root', {
+        type: 'string',
+        describe: 'Root directory',
+        default: process.cwd(),
+      })
+      .option('config', {
+        type: 'string',
+        describe: 'Config file',
+      })
+      .option('outDir', {
+        type: 'string',
+        describe: 'Output directory',
+        default: '.kubricate',
+      }),
+  handler: async (argv: ArgumentsCamelCase<GenerateCommandOptions>) => {
+    await new GenerateCommand(argv, logger).execute();
+  },
+};
 
 export interface GenerateCommandOptions extends LoadConfigOptions {
   outDir: string;
