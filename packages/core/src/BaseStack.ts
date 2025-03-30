@@ -53,6 +53,13 @@ export abstract class BaseStack<
     }
     return this._secretManagers[secretManagerId];
   }
+  /**
+   * Get all secret managers in the stack.
+   * @returns The secret managers in the stack.
+   */
+  getSecretManagers() {
+    return this._secretManagers;
+  }
 
   /**
    * Configure the stack with the provided data.

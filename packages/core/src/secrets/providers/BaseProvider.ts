@@ -1,5 +1,3 @@
-import type { AnyString } from '../../types.js';
-
 export interface BaseProvider<Config extends object = object> {
   config: Config;
 
@@ -16,8 +14,6 @@ export interface BaseEffect<Type extends string, T = unknown> {
   type: Type;
   value: T;
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface AnyEffect extends BaseEffect<AnyString> {}
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ManualEffect extends BaseEffect<'manual'> {}
 /**
