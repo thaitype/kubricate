@@ -26,7 +26,6 @@ yargs(hideBin(process.argv))
   .option('root', {
     type: 'string',
     describe: 'Root directory',
-    // default: process.cwd(),
   })
   .option('config', {
     type: 'string',

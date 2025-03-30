@@ -3,12 +3,14 @@ import { secretsValidateCommand } from './validate.js';
 import { secretsApplyCommand } from './apply.js';
 
 export const secretsCommand: CommandModule = {
-  command: 'secrets <command>',
+  command: 'secrets [command]',
   describe: 'Manage secrets with SecretManager',
   builder: yargs =>
     yargs
+      // Add subcommands
       .command(secretsValidateCommand)
       .command(secretsApplyCommand)
-      .demandCommand(1, 'You must specify a subcommand'),
-  handler: () => {}, // handled by subcommands
+      // Show help if no subcommand is provided
+      .demandCommand(1, ''),
+  handler: () => {},
 };
