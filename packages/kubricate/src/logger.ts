@@ -1,13 +1,6 @@
 import c from 'ansis';
 import { MARK_ERROR, MARK_INFO } from './constant.js';
-
-export interface BaseLogger {
-  log(message: string): void;
-  info(message: string): void;
-  warn(message: string): void;
-  error(message: string): void;
-  debug(message: string): void;
-}
+import type { BaseLogger } from '@kubricate/core';
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
 

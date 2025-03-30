@@ -40,6 +40,10 @@ export interface KubricateEffect extends BaseEffect<'kubricate'> {
    */
   path?: string;
 }
+/**
+ * KubectlEffect is used to apply a value to a manifest using kubectl.
+ * This will apply automatically to the manifest when it is created.
+ */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface KubectlEffect extends BaseEffect<'kubectl', object> {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
+export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}

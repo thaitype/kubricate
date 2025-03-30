@@ -1,8 +1,4 @@
-import { BaseStack } from '@kubricate/core';
-
-export interface KubricateConfig {
-  stacks?: Record<string, BaseStack>;
-}
+import { type KubricateConfig } from '@kubricate/core';
 
 export function defineConfig(config: KubricateConfig): KubricateConfig {
   return config;

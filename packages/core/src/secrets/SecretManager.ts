@@ -166,7 +166,7 @@ export class SecretManager<
    * @returns The current secrets in the registry.
    */
 
-  protected getSecrets() {
+  public getSecrets() {
     return this._secrets;
   }
 

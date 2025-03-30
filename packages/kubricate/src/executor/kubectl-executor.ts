@@ -4,7 +4,7 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import crypto from 'node:crypto';
 import type { ExecaExecutor } from './execa-executor.js';
-import type { BaseLogger } from '../logger.js';
+import type { BaseLogger } from '@kubricate/core';
 
 export class KubectlExecutor {
   constructor(
@@ -13,7 +13,7 @@ export class KubectlExecutor {
     private readonly execa: ExecaExecutor
   ) {}
 
-  async applyManifest(manifest: object) {
+  async apply(manifest: object) {
     const tempPath = this.createTempFilePath();
     await writeFile(tempPath, JSON.stringify(manifest), 'utf8');
 

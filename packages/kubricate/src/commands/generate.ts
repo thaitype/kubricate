@@ -5,8 +5,8 @@ import { getConfig, getMatchConfigFile } from '../load-config.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { BaseLogger } from '../logger.js';
 import type { GlobalConfigOptions } from '../types.js';
+import type { BaseLogger } from '@kubricate/core';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
