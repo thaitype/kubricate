@@ -31,7 +31,7 @@ export class GenerateCommand {
     logger.debug(`Root directory: ${this.options.root}`);
     logger.debug(`Output directory: ${this.options.outDir}`);
 
-    const config = await getConfig(this.options);
+    const config = await getConfig(this.options, logger);
     if (!config) {
       logger.error(`No config file found matching '${getMatchConfigFile()}'`);
       logger.error(`Please ensure a config file exists in the root directory:\n   ${this.options.root}`);
@@ -52,8 +52,8 @@ export class GenerateCommand {
     for (const [name, stack] of Object.entries(config.stacks)) {
       logger.debug(c.blue`  ${MARK_NODE} ${name}: ${getClassName(stack)}`);
     }
-
-    logger.log('\nGenerating Kubricate stacks...');
+    logger.log('\n-------------------------------------');
+    logger.log('Generating Kubricate stacks...');
 
     let output = '';
 

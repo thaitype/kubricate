@@ -1,25 +1,15 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { generateCommand } from './cli-interfaces/generate.js';
 import { secretsCommand } from './cli-interfaces/secrets/index.js';
-import { logger } from './bootstrap.js';
-
-const pkg = {
-  version: '0.0.0',
-};
-try {
-  pkg.version = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf-8')).version;
-} catch {
-  logger.warn('Could not read version from package.json');
-}
+import { ConsoleLogger, type LogLevel } from './logger.js';
+import { getPackageVersion } from './utils.js';
 
 yargs(hideBin(process.argv))
   .scriptName('kubricate')
   .usage('$0 <command>')
-  .version(pkg.version)
+  .version(getPackageVersion('../../package.json'))
   // .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
 
   // Global options
@@ -30,6 +20,21 @@ yargs(hideBin(process.argv))
   .option('config', {
     type: 'string',
     describe: 'Config file path',
+  })
+  .option('verbose', {
+    type: 'boolean',
+    describe: 'Enable verbose output',
+  })
+  .option('silent', {
+    type: 'boolean',
+    describe: 'Suppress all output',
+  })
+  .middleware(argv => {
+    let level: LogLevel = 'info';
+    if (argv.silent) level = 'silent';
+    else if (argv.verbose) level = 'debug';
+
+    argv.logger = new ConsoleLogger(level);
   })
 
   // Register commands

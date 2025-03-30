@@ -45,7 +45,7 @@ export class SecretsCommand {
 
   async getConfig(): Promise<KubricateConfig> {
     if (!this.config) {
-      this.config = await getConfig(this.options);
+      this.config = await getConfig(this.options, this.logger);
       if (!this.config) {
         this.logger.error('No configuration found');
         process.exit(1);

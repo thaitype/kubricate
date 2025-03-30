@@ -11,6 +11,14 @@ export interface BaseLogger {
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
 
+export class SilentLogger implements BaseLogger {
+  log() {}
+  info() {}
+  warn() {}
+  error() {}
+  debug() {}
+}
+
 export class ConsoleLogger implements BaseLogger {
   constructor(private level: LogLevel = 'debug') {}
 

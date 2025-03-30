@@ -1,7 +1,7 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
-import { logger } from '../bootstrap.js';
 import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate.js';
 import type { GlobalConfigOptions } from '../types.js';
+import { ConsoleLogger } from '../logger.js';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',
@@ -13,6 +13,7 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
       default: '.kubricate',
     }),
   handler: async (argv: ArgumentsCamelCase<GenerateCommandOptions>) => {
+    const logger = argv.logger ?? new ConsoleLogger();
     await new GenerateCommand(argv, logger).execute();
   },
 };
