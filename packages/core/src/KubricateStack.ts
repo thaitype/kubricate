@@ -1,9 +1,9 @@
-import { KubricateComposer } from './KubricateComposer.js';
+import { ManifestComposer } from './ManifestComposer.js';
 import type { FunctionLike, InferResourceBuilderFunction } from './types.js';
 
 export abstract class KubricateStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends FunctionLike<any[], KubricateComposer> = FunctionLike<any, KubricateComposer>,
+  T extends FunctionLike<any[], ManifestComposer> = FunctionLike<any, ManifestComposer>,
 > {
   composer!: ReturnType<T>;
 

@@ -1,6 +1,9 @@
 import type { BaseLoader } from './BaseLoader.js';
 
-// InMemoryLoader for isolated testing
+/**
+ * InMemoryLoader is a simple in-memory loader for secrets.
+ * For testing purposes only.
+ */
 export class InMemoryLoader implements BaseLoader {
   private loaded: Set<string> = new Set();
 

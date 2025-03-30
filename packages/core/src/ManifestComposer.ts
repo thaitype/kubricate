@@ -1,7 +1,7 @@
 import merge from 'lodash.merge';
 import type { AnyClass } from './types.js';
 
-export type ResourceStore = Record<
+export type ManifestEntryStore = Record<
   string,
   {
     type?: AnyClass;
@@ -20,8 +20,8 @@ export const LABEL_MANAGED_BY_KEY = 'thaitype.dev/managed-by';
 export const LABEL_MANAGED_BY_VALUE = 'kubricate';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export class KubricateComposer<Resource extends Record<string, unknown> = {}> {
-  _resources: ResourceStore = {};
+export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
+  _entries: ManifestEntryStore = {};
   _override: Record<string, unknown> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,9 +35,9 @@ export class KubricateComposer<Resource extends Record<string, unknown> = {}> {
 
   build() {
     const result: Record<string, unknown> = {};
-    for (const key of Object.keys(this._resources)) {
-      const { type, kind } = this._resources[key];
-      let { config } = this._resources[key];
+    for (const key of Object.keys(this._entries)) {
+      const { type, kind } = this._entries[key];
+      let { config } = this._entries[key];
 
       if (kind === 'instance') {
         result[key] = config;
@@ -66,12 +66,12 @@ export class KubricateComposer<Resource extends Record<string, unknown> = {}> {
    */
 
   add<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
-    this._resources[params.id] = {
+    this._entries[params.id] = {
       type: params.type,
       config: params.config,
       kind: 'class',
     };
-    return this as KubricateComposer<Resource & Record<Id, ConstructorParameters<T>[0]>>;
+    return this as ManifestComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
   /**
@@ -79,23 +79,23 @@ export class KubricateComposer<Resource extends Record<string, unknown> = {}> {
    */
 
   addClass<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
-    this._resources[params.id] = {
+    this._entries[params.id] = {
       type: params.type,
       config: params.config,
       kind: 'class',
     };
-    return this as KubricateComposer<Resource & Record<Id, ConstructorParameters<T>[0]>>;
+    return this as ManifestComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
   /**
    * Add an object to the composer directly. Using this method will support overriding the resource.
    */
   addObject<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
-    this._resources[params.id] = {
+    this._entries[params.id] = {
       config: params.config as Record<string, unknown>,
       kind: 'object',
     };
-    return this as KubricateComposer<Resource & Record<Id, T>>;
+    return this as ManifestComposer<Entries & Record<Id, T>>;
   }
 
   /**
@@ -105,14 +105,14 @@ export class KubricateComposer<Resource extends Record<string, unknown> = {}> {
    */
 
   addInstance<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
-    this._resources[params.id] = {
+    this._entries[params.id] = {
       config: params.config as Record<string, unknown>,
       kind: 'instance',
     };
-    return this as KubricateComposer<Resource & Record<Id, T>>;
+    return this as ManifestComposer<Entries & Record<Id, T>>;
   }
 
-  public override(overrideResources: Partial<Resource>) {
+  public override(overrideResources: Partial<Entries>) {
     this._override = overrideResources;
     return this;
   }

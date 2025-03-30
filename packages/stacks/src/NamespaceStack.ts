@@ -1,12 +1,12 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { KubricateComposer, KubricateStack } from '@kubricate/core';
+import { ManifestComposer, KubricateStack } from '@kubricate/core';
 
 export interface INamespaceStack {
   name: string;
 }
 
 function configureComposer(data: INamespaceStack) {
-  return new KubricateComposer().add({
+  return new ManifestComposer().addClass({
     id: 'namespace',
     type: Namespace,
     config: {

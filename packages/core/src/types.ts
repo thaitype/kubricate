@@ -1,4 +1,4 @@
-import { KubricateComposer } from './KubricateComposer.js';
+import { ManifestComposer } from './ManifestComposer.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;
@@ -12,6 +12,6 @@ export type AnyClass = { new (...args: any[]): any };
  */
 export type AnyKey = string | number | symbol;
 
-export type InferResourceBuilder<T> = T extends KubricateComposer<infer R> ? R : never;
+export type InferResourceBuilder<T> = T extends ManifestComposer<infer R> ? R : never;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type InferResourceBuilderFunction<T> = T extends (...args: any[]) => KubricateComposer<infer R> ? R : never;
+export type InferResourceBuilderFunction<T> = T extends (...args: any[]) => ManifestComposer<infer R> ? R : never;

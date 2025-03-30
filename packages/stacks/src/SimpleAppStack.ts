@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { KubricateComposer, KubricateStack } from '@kubricate/core';
+import { ManifestComposer, KubricateStack } from '@kubricate/core';
 
 export interface ISimpleAppStack {
   name: string;
@@ -18,8 +18,8 @@ function configureComposer(data: ISimpleAppStack) {
   const metadata = { name: data.name };
   const labels = { app: data.name };
 
-  return new KubricateComposer()
-    .add({
+  return new ManifestComposer()
+    .addClass({
       id: 'deployment',
       type: Deployment,
       config: {
@@ -46,7 +46,7 @@ function configureComposer(data: ISimpleAppStack) {
         },
       },
     })
-    .add({
+    .addClass({
       id: 'service',
       type: Service,
       config: {
