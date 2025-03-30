@@ -1,5 +1,5 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { ManifestComposer, KubricateStack } from '@kubricate/core';
+import { ManifestComposer, BaseStack } from '@kubricate/core';
 
 export interface INamespaceStack {
   name: string;
@@ -17,13 +17,14 @@ function configureComposer(data: INamespaceStack) {
   });
 }
 
-export class NamespaceStack extends KubricateStack<typeof configureComposer> {
+export class NamespaceStack extends BaseStack<typeof configureComposer> {
   constructor() {
     super();
   }
 
-  configureStack(data: INamespaceStack) {
-    this.composer = configureComposer(data);
+  from(data: INamespaceStack) {
+    const composer = configureComposer(data);
+    this.setComposer(composer);
     return this;
   }
 }

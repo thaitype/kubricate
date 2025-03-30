@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { AnySecretManager, EnvOptions, ExtractSecretManager, ManifestComposer, KubricateStack } from '@kubricate/core';
+import { AnySecretManager, EnvOptions, ExtractSecretManager, ManifestComposer, BaseStack } from '@kubricate/core';
 
 export interface IAppStack<EnvSecretRef extends keyof any = string> {
   namespace: string;
@@ -77,15 +77,16 @@ function configureComposer(data: IAppStack) {
     });
 }
 
-export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends KubricateStack<
+export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends BaseStack<
   typeof configureComposer
 > {
   constructor(private secretStore?: SecretManager) {
     super();
   }
 
-  configureStack(data: IAppStack<keyof ExtractSecretManager<SecretManager>['secretEntries']>) {
-    this.composer = configureComposer(data as IAppStack);
+  from(data: IAppStack<keyof ExtractSecretManager<SecretManager>['secretEntries']>) {
+    const composer = configureComposer(data as IAppStack);
+    this.setComposer(composer);
     return this;
   }
 }

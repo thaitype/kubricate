@@ -2,12 +2,12 @@ import { NamespaceStack } from '@kubricate/stacks';
 import { AppStack } from './stacks/AppStack';
 import { config, secretManager } from './config';
 
-const namespace = new NamespaceStack().configureStack({
+const namespace = new NamespaceStack().from({
   name: config.namespace,
 });
 
 const myApp = new AppStack(secretManager)
-  .configureStack({
+  .from({
     namespace: config.namespace,
     imageName: 'nginx',
     name: 'my-app',
@@ -22,7 +22,7 @@ const myApp = new AppStack(secretManager)
       },
     ],
   })
-  .overrideStack({
+  .override({
     service: {
       spec: {
         type: 'LoadBalancer',
