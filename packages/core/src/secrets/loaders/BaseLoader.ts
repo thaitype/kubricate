@@ -1,3 +1,5 @@
+import type { BaseLogger } from '../../types.js';
+
 /**
  * BaseLoader is the interface for secret loaders,
  * responsible for resolving secrets from sources such as
@@ -10,6 +12,8 @@ export interface BaseLoader<Config extends object = object> {
    * Optional configuration used during initialization.
    */
   config: Config;
+
+  logger?: BaseLogger;
 
   /**
    * Pre-load and validate a list of secret names.

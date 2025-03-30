@@ -1,5 +1,9 @@
+import type { BaseLogger } from '../../types.js';
+
 export interface BaseProvider<Config extends object = object> {
   config: Config;
+
+  logger?: BaseLogger;
 
   /**
    * Prepares the secret for the given name and value.

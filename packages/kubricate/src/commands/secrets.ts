@@ -1,5 +1,5 @@
 import { getConfig } from '../load-config.js';
-import { SecretsOrchestrator, type BaseLogger } from '@kubricate/core';
+import { SecretsOrchestrator, type BaseLogger, type KubricateConfig } from '@kubricate/core';
 import type { GlobalConfigOptions } from '../types.js';
 import type { KubectlExecutor } from '../executor/kubectl-executor.js';
 import { MARK_CHECK } from '../constant.js';
@@ -18,6 +18,14 @@ export class SecretsCommand {
     private kubectl: KubectlExecutor
   ) {}
 
+  private injectLogger(config: KubricateConfig) {
+    for (const stack of Object.values(config.stacks ?? {})) {
+      if (stack.logger) {
+        stack.logger = this.logger;
+      }
+    }
+  }
+
   private async init(): Promise<SecretsOrchestrator> {
     if (!this.configLoaded) {
       const config = await getConfig(this.options);
@@ -25,6 +33,7 @@ export class SecretsCommand {
         this.logger.error('No configuration found.');
         process.exit(1);
       }
+      this.injectLogger(config);
       this.orchestrator = new SecretsOrchestrator(config, this.logger);
       this.configLoaded = true;
     }

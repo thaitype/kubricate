@@ -1,6 +1,7 @@
-import type { BaseLoader } from '@kubricate/core';
+import { type BaseLoader, type BaseLogger } from '@kubricate/core';
 import { config as loadDotenv } from 'dotenv';
 import path from 'node:path';
+import { maskingValue } from './utilts.js';
 
 export interface EnvLoaderConfig {
   /**
@@ -33,6 +34,7 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
   private prefix: string;
   private secrets = new Map<string, string>();
   private caseInsensitive: boolean;
+  public logger?: BaseLogger;
   private workingDir = process.cwd(); // Default working directory
 
   constructor(config?: EnvLoaderConfig) {
@@ -40,7 +42,6 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
     this.prefix = config?.prefix ?? 'KUBRICATE_SECRET_';
     this.caseInsensitive = config?.caseInsensitive ?? false;
   }
-
   /**
    * Set the working directory for loading .env files.
    * @param path The path to the working directory.
@@ -66,10 +67,11 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
       loadDotenv({
         path: this.getEnvFilePath(),
       });
-      console.log(`Loaded .env file from\n   ${this.getEnvFilePath()}`);
+      this.logger?.log(`Loaded .env file from\n   ${this.getEnvFilePath()}`);
     }
 
     for (const name of names) {
+      this.logger?.debug(`Loading secret: ${name}`);
       if (!/^[a-zA-Z0-9_]+$/.test(name)) {
         throw new Error(`Invalid env var name: ${name}`);
       }
@@ -95,6 +97,8 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
 
       const storeKey = this.normalizeName(name);
       this.secrets.set(storeKey, value);
+      this.logger?.debug(`Loaded secret: ${name} -> ${storeKey}`);
+      this.logger?.debug(`Value: ${maskingValue(value)}`);
     }
   }
 

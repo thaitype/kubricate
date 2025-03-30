@@ -32,3 +32,11 @@ export interface BaseLogger {
   error(message: string): void;
   debug(message: string): void;
 }
+
+export class SilentLogger implements BaseLogger {
+  log() {}
+  info() {}
+  warn() {}
+  error() {}
+  debug() {}
+}

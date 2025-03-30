@@ -50,7 +50,7 @@ yargs(hideBin(process.argv))
       yargs.showHelp(); // when no command is given
     } else {
       console.error(msg);
-      process.exit(1);
+      process.exit(99);
     }
   })
   .strict()

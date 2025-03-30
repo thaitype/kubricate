@@ -1,6 +1,6 @@
 import type { BaseLoader } from './loaders/BaseLoader.js';
 import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
-import type { AnyKey } from '../types.js';
+import type { AnyKey, BaseLogger } from '../types.js';
 import { validateString } from '../utils.js';
 
 export interface SecretManagerEffect {
@@ -72,6 +72,8 @@ export class SecretManager<
 
   private _defaultProvider: keyof ProviderInstances | undefined;
   private _defaultLoader: keyof LoaderInstances | undefined;
+
+  logger?: BaseLogger;
 
   constructor() {}
 
@@ -236,6 +238,14 @@ export class SecretManager<
 
   resolveLoader(loader?: AnyKey): BaseLoader {
     return loader ? this.getLoader(loader) : this.getLoader(this._defaultLoader);
+  }
+
+  getLoaders() {
+    return this._loaders;
+  }
+
+  getProviders() {
+    return this._providers;
   }
 
   /**

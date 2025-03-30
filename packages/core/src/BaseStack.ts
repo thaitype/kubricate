@@ -1,6 +1,7 @@
 import { ManifestComposer } from './ManifestComposer.js';
-import type { FunctionLike, InferResourceBuilderFunction } from './types.js';
+import type { BaseLogger, FunctionLike, InferResourceBuilderFunction } from './types.js';
 import type { AnySecretManager, EnvOptions, ExtractSecretManager } from './secrets/types.js';
+import type { BaseLoader, BaseProvider } from './secrets/index.js';
 
 export abstract class BaseStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -10,6 +11,7 @@ export abstract class BaseStack<
   private _composer!: ReturnType<T>;
   private _secretManagers: Record<string, SecretManager> = {};
   private readonly _defaultSecretManagerId = 'default';
+  public logger?: BaseLogger;
 
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
@@ -91,5 +93,33 @@ export abstract class BaseStack<
    */
   get manifests() {
     return this._composer;
+  }
+
+  /**
+   * Inject a logger instance into all components of the stack e.g. secret managers, loader, providers, etc.
+   * This is useful for logging purposes and debugging.
+   * @param logger The logger instance to be injected.
+   */
+  injectLogger(logger: BaseLogger) {
+    this.logger = logger;
+
+    if (typeof this.getSecretManagers === 'function') {
+      const managers = this.getSecretManagers();
+
+      for (const secretManager of Object.values(managers)) {
+        // Inject into SecretManager
+        secretManager.logger = logger;
+
+        // Inject into each loader
+        for (const loader of Object.values(secretManager.getLoaders())) {
+          (loader as BaseLoader).logger = logger;
+        }
+
+        // Inject into each provider
+        for (const provider of Object.values(secretManager.getProviders())) {
+          (provider as BaseProvider).logger = logger;
+        }
+      }
+    }
   }
 }
