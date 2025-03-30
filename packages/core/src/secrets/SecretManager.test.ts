@@ -2,28 +2,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SecretManager } from './SecretManager.js';
 import { KubernetesSecretProvider } from './providers/KubernetesSecretProvider.js';
-
-// ✅ InMemoryLoader for isolated testing
-class InMemoryLoader {
-  private values: Record<string, string> = {};
-  private loaded: Set<string> = new Set();
-
-  constructor(entries: Record<string, string>) {
-    this.values = entries;
-  }
-
-  async load(names: string[]) {
-    for (const name of names) {
-      if (!(name in this.values)) throw new Error(`Missing secret: ${name}`);
-      this.loaded.add(name);
-    }
-  }
-
-  get(name: string): string {
-    if (!this.loaded.has(name)) throw new Error(`Secret ${name} not loaded`);
-    return this.values[name];
-  }
-}
+import { InMemoryLoader } from './loaders/InMemoryLoader.js';
 
 describe('SecretManager', () => {
   let manager: SecretManager;

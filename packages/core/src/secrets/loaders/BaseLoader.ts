@@ -9,7 +9,7 @@ export interface BaseLoader<Config extends object = object> {
   /**
    * Optional configuration used during initialization.
    */
-  config?: Config;
+  config: Config;
 
   /**
    * Pre-load and validate a list of secret names.
