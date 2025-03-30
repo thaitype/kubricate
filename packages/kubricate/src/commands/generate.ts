@@ -1,11 +1,12 @@
 import c from 'ansis';
-import { MARK_NODE } from '../constant.js';
+import { MARK_CHECK, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
-import { getConfig, getMatchConfigFile, type GlobalConfigOptions } from '../load-config.js';
+import { getConfig, getMatchConfigFile } from '../load-config.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ILogger } from '../logger.js';
+import type { BaseLogger } from '../logger.js';
+import type { GlobalConfigOptions } from '../types.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
@@ -14,7 +15,7 @@ export interface GenerateCommandOptions extends GlobalConfigOptions {
 export class GenerateCommand {
   constructor(
     private options: GenerateCommandOptions,
-    private logger: ILogger
+    private logger: BaseLogger
   ) {}
 
   async execute() {
@@ -22,13 +23,13 @@ export class GenerateCommand {
     logger.info('Executing: Generating Kubricate stacks for Kubernetes...');
 
     if (!this.options.config) {
-      logger.info(`No config file provided. Falling back to default: '${getMatchConfigFile()}'`);
+      logger.debug(`No config file provided. Falling back to default: '${getMatchConfigFile()}'`);
     } else {
-      logger.info(`Using config file: ${this.options.config}`);
+      logger.debug(`Using config file: ${this.options.config}`);
     }
 
-    logger.info(`Root directory: ${this.options.root}`);
-    logger.info(`Output directory: ${this.options.outDir}`);
+    logger.debug(`Root directory: ${this.options.root}`);
+    logger.debug(`Output directory: ${this.options.outDir}`);
 
     const config = await getConfig(this.options);
     if (!config) {
@@ -47,15 +48,12 @@ export class GenerateCommand {
       process.exit(1);
     }
 
-    logger.success(`Found ${stacksLength} stacks in config`);
+    logger.log(`Found ${stacksLength} stacks in config`);
     for (const [name, stack] of Object.entries(config.stacks)) {
-      logger.info(c.blue`  ${MARK_NODE} ${name}: ${getClassName(stack)}`);
+      logger.debug(c.blue`  ${MARK_NODE} ${name}: ${getClassName(stack)}`);
     }
 
-    logger.log('');
-    logger.log('---------------------');
-    logger.log('Generating Kubricate stacks...');
-    logger.log('---------------------');
+    logger.log('\nGenerating Kubricate stacks...');
 
     let output = '';
 
@@ -65,17 +63,17 @@ export class GenerateCommand {
         output += yamlStringify(resource);
         output += '---\n';
       }
-      logger.success(`Successfully generated stack: ${name}`);
+      logger.log(c.green`${MARK_CHECK} Successfully generated stack: ${name}`);
     }
 
-    logger.success('All stacks generated successfully');
+    logger.log(c.green`${MARK_CHECK} All stacks generated successfully`);
 
     const outputPath = path.join(this.options.root ?? process.cwd(), this.options.outDir, 'stacks.yml');
     await fs.mkdir(this.options.outDir, { recursive: true });
     await fs.writeFile(outputPath, output);
 
     logger.log('');
-    logger.info(`YAML file successfully written to:\n   '${path.resolve(outputPath)}'`);
-    logger.success('Done!');
+    logger.log(c.green`${MARK_CHECK} YAML file successfully written to:\n   '${path.resolve(outputPath)}\n`);
+    logger.log(c.green`${MARK_CHECK} Done!`);
   }
 }

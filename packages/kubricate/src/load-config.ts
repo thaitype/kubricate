@@ -2,24 +2,7 @@ import { loadConfig } from 'unconfig';
 import { MARK_CHECK } from './constant.js';
 import type { KubricateConfig } from './config.js';
 import c from 'ansis';
-
-export interface GlobalConfigOptions {
-  /**
-   * Working directory to load the config from.
-   * This is the directory where the config file is located.
-   * If not specified, the current working directory will be used.
-   *
-   * @default process.cwd()
-   */
-  root?: string;
-  /**
-   * Config file name to load.
-   * If not specified, the default config file name will be used.
-   *
-   * @default 'kubricate.config'
-   */
-  config?: string;
-}
+import type { GlobalConfigOptions } from './types.js';
 
 export const DEFAULT_CONFIG_NAME = 'kubricate.config';
 // Allow all JS/TS file extensions except JSON

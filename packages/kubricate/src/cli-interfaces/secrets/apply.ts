@@ -1,9 +1,9 @@
 import type { CommandModule } from 'yargs';
-import type { GlobalConfigOptions } from '../../load-config.js';
 import { SecretsCommand, type SecretsCommandOptions } from '../../commands/secrets.js';
 import { logger } from '../../bootstrap.js';
 import { ExecaExecutor } from '../../executor/execa-executor.js';
 import { KubectlExecutor } from '../../executor/kubectl-executor.js';
+import type { GlobalConfigOptions } from '../../types.js';
 
 export const secretsApplyCommand: CommandModule<GlobalConfigOptions, SecretsCommandOptions> = {
   command: 'apply',

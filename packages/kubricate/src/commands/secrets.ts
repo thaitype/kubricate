@@ -1,8 +1,9 @@
 import type { SecretManager } from '@kubricate/core';
 import type { KubricateConfig } from '../config.js';
-import { getConfig, type GlobalConfigOptions } from '../load-config.js';
-import type { ILogger } from '../logger.js';
+import { getConfig } from '../load-config.js';
+import type { BaseLogger } from '../logger.js';
 import type { KubectlExecutor } from '../executor/kubectl-executor.js';
+import type { GlobalConfigOptions } from '../types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SecretsCommandOptions extends GlobalConfigOptions {}
@@ -38,7 +39,7 @@ export class SecretsCommand {
 
   constructor(
     private options: SecretsCommandOptions,
-    private logger: ILogger,
+    private logger: BaseLogger,
     private readonly kubectl: KubectlExecutor
   ) {}
 
@@ -89,7 +90,7 @@ export class SecretsCommand {
     for (const [id, { secretManager }] of Object.entries(managers)) {
       try {
         await secretManager.prepare(); // triggers loader.load internally
-        this.logger.success(`✅ Validated: ${id}`);
+        this.logger.log(`✅ Validated: ${id}`);
       } catch (err) {
         this.logger.error(`❌ Validation failed: ${id}: ${(err as Error).message}`);
         process.exit(1);
@@ -117,6 +118,6 @@ export class SecretsCommand {
       }
     }
 
-    this.logger.success('🎉 All secrets applied via kubectl');
+    this.logger.log('🎉 All secrets applied via kubectl');
   }
 }

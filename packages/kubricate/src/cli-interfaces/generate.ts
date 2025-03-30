@@ -1,7 +1,7 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { logger } from '../bootstrap.js';
 import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate.js';
-import type { GlobalConfigOptions } from '../load-config.js';
+import type { GlobalConfigOptions } from '../types.js';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',
