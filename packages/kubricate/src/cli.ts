@@ -1,10 +1,10 @@
 import c from 'ansis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { generateCommand } from './commands/generate.js';
-
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+
+import { generateCommand } from './cli-interfaces/generate.js';
 import { logger } from './bootstrap.js';
 
 const pkg = {
