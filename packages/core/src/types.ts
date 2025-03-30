@@ -25,7 +25,10 @@ export interface KubricateConfig {
   stacks?: Record<string, BaseStack>;
 }
 
+export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
+
 export interface BaseLogger {
+  level: LogLevel;
   log(message: string): void;
   info(message: string): void;
   warn(message: string): void;
@@ -34,6 +37,7 @@ export interface BaseLogger {
 }
 
 export class SilentLogger implements BaseLogger {
+  level: LogLevel = 'silent';
   log() {}
   info() {}
   warn() {}

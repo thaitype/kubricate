@@ -1,11 +1,9 @@
 import c from 'ansis';
 import { MARK_ERROR, MARK_INFO, MARK_WARNING } from './constant.js';
-import type { BaseLogger } from '@kubricate/core';
-
-export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
+import type { BaseLogger, LogLevel } from '@kubricate/core';
 
 export class ConsoleLogger implements BaseLogger {
-  constructor(private level: LogLevel = 'debug') {}
+  constructor(public level: LogLevel = 'debug') {}
 
   private shouldLog(target: LogLevel) {
     const levels: LogLevel[] = ['silent', 'error', 'warn', 'info', 'debug'];

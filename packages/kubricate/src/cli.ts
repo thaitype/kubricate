@@ -3,8 +3,9 @@ import { hideBin } from 'yargs/helpers';
 
 import { generateCommand } from './cli-interfaces/generate.js';
 import { secretsCommand } from './cli-interfaces/secrets/index.js';
-import { ConsoleLogger, type LogLevel } from './logger.js';
+import { ConsoleLogger } from './logger.js';
 import { getPackageVersion } from './utils.js';
+import type { LogLevel } from '@kubricate/core';
 
 yargs(hideBin(process.argv))
   .scriptName('kubricate')

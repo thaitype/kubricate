@@ -2,6 +2,8 @@ import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate.js';
 import type { GlobalConfigOptions } from '../types.js';
 import { ConsoleLogger } from '../logger.js';
+import { handlerError } from '../error.js';
+import { verboseCliConfig } from '../utils.js';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',
@@ -14,6 +16,11 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
     }),
   handler: async (argv: ArgumentsCamelCase<GenerateCommandOptions>) => {
     const logger = argv.logger ?? new ConsoleLogger();
-    await new GenerateCommand(argv, logger).execute();
+    try {
+      verboseCliConfig(argv, logger, 'generate');
+      await new GenerateCommand(argv, logger).execute();
+    } catch (error) {
+      handlerError(error, logger);
+    }
   },
 };

@@ -1,7 +1,6 @@
 import type { PreparedEffect } from './providers/BaseProvider.js';
 import { collectSecretManagers, validateSecretManagers, prepareSecretEffects } from './manager.js';
 import type { KubricateConfig, BaseLogger } from '../types.js';
-import { MARK_CHECK } from '../constant.js';
 
 export class SecretsOrchestrator {
   constructor(
@@ -10,10 +9,10 @@ export class SecretsOrchestrator {
   ) {}
 
   async validate(): Promise<void> {
-    this.logger.info('Validating secrets configuration...');
+    this.logger.info('Collecting secret managers...');
     const managers = collectSecretManagers(this.config);
+    this.logger.info('Validating secret managers...');
     await validateSecretManagers(managers);
-    this.logger.log(`${MARK_CHECK} All secret managers validated successfully.`);
   }
 
   async prepare(): Promise<PreparedEffect[]> {

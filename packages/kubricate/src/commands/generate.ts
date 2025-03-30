@@ -21,16 +21,6 @@ export class GenerateCommand {
   async execute() {
     const logger = this.logger;
     logger.info('Executing: Generating Kubricate stacks for Kubernetes...');
-
-    if (!this.options.config) {
-      logger.debug(`No config file provided. Falling back to default: '${getMatchConfigFile()}'`);
-    } else {
-      logger.debug(`Using config file: ${this.options.config}`);
-    }
-
-    logger.debug(`Root directory: ${this.options.root}`);
-    logger.debug(`Output directory: ${this.options.outDir}`);
-
     const config = await getConfig(this.options, logger);
     if (!config) {
       logger.error(`No config file found matching '${getMatchConfigFile()}'`);
