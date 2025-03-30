@@ -29,12 +29,14 @@ export interface EnvLoaderConfig {
  * configurable prefixes and case-insensitive lookups.
  */
 export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
+  public config: EnvLoaderConfig;
   private prefix: string;
   private secrets = new Map<string, string>();
   private caseInsensitive: boolean;
   private workingDir = process.cwd(); // Default working directory
 
-  constructor(public config?: EnvLoaderConfig) {
+  constructor(config?: EnvLoaderConfig) {
+    this.config = config ?? {};
     this.prefix = config?.prefix ?? 'KUBRICATE_SECRET_';
     this.caseInsensitive = config?.caseInsensitive ?? false;
   }
