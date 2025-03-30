@@ -75,6 +75,9 @@ export class SecretManager<
   private _providers: Record<string, BaseProvider> = {};
   private _loaders: Record<string, BaseLoader> = {};
 
+  private _defaultProvider: keyof ProviderInstances | undefined;
+  private _defaultLoader: keyof LoaderInstances | undefined;
+
   constructor() {}
 
   /**
@@ -194,6 +197,41 @@ export class SecretManager<
     return this._providers[key] as BaseProvider<Config>;
   }
 
+  validateConfig() {
+    if (Object.keys(this._loaders).length === 0) {
+      throw new Error('No loaders registered');
+    }
+    if (Object.keys(this._providers).length === 0) {
+      throw new Error('No providers registered');
+    }
+    if (Object.keys(this._secrets).length === 0) {
+      throw new Error('No secrets registered');
+    }
+    if (!this._defaultProvider && Object.keys(this._providers).length > 1) {
+      throw new Error('No default provider set, and multiple providers registered');
+    }
+    if (!this._defaultLoader && Object.keys(this._loaders).length > 1) {
+      throw new Error('No default loader set, and multiple loaders registered');
+    }
+    if (!this._defaultProvider) {
+      this._defaultProvider = Object.keys(this._providers)[0] as keyof ProviderInstances;
+    }
+    if (!this._defaultLoader) {
+      this._defaultLoader = Object.keys(this._loaders)[0] as keyof LoaderInstances;
+    }
+    console.log('SecretManager configuration is valid');
+    console.log('Default provider:', this._defaultProvider);
+    console.log('Default loader:', this._defaultLoader);
+  }
+
+  resolveProvider(provider?: AnyKey): BaseProvider {
+    return provider ? this.getProvider(provider) : this.getProvider(this._defaultProvider);
+  }
+
+  resolveLoader(loader?: AnyKey): BaseLoader {
+    return loader ? this.getLoader(loader) : this.getLoader(this._defaultLoader);
+  }
+
   /**
    * @internal Internal method to get the current providers in the manager.
    * This is not intended for public use.
@@ -205,12 +243,13 @@ export class SecretManager<
    * @throws Error if a loader or provider is not found for a secret.
    */
   async prepare(): Promise<SecretManagerEffect[]> {
+    this.validateConfig();
     const secrets = this.getSecrets();
     const resolved: Record<string, string> = {};
 
     for (const secret of Object.values(secrets)) {
-      const loader = this.getLoader(secret.loader);
-      const provider = this.getProvider(secret.provider);
+      const loader = this.resolveLoader(secret.loader);
+      const provider = this.resolveProvider(secret.provider);
       if (!loader || !provider) throw new Error(`Missing loader or provider for ${secret.name}`);
 
       if (!resolved[secret.name]) {
@@ -220,7 +259,7 @@ export class SecretManager<
     }
 
     return Object.values(secrets).map(secret => {
-      const provider = this.getProvider(secret.provider)!;
+      const provider = this.resolveProvider(secret.provider);
       return {
         name: secret.name,
         value: resolved[secret.name],
