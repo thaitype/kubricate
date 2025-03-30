@@ -49,11 +49,6 @@ export class SecretManager<
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   LoaderInstances extends Record<string, string> = {},
-  // /**
-  //  * Definitions of allowed provider types.
-  //  * Each definition includes a unique `name` and its `config` structure.
-  //  */
-  // ProviderDefinitions extends ProviderBase,
   /**
    * Instances of providers that have been registered.
    * Keys are provider names, values are typically unique string identifiers.
@@ -88,8 +83,10 @@ export class SecretManager<
    * @returns A SecretManager instance with the provider added.
    */
   addProvider<NewProvider extends string>(provider: NewProvider, options: BaseProvider) {
+    if (this._providers[provider]) {
+      throw new Error(`Provider ${provider} already exists`);
+    }
     this._providers[provider] = options;
-    console.log(`Provider ${provider} added with options:`, options);
     return this as SecretManager<LoaderInstances, ProviderInstances & Record<NewProvider, string>, SecretEntries>;
   }
 
@@ -103,7 +100,7 @@ export class SecretManager<
    * @returns A SecretManager instance with the provider added.
    */
   setDefaultProvider(provider: keyof ProviderInstances) {
-    console.log(`Default provider set to: ${String(provider)}`);
+    this._defaultProvider = provider;
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries>;
   }
 
@@ -116,7 +113,10 @@ export class SecretManager<
    */
 
   addLoader<NewLoader extends string>(loader: NewLoader, options: BaseLoader) {
-    console.log(`Loader ${loader} added with options:`, options);
+    if (this._loaders[loader]) {
+      throw new Error(`Loader ${loader} already exists`);
+    }
+    this._loaders[loader] = options;
     return this as SecretManager<LoaderInstances & Record<NewLoader, string>, ProviderInstances, SecretEntries>;
   }
 
@@ -130,7 +130,7 @@ export class SecretManager<
    * @returns A SecretManager instance with the loader added.
    */
   setDefaultLoader(loader: keyof LoaderInstances) {
-    console.log(`Default loader set to: ${String(loader)}`);
+    this._defaultLoader = loader;
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries>;
   }
 
@@ -144,10 +144,16 @@ export class SecretManager<
     optionsOrName: NewSecret | SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>
   ) {
     if (typeof optionsOrName === 'string') {
+      if (this._secrets[optionsOrName]) {
+        throw new Error(`Secret ${optionsOrName} already exists`);
+      }
       this._secrets[optionsOrName] = {
         name: optionsOrName,
       };
     } else {
+      if (this._secrets[optionsOrName.name]) {
+        throw new Error(`Secret ${optionsOrName.name} already exists`);
+      }
       this._secrets[optionsOrName.name] = optionsOrName;
     }
     return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries & Record<NewSecret, string>>;
@@ -160,7 +166,7 @@ export class SecretManager<
    * @returns The current secrets in the registry.
    */
 
-  getSecrets() {
+  protected getSecrets() {
     return this._secrets;
   }
 
@@ -246,15 +252,15 @@ export class SecretManager<
     this.validateConfig();
     const secrets = this.getSecrets();
     const resolved: Record<string, string> = {};
+    const loadedKeys = new Set<string>();
 
     for (const secret of Object.values(secrets)) {
       const loader = this.resolveLoader(secret.loader);
-      const provider = this.resolveProvider(secret.provider);
-      if (!loader || !provider) throw new Error(`Missing loader or provider for ${secret.name}`);
 
-      if (!resolved[secret.name]) {
+      if (!loadedKeys.has(secret.name)) {
         await loader.load([secret.name]);
         resolved[secret.name] = loader.get(secret.name);
+        loadedKeys.add(secret.name);
       }
     }
 
