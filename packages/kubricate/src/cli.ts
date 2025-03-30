@@ -1,4 +1,3 @@
-import c from 'ansis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import yargs from 'yargs';
@@ -21,9 +20,23 @@ yargs(hideBin(process.argv))
   .scriptName('kubricate')
   .usage('$0 <command>')
   .version(pkg.version)
-  .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
+  // .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
+
+  // Global options
+  .option('root', {
+    type: 'string',
+    describe: 'Root directory',
+    // default: process.cwd(),
+  })
+  .option('config', {
+    type: 'string',
+    describe: 'Config file path',
+  })
+
+  // Register commands
   .command(generateCommand)
   .command(secretsCommand)
+
   .help()
   .alias('h', 'help')
   .alias('v', 'version')

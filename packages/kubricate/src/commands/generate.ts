@@ -1,13 +1,13 @@
 import c from 'ansis';
 import { MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
-import { getConfig, getMatchConfigFile, type LoadConfigOptions } from '../load-config.js';
+import { getConfig, getMatchConfigFile, type GlobalConfigOptions } from '../load-config.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { ILogger } from '../logger.js';
 
-export interface GenerateCommandOptions extends LoadConfigOptions {
+export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
 }
 
@@ -70,7 +70,7 @@ export class GenerateCommand {
 
     logger.success('All stacks generated successfully');
 
-    const outputPath = path.join(this.options.root, this.options.outDir, 'stacks.yml');
+    const outputPath = path.join(this.options.root ?? process.cwd(), this.options.outDir, 'stacks.yml');
     await fs.mkdir(this.options.outDir, { recursive: true });
     await fs.writeFile(outputPath, output);
 

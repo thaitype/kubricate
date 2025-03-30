@@ -3,8 +3,21 @@ import { MARK_CHECK } from './constant.js';
 import type { KubricateConfig } from './config.js';
 import c from 'ansis';
 
-export interface LoadConfigOptions {
-  root: string;
+export interface GlobalConfigOptions {
+  /**
+   * Working directory to load the config from.
+   * This is the directory where the config file is located.
+   * If not specified, the current working directory will be used.
+   *
+   * @default process.cwd()
+   */
+  root?: string;
+  /**
+   * Config file name to load.
+   * If not specified, the default config file name will be used.
+   *
+   * @default 'kubricate.config'
+   */
   config?: string;
 }
 
@@ -16,7 +29,7 @@ export function getMatchConfigFile(): string {
   return `${DEFAULT_CONFIG_NAME}.{${DEFAULT_CONFIG_EXTENSIONS.join(',')}}`;
 }
 
-export async function getConfig(options: LoadConfigOptions): Promise<KubricateConfig | undefined> {
+export async function getConfig(options: GlobalConfigOptions): Promise<KubricateConfig | undefined> {
   const result = await loadConfig<KubricateConfig>({
     cwd: options.root,
     sources: [

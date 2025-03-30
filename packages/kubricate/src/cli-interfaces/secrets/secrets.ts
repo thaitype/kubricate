@@ -9,15 +9,6 @@ export const secretsCommand: CommandModule = {
     yargs
       .command(secretsValidateCommand)
       .command(secretsApplyCommand)
-      .option('root', {
-        type: 'string',
-        describe: 'Root directory',
-        default: process.cwd(),
-      })
-      .option('config', {
-        type: 'string',
-        describe: 'Config file path',
-      })
       .demandCommand(1, 'You must specify a subcommand'),
   handler: () => {}, // handled by subcommands
 };
