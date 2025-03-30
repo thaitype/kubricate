@@ -3,6 +3,7 @@ import c from 'ansis';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { GenerateCommand, type GenerateCommandOptions } from './commands/generate.js';
+import { Logger } from './logger.js';
 
 const pkg = {
   version: '0.0.0',
@@ -14,6 +15,7 @@ try {
 }
 
 const cli = cac(c.bold(c.blue('kubricate')));
+const logger = new Logger();
 
 cli
   .command('generate', 'Generate a stack into yaml files')
@@ -22,7 +24,7 @@ cli
   .option('--outDir <dir>', 'Output directory', { default: '.kubricate' })
   // Action
   .action(async (options: GenerateCommandOptions) => {
-    await new GenerateCommand(options).execute();
+    await new GenerateCommand(options, logger).execute();
   });
 
 cli.version(pkg.version);
