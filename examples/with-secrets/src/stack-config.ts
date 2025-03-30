@@ -6,11 +6,13 @@ const namespace = new NamespaceStack().from({
   name: config.namespace,
 });
 
-const myApp = new AppStack(secretManager)
+const myApp = new AppStack()
   .from({
     namespace: config.namespace,
     imageName: 'nginx',
     name: 'my-app',
+  })
+  .useSecrets(secretManager, {
     env: [
       {
         name: 'MY_ENV',

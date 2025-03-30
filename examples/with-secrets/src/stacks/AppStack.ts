@@ -1,15 +1,14 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { AnySecretManager, EnvOptions, ExtractSecretManager, ManifestComposer, BaseStack } from '@kubricate/core';
+import { ManifestComposer, BaseStack } from '@kubricate/core';
 
-export interface IAppStack<EnvSecretRef extends keyof any = string> {
+export interface IAppStack {
   namespace: string;
   name: string;
   imageName: string;
   replicas?: number;
   imageRegistry?: string;
   port?: number;
-  env?: EnvOptions<EnvSecretRef>[];
 }
 
 function configureComposer(data: IAppStack) {
@@ -77,14 +76,12 @@ function configureComposer(data: IAppStack) {
     });
 }
 
-export class AppStack<SecretManager extends AnySecretManager = AnySecretManager> extends BaseStack<
-  typeof configureComposer
-> {
-  constructor(private secretStore?: SecretManager) {
+export class AppStack extends BaseStack<typeof configureComposer> {
+  constructor() {
     super();
   }
 
-  from(data: IAppStack<keyof ExtractSecretManager<SecretManager>['secretEntries']>) {
+  from(data: IAppStack) {
     const composer = configureComposer(data as IAppStack);
     this.setComposer(composer);
     return this;
