@@ -10,3 +10,8 @@ export function validateString(value: unknown): asserts value is string {
     throw new TypeError(`Expected a string, but received: ${typeof value}`);
   }
 }
+
+export function getClassName(obj: unknown): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return obj && typeof obj === 'object' ? (obj as any).constructor.name : 'Unknown';
+}

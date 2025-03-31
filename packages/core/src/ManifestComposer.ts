@@ -1,6 +1,7 @@
 import { merge } from 'lodash-es';
 import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
+import { get, set } from 'lodash-es';
 
 export type ManifestEntryStore = Record<
   string,
@@ -34,8 +35,24 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
     return config;
   }
 
-  // TODO: Implement this method
-  // inject(){}
+  inject(composeId: string, path: string, value: unknown) {
+    const composed = this._entries[composeId];
+    if (!composed) {
+      throw new Error(`Cannot inject, resource with ID ${composeId} not found.`);
+    }
+    if (!(composed.kind === 'object' || composed.kind === 'class')) {
+      throw new Error(`Cannot inject, resource with ID ${composeId} is not an object or class.`);
+    }
+    const existingConfigFromPath = get(composed.config, path);
+    if (!existingConfigFromPath) {
+      set(composed.config, path, value);
+      return;
+    }
+    // TODO: Merge the existing config with the new value
+    throw new Error(
+      `Cannot inject, resource with ID ${composeId} already has a value at path ${path}. Existing value: ${JSON.stringify(existingConfigFromPath)}`
+    );
+  }
 
   build() {
     const result: Record<string, unknown> = {};

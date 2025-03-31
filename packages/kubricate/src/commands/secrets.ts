@@ -19,13 +19,13 @@ export class SecretsCommand extends BaseCommand {
 
   async validate() {
     this.logger.info('Validating secrets configuration...');
-    const orchestrator = await this.init();
+    const { orchestrator } = await this.init();
     await orchestrator.validate();
     this.logger.log(c.green`${MARK_CHECK} All secret managers validated successfully.`);
   }
 
   async apply() {
-    const orchestrator = await this.init();
+    const { orchestrator } = await this.init();
     await orchestrator.validate();
 
     const effects = await orchestrator.prepare();

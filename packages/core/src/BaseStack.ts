@@ -9,7 +9,7 @@ export interface UseSecretsOptions<Key extends AnyKey> {
    * The ID of the secret manager.
    * This is used to identify the secret manager in the stack.
    *
-   * Multiple secret managers can be used in the same stack.
+   * Multiple secret managers can be usedget in the same stack.
    *
    * @default 'default' Usually, the default secret manager is used,
    */
@@ -27,6 +27,7 @@ export abstract class BaseStack<
   private _composer!: ReturnType<T>;
   private _secretManagers: Record<string, SecretManager> = {};
   private readonly _defaultSecretManagerId = 'default';
+  private _targetInjects: Record<string, ProviderInjection[]> = {};
   public logger?: BaseLogger;
 
   useSecrets<NewSecretManager extends AnySecretManager>(
@@ -43,8 +44,15 @@ export abstract class BaseStack<
     if (!options.env) {
       throw new Error(`Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} requires env options.`);
     }
+    this.logger?.debug(`BaseStack.useSecrets: secret manager with ID ${secretManagerId} is defined.`);
     this._secretManagers[secretManagerId] = secretManager as unknown as SecretManager;
-    this.setTargetInjects(secretManagerId, options.injectes ?? []);
+
+    if (this._targetInjects[secretManagerId]) {
+      throw new Error(
+        `Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} already has injectes defined.`
+      );
+    }
+    this._targetInjects[secretManagerId] = options.injectes ?? [];
     return this;
   }
 
@@ -53,13 +61,24 @@ export abstract class BaseStack<
    * @param secretManagerId
    * @param injectes
    */
-  setTargetInjects(secretManagerId: string, injectes: ProviderInjection[]) {
+  setTargetInjects(secretManagerId: string) {
     if (!this._secretManagers[secretManagerId]) {
-      throw new Error(`Cannot BaseStack.setTargetInjects, secret manager with ID ${secretManagerId} is not defined.`);
+      throw new Error(`Cannot BaseStack.setTargetInjects, secret manager with ID "${secretManagerId}" is not defined.`);
     }
+    this.logger?.debug(
+      `BaseStack.setTargetInjects: Starting to set injectes for secret manager with ID "${secretManagerId}".`
+    );
     const secretManager = this._secretManagers[secretManagerId];
     for (const provider of Object.values(secretManager.getProviders())) {
-      provider.setInjects(injectes);
+      provider.setInjects(this._targetInjects[secretManagerId]);
+      if (this.logger?.debug) {
+        const stringifyInjects = this._targetInjects[secretManagerId]
+          .map(inject => JSON.stringify(inject))
+          .join('\n  ');
+        this.logger?.debug(
+          `BaseStack.setTargetInjects: Provider "${provider.constructor.name}" injects set for secret manager with ID "${secretManagerId}": \n  "${stringifyInjects}" `
+        );
+      }
     }
   }
 
@@ -102,7 +121,22 @@ export abstract class BaseStack<
    * @returns The resources in the stack.
    */
   build() {
-    // TODO: during build process, secret managers should be called to load the secrets metadata
+    this.logger?.debug('BaseStack.build: Starting to build the stack.');
+    this.logger?.debug('BaseStack.build: Setup target injectes for secret managers.');
+    for (const secretManagerId of Object.keys(this._secretManagers)) {
+      this.setTargetInjects(secretManagerId);
+      this.logger?.debug(`BaseStack.build: Target injectes for secret manager with ID ${secretManagerId} set.`);
+    }
+
+    this.logger?.debug('BaseStack.build: Injecting secrets into providers.');
+    for (const secretManager of Object.values(this._secretManagers)) {
+      for (const provider of Object.values(secretManager.getProviders())) {
+        for (const inject of provider.injectes) {
+          const targetValue = provider.getInjectionPayload();
+          this._composer.inject(inject.composeId, inject.path, targetValue);
+        }
+      }
+    }
 
     return this._composer.build();
   }

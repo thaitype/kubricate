@@ -1,7 +1,6 @@
 import c from 'ansis';
 import { MARK_CHECK, MARK_NODE } from '../constant.js';
 import { getClassName } from '../utils.js';
-import { getConfig, getMatchConfigFile } from '../load-config.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -21,18 +20,12 @@ export class GenerateCommand extends BaseCommand {
     super(options, logger);
   }
 
+  // const orchestrator = await this.init();
+
   async execute() {
     const logger = this.logger;
     logger.info('Executing: Generating Kubricate stacks for Kubernetes...');
-    const config = await getConfig(this.options, logger);
-    if (!config) {
-      logger.error(`No config file found matching '${getMatchConfigFile()}'`);
-      logger.error(`Please ensure a config file exists in the root directory:\n   ${this.options.root}`);
-      logger.error(`If your config is located elsewhere, specify it using:\n   --root <dir>`);
-      logger.error(`Or specify a config file using:\n   --config <file>`);
-      logger.error(`Exiting...`);
-      process.exit(1);
-    }
+    const { config, orchestrator } = await this.init();
 
     const stacksLength = Object.keys(config.stacks ?? {}).length;
 
@@ -48,7 +41,9 @@ export class GenerateCommand extends BaseCommand {
     logger.log('\n-------------------------------------');
     logger.log('Generating Kubricate stacks...');
 
-    // this.injectSecretsToProviders
+    logger.debug('GenerateCommand.execute: Injecting Secrets to providers...');
+    orchestrator.injectSecretsToProviders();
+    logger.debug('GenerateCommand.execute: Secrets injected to providers successfully');
 
     let output = '';
 

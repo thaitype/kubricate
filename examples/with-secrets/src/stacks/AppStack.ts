@@ -16,25 +16,18 @@ function configureComposer(data: IAppStack) {
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
 
-  const metadata = { name: data.name };
+  const metadata = {
+    name: data.name,
+    namespace: data.namespace,
+  };
   const labels = { app: data.name };
 
   return new ManifestComposer()
-    .addObject({
-      id: 'namespace',
-      config: {
-        apiVersion: 'v1',
-        kind: 'Namespace',
-        metadata: {
-          name: data.namespace,
-        },
-      },
-    })
     .addClass({
       id: 'deployment',
       type: Deployment,
       config: {
-        metadata,
+        metadata: metadata,
         spec: {
           replicas: replicas,
           selector: {
