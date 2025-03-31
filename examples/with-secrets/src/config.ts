@@ -1,5 +1,6 @@
 import { SecretManager, KubernetesSecretProvider } from '@kubricate/core';
 import { EnvLoader } from '@kubricate/env';
+import { AppStack } from './stacks/AppStack';
 
 export const config = {
   namespace: 'my-namespace',
@@ -11,8 +12,13 @@ export const secretManager = new SecretManager()
     'Kubernetes.Secret',
     new KubernetesSecretProvider({
       name: 'secret-application',
-      // TODO: namespace: config.namespace,
-      // TODO: isInjected: true, If true the framework will into injected into the container env;
+      defaultInjects: [
+        {
+          composeId: 'deployment',
+          stackIdentifier: AppStack,
+          path: 'spec.template.spec.containers[0].env',
+        },
+      ],
     })
   )
   .setDefaultLoader('EnvLoader')

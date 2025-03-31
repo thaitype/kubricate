@@ -1,7 +1,19 @@
-import type { BaseLogger } from '../../types.js';
+import type { AnyClass, BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
 import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
 import { Base64 } from 'js-base64';
+
+export interface ProviderSecretsInjection<ComposeId extends string = string, Path extends string = string> {
+  composeId: ComposeId;
+  /**
+   * The stack identifier is used to identify the stack that the secret is injected into.
+   * It is used to find the correct stack in the stack manager.
+   *
+   * @future apply with string | symbol for stack identifier for advanced usage
+   */
+  stackIdentifier: AnyClass;
+  path: Path;
+}
 
 export interface KubernetesSecretProviderConfig {
   /**
@@ -14,6 +26,8 @@ export interface KubernetesSecretProviderConfig {
    * @default 'default'
    */
   namespace?: string;
+
+  defaultInjects?: ProviderSecretsInjection[];
 }
 
 /**

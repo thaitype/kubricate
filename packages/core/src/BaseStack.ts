@@ -82,6 +82,7 @@ export abstract class BaseStack<
    * @returns The resources in the stack.
    */
   build() {
+    // TODO: during build process, secret managers should be called to load the secrets metadata
     return this._composer.build();
   }
 
@@ -98,6 +99,10 @@ export abstract class BaseStack<
   }
 
   /**
+   * @internal
+   * This method is used to inject the logger into the stack.
+   * It is called by the orchestrator to inject the logger into all components of the stack.
+   *
    * Inject a logger instance into all components of the stack e.g. secret managers, loader, providers, etc.
    * This is useful for logging purposes and debugging.
    * @param logger The logger instance to be injected.

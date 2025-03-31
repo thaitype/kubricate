@@ -1,7 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
 import { ManifestComposer, BaseStack, KubernetesSecretProvider } from '@kubricate/core';
-import { IEnvVar } from 'kubernetes-models/v1/EnvVar';
 
 export interface IAppStack {
   namespace: string;
@@ -12,7 +11,7 @@ export interface IAppStack {
   port?: number;
 }
 
-function configureComposer(data: IAppStack, env: IEnvVar[]) {
+function configureComposer(data: IAppStack) {
   const port = data.port || 80;
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
@@ -51,7 +50,8 @@ function configureComposer(data: IAppStack, env: IEnvVar[]) {
                   image: imageRegistry + data.name,
                   name: data.name,
                   ports: [{ containerPort: port }],
-                  env,
+                  // This will automatically inject the secret into the container
+                  // env: []
                 },
               ],
             },
@@ -83,25 +83,25 @@ export class AppStack extends BaseStack<typeof configureComposer> {
     super();
   }
 
-  /**
-   * Collects environment variables from the secret manager.
-   *
-   * Future implementation: Support Auto Injection of SecretProvider from SecretManager into Stack,
-   * So, we don't need to manually add the secret provider to the stack.
-   * https://github.com/thaitype/kubricate/issues/26
-   */
-  collectEnvVars() {
-    const secretManager = this.getSecretManager();
-    const providerId = 'Kubernetes.Secret';
-    const provider = secretManager.getProvider(providerId);
-    if (!(provider instanceof KubernetesSecretProvider)) {
-      throw new Error(`Secret provider ${providerId} is not a KubernetesSecretProvider`);
-    }
-    return provider.getInjectionPayload();
-  }
+  // /**
+  //  * Collects environment variables from the secret manager.
+  //  *
+  //  * Future implementation: Support Auto Injection of SecretProvider from SecretManager into Stack,
+  //  * So, we don't need to manually add the secret provider to the stack.
+  //  * https://github.com/thaitype/kubricate/issues/26
+  //  */
+  // collectEnvVars() {
+  //   const secretManager = this.getSecretManager();
+  //   const providerId = 'Kubernetes.Secret';
+  //   const provider = secretManager.getProvider(providerId);
+  //   if (!(provider instanceof KubernetesSecretProvider)) {
+  //     throw new Error(`Secret provider ${providerId} is not a KubernetesSecretProvider`);
+  //   }
+  //   return provider.getInjectionPayload();
+  // }
 
   from(data: IAppStack) {
-    const composer = configureComposer(data as IAppStack, this.collectEnvVars());
+    const composer = configureComposer(data as IAppStack);
     this.setComposer(composer);
     return this;
   }
