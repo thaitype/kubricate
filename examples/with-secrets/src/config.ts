@@ -12,13 +12,13 @@ export const secretManager = new SecretManager()
     'Kubernetes.Secret',
     new KubernetesSecretProvider({
       name: 'secret-application',
-      defaultInjects: [
-        {
-          composeId: 'deployment',
-          stackIdentifier: AppStack,
-          path: 'spec.template.spec.containers[0].env',
-        },
-      ],
+      // targetInjects: [
+      //   {
+      //     composeId: 'deployment',
+      //     stackIdentifier: AppStack,
+      //     path: 'spec.template.spec.containers[0].env',
+      //   },
+      // ],
     })
   )
   .setDefaultLoader('EnvLoader')

@@ -34,6 +34,9 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
     return config;
   }
 
+  // TODO: Implement this method
+  // inject(){}
+
   build() {
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(this._entries)) {

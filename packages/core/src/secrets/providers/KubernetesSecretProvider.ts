@@ -1,10 +1,9 @@
 import type { AnyClass, BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
-import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
+import type { BaseProvider, PreparedEffect, ProviderInjection } from './BaseProvider.js';
 import { Base64 } from 'js-base64';
 
-export interface ProviderSecretsInjection<ComposeId extends string = string, Path extends string = string> {
-  composeId: ComposeId;
+export interface WithStackIdentifier {
   /**
    * The stack identifier is used to identify the stack that the secret is injected into.
    * It is used to find the correct stack in the stack manager.
@@ -12,7 +11,6 @@ export interface ProviderSecretsInjection<ComposeId extends string = string, Pat
    * @future apply with string | symbol for stack identifier for advanced usage
    */
   stackIdentifier: AnyClass;
-  path: Path;
 }
 
 export interface KubernetesSecretProviderConfig {
@@ -27,7 +25,8 @@ export interface KubernetesSecretProviderConfig {
    */
   namespace?: string;
 
-  defaultInjects?: ProviderSecretsInjection[];
+  // TODO: add support for targetInjects
+  // targetInjects?: (ProviderSecretsInjection & WithStackIdentifier)[];
 }
 
 /**
@@ -70,12 +69,17 @@ export interface EnvVar {
 
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
   secrets: Record<string, SecretOptions> = {};
+  injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
 
   constructor(public config: KubernetesSecretProviderConfig) {}
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
+  }
+
+  setInjects(injectes: ProviderInjection[]): void {
+    this.injectes = injectes;
   }
 
   getInjectionPayload(): EnvVar[] {

@@ -9,6 +9,12 @@ const namespace = new NamespaceStack().from({
 const myApp = new AppStack()
   // Use secrets before the from method
   .useSecrets(secretManager, {
+    injectes: [
+      {
+        composeId: 'deployment',
+        path: 'spec.template.spec.containers[0].env',
+      },
+    ],
     env: [
       {
         name: 'MY_ENV',

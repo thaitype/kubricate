@@ -8,6 +8,7 @@ export interface BaseProvider<Config extends object = object> {
    * This is used to inject the secret into the manifest.
    */
   secrets: Record<string, SecretOptions>;
+  injectes: ProviderInjection[];
   logger?: BaseLogger;
 
   /**
@@ -31,6 +32,13 @@ export interface BaseProvider<Config extends object = object> {
    * @param secrets The secrets to be set in the provider.
    */
   setSecrets(secrets: Record<string, SecretOptions>): void;
+
+  /**
+   * @internal Sets the injects in the provider.
+   *
+   * @param injectes
+   */
+  setInjects(injectes: ProviderInjection[]): void;
 }
 
 export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;
@@ -72,3 +80,8 @@ export interface KubricateEffect extends BaseEffect<'kubricate'> {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
+
+export interface ProviderInjection<ComposeId extends string = string, Path extends string = string> {
+  composeId: ComposeId;
+  path: Path;
+}
