@@ -2,6 +2,7 @@ import { ManifestComposer } from './ManifestComposer.js';
 import type { BaseLogger, FunctionLike, InferResourceBuilderFunction } from './types.js';
 import type { AnySecretManager, EnvOptions, ExtractSecretManager } from './secrets/types.js';
 import type { BaseLoader, BaseProvider } from './secrets/index.js';
+import type { Objects, Call } from 'hotscript';
 
 export abstract class BaseStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,7 +71,7 @@ export abstract class BaseStack<
    */
   abstract from(data: unknown): unknown;
 
-  override(data: Partial<InferResourceBuilderFunction<T>>) {
+  override(data: Call<Objects.PartialDeep, InferResourceBuilderFunction<T>>) {
     this._composer.override(data);
     return this;
   }

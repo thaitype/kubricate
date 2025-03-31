@@ -25,6 +25,7 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
+    "hotscript": "^1.0.13",
     "js-base64": "^3.7.7",
     "lodash.merge": "^4.6.2"
   },

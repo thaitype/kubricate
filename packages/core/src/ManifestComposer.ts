@@ -1,5 +1,6 @@
 import merge from 'lodash.merge';
 import type { AnyClass } from './types.js';
+import type { Call, Objects } from 'hotscript';
 
 export type ManifestEntryStore = Record<
   string,
@@ -112,7 +113,7 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
     return this as ManifestComposer<Entries & Record<Id, T>>;
   }
 
-  public override(overrideResources: Partial<Entries>) {
+  public override(overrideResources: Call<Objects.PartialDeep, Entries>) {
     this._override = overrideResources;
     return this;
   }
