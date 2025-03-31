@@ -1,7 +1,7 @@
 ---
 'kubricate': minor
-'@kubricate/stacks': minor
 '@kubricate/core': minor
+'@kubricate/stacks': minor
 '@kubricate/env': minor
 '@kubricate/mono': patch
 ---
