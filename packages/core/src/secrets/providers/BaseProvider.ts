@@ -10,6 +10,11 @@ export interface BaseProvider<Config extends object = object> {
    * This method should return a manifest object that can be applied to Kubernetes.
    */
   prepare(name: string, value: string): PreparedEffect[];
+
+  /**
+   * Returns the payload to be injected into the target resource.
+   */
+  getInjectionPayload(): unknown;
 }
 
 export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;

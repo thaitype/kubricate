@@ -39,7 +39,6 @@ export abstract class BaseStack<
     if (!options.env) {
       throw new Error(`Secret manager with ID ${secretManagerId} requires env options.`);
     }
-    // TODO: Load the secrets from the secret manager
     this._secretManagers[secretManagerId] = secretManager as unknown as SecretManager;
     return this;
   }

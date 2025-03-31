@@ -197,7 +197,7 @@ export class SecretManager<
    * @throws Error if the provider is not found.
    */
 
-  getProvider<Config extends object = object>(key?: AnyKey): BaseProvider<Config> {
+  getProvider<Config extends object = object>(key: AnyKey | undefined): BaseProvider<Config> {
     validateString(key);
     if (!this._providers[key]) {
       throw new Error(`Provider ${key} not found`);
