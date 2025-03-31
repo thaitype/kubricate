@@ -1,5 +1,11 @@
 # @kubricate/mono
 
+## 0.3.2
+
+### Patch Changes
+
+- e474bb7: feat(core/secrets): introduce SecretManager integration and CLI orchestration
+
 ## 0.3.1
 
 ### Patch Changes
