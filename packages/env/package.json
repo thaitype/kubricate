@@ -1,6 +1,6 @@
 {
   "name": "@kubricate/env",
-  "version": "0.0.1",
+  "version": "0.6.3",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",

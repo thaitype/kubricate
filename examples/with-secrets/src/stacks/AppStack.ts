@@ -76,23 +76,6 @@ export class AppStack extends BaseStack<typeof configureComposer> {
     super();
   }
 
-  // /**
-  //  * Collects environment variables from the secret manager.
-  //  *
-  //  * Future implementation: Support Auto Injection of SecretProvider from SecretManager into Stack,
-  //  * So, we don't need to manually add the secret provider to the stack.
-  //  * https://github.com/thaitype/kubricate/issues/26
-  //  */
-  // collectEnvVars() {
-  //   const secretManager = this.getSecretManager();
-  //   const providerId = 'Kubernetes.Secret';
-  //   const provider = secretManager.getProvider(providerId);
-  //   if (!(provider instanceof KubernetesSecretProvider)) {
-  //     throw new Error(`Secret provider ${providerId} is not a KubernetesSecretProvider`);
-  //   }
-  //   return provider.getInjectionPayload();
-  // }
-
   from(data: IAppStack) {
     const composer = configureComposer(data as IAppStack);
     this.setComposer(composer);
