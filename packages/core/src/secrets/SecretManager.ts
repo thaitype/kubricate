@@ -248,6 +248,14 @@ export class SecretManager<
     return this._providers;
   }
 
+  getDefaultProvider() {
+    return this._defaultProvider;
+  }
+
+  getDefaultLoader() {
+    return this._defaultLoader;
+  }
+
   /**
    * @internal Internal method to get the current providers in the manager.
    * This is not intended for public use.

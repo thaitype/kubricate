@@ -1,3 +1,4 @@
+import type { SecretOptions } from '../SecretManager.js';
 import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
 import { Base64 } from 'js-base64';
 
@@ -53,11 +54,28 @@ export interface EnvVar {
 }
 
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
+  secrets: Record<string, SecretOptions> = {};
+
   constructor(public config: KubernetesSecretProviderConfig) {}
 
+  setSecrets(secrets: Record<string, SecretOptions>): void {
+    this.secrets = secrets;
+  }
+
   getInjectionPayload(): EnvVar[] {
-    // TODO: Implement this method to return the correct payload for Kubernetes
-    return [] as EnvVar[];
+    if (!this.secrets || Object.keys(this.secrets).length === 0) {
+      throw new Error(`Secrets not set for KubernetesSecretProvider`);
+    }
+
+    return Object.entries(this.secrets).map(([name]) => ({
+      name,
+      valueFrom: {
+        secretKeyRef: {
+          name: this.config.name,
+          key: name,
+        },
+      },
+    }));
   }
 
   prepare(name: string, value: string): PreparedEffect[] {

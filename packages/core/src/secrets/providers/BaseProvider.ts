@@ -1,8 +1,13 @@
 import type { BaseLogger } from '../../types.js';
+import type { SecretOptions } from '../SecretManager.js';
 
 export interface BaseProvider<Config extends object = object> {
   config: Config;
-
+  /**
+   * Secret from SecretManager (This only metadata and not the value)
+   * This is used to inject the secret into the manifest.
+   */
+  secrets: Record<string, SecretOptions>;
   logger?: BaseLogger;
 
   /**
@@ -15,6 +20,14 @@ export interface BaseProvider<Config extends object = object> {
    * Returns the payload to be injected into the target resource.
    */
   getInjectionPayload(): unknown;
+
+  /**
+   * @interal Sets the secrets in the provider.
+   * This will be called by secretOrchestrator during `kubricate generate`
+   *
+   * @param secrets The secrets to be set in the provider.
+   */
+  setSecrets(secrets: Record<string, SecretOptions>): void;
 }
 
 export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;
