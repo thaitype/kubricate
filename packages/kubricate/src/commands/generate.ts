@@ -7,16 +7,19 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { GlobalConfigOptions } from '../types.js';
 import type { BaseLogger } from '@kubricate/core';
+import { BaseCommand } from './base.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
 }
 
-export class GenerateCommand {
+export class GenerateCommand extends BaseCommand {
   constructor(
-    private options: GenerateCommandOptions,
-    private logger: BaseLogger
-  ) {}
+    protected options: GenerateCommandOptions,
+    protected logger: BaseLogger
+  ) {
+    super(options, logger);
+  }
 
   async execute() {
     const logger = this.logger;
@@ -44,6 +47,8 @@ export class GenerateCommand {
     }
     logger.log('\n-------------------------------------');
     logger.log('Generating Kubricate stacks...');
+
+    // this.injectSecretsToProviders
 
     let output = '';
 

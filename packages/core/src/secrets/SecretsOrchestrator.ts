@@ -11,34 +11,43 @@ export class SecretsOrchestrator {
 
   async validate(): Promise<void> {
     this.logger.info('Collecting secret managers...');
-    const managers = collectSecretManagers(this.config); // Return type MergedSecretManager
+    const managers = collectSecretManagers(this.config);
+    this.logger.debug(`Found ${Object.keys(managers).length} secret managers`);
+
     this.logger.info('Validating secret managers...');
     await validateSecretManagers(managers);
+    this.logger.debug('Secret managers validated successfully');
   }
 
   async prepare(): Promise<PreparedEffect[]> {
-    const managers = collectSecretManagers(this.config); // Return type MergedSecretManager
+    this.logger.debug('Preparing secret effects...');
+    const managers = collectSecretManagers(this.config);
+    this.logger.debug(`Preparing secrets for ${Object.keys(managers).length} managers`);
     return prepareSecretEffects(managers);
   }
 
   injectSecretsToProviders(): void {
     const managers = collectSecretManagers(this.config);
+    this.logger.debug(`Injecting secrets for ${Object.keys(managers).length} secret managers`);
 
     for (const { name, stackName, secretManager } of Object.values(managers)) {
+      this.logger.debug(`Injecting secrets for stack: ${stackName}, manager: ${name}`);
       this.injectStackSecrets(stackName, name, secretManager);
     }
+
+    this.logger.debug('All secrets injected into providers');
   }
 
   private injectStackSecrets(stackName: string, managerName: string, secretManager: SecretManager): void {
     const secrets = secretManager.getSecrets();
+    this.logger.debug(`Stack '${stackName}' has ${Object.keys(secrets).length} secrets`);
 
     for (const [providerId, provider] of Object.entries(secretManager.getProviders())) {
+      this.logger.debug(`Checking provider '${providerId}' for injection support`);
       if ('setSecrets' in provider && typeof provider.setSecrets === 'function') {
         const filteredSecrets = this.filterSecretsByProvider(secrets, providerId, secretManager);
+        this.logger.debug(`Injecting ${Object.keys(filteredSecrets).length} secrets into provider '${providerId}'`);
         provider.setSecrets(filteredSecrets);
-        this.logger.debug(
-          `Injected ${Object.keys(filteredSecrets).length} secrets into provider '${providerId}' in stack '${stackName}' (${managerName})`
-        );
       }
     }
   }
@@ -50,6 +59,7 @@ export class SecretsOrchestrator {
   ): Record<string, SecretOptions> {
     const result: Record<string, SecretOptions> = {};
     const defaultProvider = secretManager.getDefaultProvider();
+    this.logger.debug(`Filtering secrets for provider '${providerId}' (default: ${defaultProvider})`);
 
     for (const [key, entry] of Object.entries(secrets)) {
       const entryProvider = entry.provider ?? defaultProvider;
@@ -58,6 +68,7 @@ export class SecretsOrchestrator {
       }
     }
 
+    this.logger.debug(`Filtered ${Object.keys(result).length} secrets for provider '${providerId}'`);
     return result;
   }
 }

@@ -1,3 +1,4 @@
+import type { BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
 import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
 import { Base64 } from 'js-base64';
@@ -55,6 +56,7 @@ export interface EnvVar {
 
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
   secrets: Record<string, SecretOptions> = {};
+  logger?: BaseLogger;
 
   constructor(public config: KubernetesSecretProviderConfig) {}
 
@@ -63,10 +65,12 @@ export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretPr
   }
 
   getInjectionPayload(): EnvVar[] {
-    if (!this.secrets || Object.keys(this.secrets).length === 0) {
-      throw new Error(`Secrets not set for KubernetesSecretProvider`);
+    if (!this.secrets) {
+      throw new Error('Secrets not set in KubernetesSecretProvider');
     }
-
+    if (Object.keys(this.secrets).length === 0) {
+      this.logger?.warn('Trying to get secrets from KubernetesSecretProvider, but no secrets set');
+    }
     return Object.entries(this.secrets).map(([name]) => ({
       name,
       valueFrom: {

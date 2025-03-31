@@ -18,6 +18,9 @@ export interface BaseProvider<Config extends object = object> {
 
   /**
    * Returns the payload to be injected into the target resource.
+   *
+   * getInjectionPayload, will be called multiple times, sometime may no secrets set, this will be happen when read config from `kubricate.config` file
+   * However, when the `kubricate generate` command is executed, the secrets will be set.
    */
   getInjectionPayload(): unknown;
 

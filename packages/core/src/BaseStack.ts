@@ -31,13 +31,13 @@ export abstract class BaseStack<
   ) {
     const secretManagerId = options.id ?? this._defaultSecretManagerId;
     if (!secretManager) {
-      throw new Error(`Secret manager with ID ${secretManagerId} is not defined.`);
+      throw new Error(`Cannot useSecrets, secret manager with ID ${secretManagerId} is not defined.`);
     }
     if (this._secretManagers[secretManagerId]) {
-      throw new Error(`Secret manager with ID ${secretManagerId} already exists.`);
+      throw new Error(`Cannot useSecrets, secret manager with ID ${secretManagerId} already exists.`);
     }
     if (!options.env) {
-      throw new Error(`Secret manager with ID ${secretManagerId} requires env options.`);
+      throw new Error(`Cannot useSecrets, secret manager with ID ${secretManagerId} requires env options.`);
     }
     this._secretManagers[secretManagerId] = secretManager as unknown as SecretManager;
     return this;
@@ -51,7 +51,9 @@ export abstract class BaseStack<
   getSecretManager(id?: string) {
     const secretManagerId = id ?? this._defaultSecretManagerId;
     if (!this._secretManagers[secretManagerId]) {
-      throw new Error(`Secret manager with ID ${secretManagerId} is not defined.`);
+      throw new Error(
+        `Secret manager with ID ${secretManagerId} is not defined. Make sure to use the 'useSecrets' method to define it, and call before 'from' method in the stack.`
+      );
     }
     return this._secretManagers[secretManagerId];
   }

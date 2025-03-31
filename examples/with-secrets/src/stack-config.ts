@@ -7,11 +7,7 @@ const namespace = new NamespaceStack().from({
 });
 
 const myApp = new AppStack()
-  .from({
-    namespace: config.namespace,
-    imageName: 'nginx',
-    name: 'my-app',
-  })
+  // Use secrets before the from method
   .useSecrets(secretManager, {
     env: [
       {
@@ -23,6 +19,11 @@ const myApp = new AppStack()
         secretRef: 'my_app_key',
       },
     ],
+  })
+  .from({
+    namespace: config.namespace,
+    imageName: 'nginx',
+    name: 'my-app',
   })
   .override({
     service: {
