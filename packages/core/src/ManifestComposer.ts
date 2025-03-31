@@ -1,4 +1,4 @@
-import merge from 'lodash.merge';
+import { merge } from 'lodash-es';
 import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 
