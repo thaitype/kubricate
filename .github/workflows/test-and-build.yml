@@ -31,7 +31,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install Dependencies
-        run: pnpm i
+        run: pnpm install
 
-      - name: Lint, format, test, and build
+      - name: Lint, format, test, build
         run: pnpm all
+

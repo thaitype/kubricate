@@ -5,8 +5,8 @@ const binName = 'mono';
 // prettier-ignore
 const scripts: MonoScripts = {
   // Lint Scripts
-  'lint:check': 'eslint src',
-  'lint:fix': 'eslint src --fix',
+  'lint:check': 'eslint src --max-warnings 0',
+  'lint:fix': 'eslint src --fix --max-warnings 0',
 
   // Test Scripts
   'test': 'vitest run',

@@ -1,30 +1,58 @@
-import { cac } from 'cac';
-import c from 'ansis';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { GenerateCommand, type GenerateCommandOptions } from './commands/generate.js';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-const pkg = {
-  version: '0.0.0',
-};
-try {
-  pkg.version = JSON.parse(readFileSync(join(__dirname, '../../package.json'), 'utf-8')).version;
-} catch {
-  console.warn('Could not read version from package.json');
-}
+import { generateCommand } from './cli-interfaces/generate.js';
+import { secretsCommand } from './cli-interfaces/secrets/index.js';
+import { ConsoleLogger } from './logger.js';
+import { getPackageVersion } from './utils.js';
+import type { LogLevel } from '@kubricate/core';
 
-const cli = cac(c.bold(c.blue('kubricate')));
+yargs(hideBin(process.argv))
+  .scriptName('kubricate')
+  .usage('$0 <command>')
+  .version(getPackageVersion('../../package.json'))
+  // .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
 
-cli
-  .command('generate', 'Generate a stack into yaml files')
-  .option('--root <root>', 'Root directory', { default: process.cwd() })
-  .option('--config <config>', 'Config file')
-  .option('--outDir <dir>', 'Output directory', { default: '.kubricate' })
-  // Action
-  .action(async (options: GenerateCommandOptions) => {
-    await new GenerateCommand(options).execute();
-  });
+  // Global options
+  .option('root', {
+    type: 'string',
+    describe: 'Root directory',
+  })
+  .option('config', {
+    type: 'string',
+    describe: 'Config file path',
+  })
+  .option('verbose', {
+    type: 'boolean',
+    describe: 'Enable verbose output',
+  })
+  .option('silent', {
+    type: 'boolean',
+    describe: 'Suppress all output',
+  })
+  .middleware(argv => {
+    let level: LogLevel = 'info';
+    if (argv.silent) level = 'silent';
+    else if (argv.verbose) level = 'debug';
 
-cli.version(pkg.version);
-cli.help();
-cli.parse();
+    argv.logger = new ConsoleLogger(level);
+  })
+
+  // Register commands
+  .command(generateCommand)
+  .command(secretsCommand)
+
+  .help()
+  .alias('h', 'help')
+  .alias('v', 'version')
+  .demandCommand(1, '') // do not show "command required" error
+  .fail((msg, err, yargs) => {
+    if (!msg && !err) {
+      yargs.showHelp(); // when no command is given
+    } else {
+      console.error(msg);
+      process.exit(99);
+    }
+  })
+  .strict()
+  .parse();

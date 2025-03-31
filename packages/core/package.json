@@ -1,7 +1,7 @@
 {
   "name": "@kubricate/core",
   "description": "A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach",
-  "version": "0.6.1",
+  "version": "0.6.3",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -25,14 +25,16 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
-    "lodash.merge": "^4.6.2"
+    "hotscript": "^1.0.13",
+    "js-base64": "^3.7.7",
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@types/lodash.merge": "^4.6.9"
+    "@kubricate/mono": "workspace:*",
+    "@types/lodash-es": "^4.17.12"
   },
   "repository": {
     "type": "git",

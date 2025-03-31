@@ -1,12 +1,8 @@
 import { loadConfig } from 'unconfig';
 import { MARK_CHECK } from './constant.js';
-import type { KubricateConfig } from './config.js';
 import c from 'ansis';
-
-export interface LoadConfigOptions {
-  root: string;
-  config?: string;
-}
+import type { GlobalConfigOptions } from './types.js';
+import { SilentLogger, type BaseLogger, type KubricateConfig } from '@kubricate/core';
 
 export const DEFAULT_CONFIG_NAME = 'kubricate.config';
 // Allow all JS/TS file extensions except JSON
@@ -16,7 +12,10 @@ export function getMatchConfigFile(): string {
   return `${DEFAULT_CONFIG_NAME}.{${DEFAULT_CONFIG_EXTENSIONS.join(',')}}`;
 }
 
-export async function getConfig(options: LoadConfigOptions): Promise<KubricateConfig | undefined> {
+export async function getConfig(
+  options: GlobalConfigOptions,
+  logger: BaseLogger = new SilentLogger()
+): Promise<KubricateConfig | undefined> {
   const result = await loadConfig<KubricateConfig>({
     cwd: options.root,
     sources: [
@@ -28,6 +27,6 @@ export async function getConfig(options: LoadConfigOptions): Promise<KubricateCo
     ],
     merge: false,
   });
-  if (result.sources.length) console.log(c.green`${MARK_CHECK} Config loaded from ${result.sources.join(', ')}`);
+  if (result.sources.length) logger.log(c.green`${MARK_CHECK} Config loaded from ${result.sources.join(', ')}`);
   return result.config;
 }
