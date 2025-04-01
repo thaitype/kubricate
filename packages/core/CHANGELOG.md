@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.9.0
+
+### Minor Changes
+
+- dcedcc8: Add createStack Helper for Simplifying Custom Stack Definitions
+
 ## 0.8.0
 
 ### Minor Changes
