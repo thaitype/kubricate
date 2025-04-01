@@ -98,6 +98,34 @@ importers:
         specifier: ^3.0.9
         version: 3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1)
 
+  examples/with-custom-stack:
+    dependencies:
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      kubernetes-models:
+        specifier: ^4.4.2
+        version: 4.4.2
+    devDependencies:
+      '@kubernetes-models/base':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
+
   examples/with-secrets:
     dependencies:
       '@kubricate/core':
