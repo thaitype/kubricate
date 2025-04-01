@@ -1,6 +1,6 @@
 import c from 'ansis';
-import { MARK_CHECK, MARK_NODE } from '../internal/constant.js';
-import { extractStackInfo } from '../internal/utils.js';
+import { MARK_CHECK, MARK_NODE, MARK_TREE_END, MARK_TREE_LEAF } from '../internal/constant.js';
+import { extractStackInfoFromConfig, type StackInfo } from '../internal/utils.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -38,24 +38,40 @@ export class GenerateCommand extends BaseCommand {
     return output;
   }
 
-  async execute() {
+  showStacks(config: KubricateConfig) {
     const logger = this.logger;
-    logger.info('Generating stacks for Kubernetes...');
-    logger.log('-------------------------------------\n');
-    const { config, orchestrator } = await this.init();
-
     const stacksLength = Object.keys(config.stacks ?? {}).length;
 
     if (!config.stacks || stacksLength === 0) {
-      logger.error(`No stacks found in config`);
-      process.exit(1);
+      throw new Error('No stacks found in config');
     }
 
     logger.log(`Found ${stacksLength} stacks in config:`);
 
-    for (const stack of extractStackInfo(config)) {
-      logger.log(c.blue`  ${MARK_NODE} ${stack.name} (${stack.type})`);
+    const renderListTree = (kinds: StackInfo['kinds']) => {
+      const lastIndex = kinds.length - 1;
+      for (let i = 0; i < kinds.length; i++) {
+        const kind = kinds[i];
+        const marker = i === lastIndex ? MARK_TREE_END : MARK_TREE_LEAF;
+        logger.log(c.blue`      ${marker} ${kind.kind}` + c.dim` (id: ${kind.id})`);
+      }
+    };
+
+    for (const stack of extractStackInfoFromConfig(config)) {
+      logger.log(c.blue`  ${MARK_NODE} ${stack.name}` + c.dim` (type: ${stack.type})`);
+      renderListTree(stack.kinds);
+      logger.log('');
     }
+  }
+
+  async execute() {
+    const logger = this.logger;
+    logger.info('Generating stacks for Kubernetes...');
+    logger.log('-------------------------------------\n');
+
+    const { config, orchestrator } = await this.init();
+
+    this.showStacks(config);
 
     logger.log('');
     logger.log('-------------------------------------');

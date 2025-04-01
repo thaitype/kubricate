@@ -145,6 +145,10 @@ export abstract class BaseStack<
     this._composer = composer;
   }
 
+  getComposer() {
+    return this._composer;
+  }
+
   /**
    * Get the resources from the composer.
    * @returns The resources from the composer.

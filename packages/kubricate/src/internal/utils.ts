@@ -1,5 +1,5 @@
 import type { GlobalConfigOptions } from './types.js';
-import type { BaseLogger, KubricateConfig } from '@kubricate/core';
+import type { BaseLogger, BaseStack, KubricateConfig, ResourceEntry } from '@kubricate/core';
 import { getMatchConfigFile } from './load-config.js';
 import type { GenerateCommandOptions } from '../commands/generate.js';
 import type { SecretsCommandOptions } from '../commands/secrets.js';
@@ -9,14 +9,40 @@ export function getClassName(obj: unknown): string {
   return obj && typeof obj === 'object' ? (obj as any).constructor.name : 'Unknown';
 }
 
-export function extractStackInfo(config: KubricateConfig) {
-  const stacks = Object.entries(config.stacks || {}).map(([name, stack]) => {
-    return {
-      name,
-      type: getClassName(stack),
-    };
-  });
+export interface StackInfo {
+  name: string;
+  type: string;
+  kinds: {
+    id: string;
+    kind: string;
+  }[];
+}
 
+export function extractKindFromResourceEntry(entry: ResourceEntry): string {
+  if (entry.entryType === 'class') {
+    return String(entry.type?.name);
+  }
+  if (entry.config.kind) {
+    return entry.config.kind as string;
+  }
+  return 'Unknown';
+}
+
+export function extractStackInfo(name: string, stack: BaseStack): StackInfo {
+  return {
+    name,
+    type: getClassName(stack),
+    kinds: Object.entries(stack.getComposer()._entries).map(([id, entry]) => {
+      return {
+        id,
+        kind: extractKindFromResourceEntry(entry),
+      };
+    }),
+  };
+}
+
+export function extractStackInfoFromConfig(config: KubricateConfig): StackInfo[] {
+  const stacks = Object.entries(config.stacks || {}).map(([name, stack]) => extractStackInfo(name, stack));
   return stacks;
 }
 
