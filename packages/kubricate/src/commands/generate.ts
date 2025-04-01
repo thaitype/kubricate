@@ -1,11 +1,11 @@
 import c from 'ansis';
 import { MARK_CHECK, MARK_NODE } from '../internal/constant.js';
-import { getClassName } from '../internal/utils.js';
+import { extractStackInfo } from '../internal/utils.js';
 import { stringify as yamlStringify } from 'yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { GlobalConfigOptions } from '../internal/types.js';
-import type { BaseLogger } from '@kubricate/core';
+import type { BaseLogger, KubricateConfig } from '@kubricate/core';
 import { BaseCommand } from './base.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
@@ -20,9 +20,28 @@ export class GenerateCommand extends BaseCommand {
     super(options, logger);
   }
 
+  generateStacks(config: KubricateConfig) {
+    let output = '';
+    const logger = this.logger;
+    if (!config.stacks || Object.keys(config.stacks ?? {}).length === 0) {
+      throw new Error('No stacks found in config');
+    }
+    for (const [name, stack] of Object.entries(config.stacks)) {
+      logger.log(c.blue`${MARK_NODE} Generating stack: ${name}...`);
+      for (const resource of stack.build()) {
+        output += yamlStringify(resource);
+        output += '---\n';
+      }
+      logger.log(`${MARK_CHECK} Successfully generated stack: ${name}`);
+    }
+
+    return output;
+  }
+
   async execute() {
     const logger = this.logger;
     logger.info('Generating stacks for Kubernetes...');
+    logger.log('-------------------------------------\n');
     const { config, orchestrator } = await this.init();
 
     const stacksLength = Object.keys(config.stacks ?? {}).length;
@@ -33,26 +52,20 @@ export class GenerateCommand extends BaseCommand {
     }
 
     logger.log(`Found ${stacksLength} stacks in config:`);
-    for (const [name, stack] of Object.entries(config.stacks)) {
-      logger.log(c.blue`  ${MARK_NODE} ${name} (${getClassName(stack)})`);
+
+    for (const stack of extractStackInfo(config)) {
+      logger.log(c.blue`  ${MARK_NODE} ${stack.name} (${stack.type})`);
     }
-    logger.log('\n-------------------------------------');
+
+    logger.log('');
+    logger.log('-------------------------------------');
     logger.log('Generating stacks...');
 
     logger.debug('GenerateCommand.execute: Injecting Secrets to providers...');
     orchestrator.injectSecretsToProviders();
     logger.debug('GenerateCommand.execute: Secrets injected to providers successfully');
 
-    let output = '';
-
-    for (const [name, stack] of Object.entries(config.stacks)) {
-      logger.log(c.blue`${MARK_NODE} Generating stack: ${name}...`);
-      for (const resource of stack.build()) {
-        output += yamlStringify(resource);
-        output += '---\n';
-      }
-      logger.log(c.green`${MARK_CHECK} Successfully generated stack: ${name}`);
-    }
+    const output = this.generateStacks(config);
 
     logger.log(c.green`${MARK_CHECK} All stacks generated successfully`);
 
@@ -62,6 +75,7 @@ export class GenerateCommand extends BaseCommand {
 
     logger.log('');
     logger.log(`${MARK_CHECK} YAML file successfully written to:\n   ${path.resolve(outputPath)}\n`);
+
     logger.log(c.green`${MARK_CHECK} Done!`);
   }
 }

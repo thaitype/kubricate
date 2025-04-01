@@ -1,5 +1,5 @@
 import type { GlobalConfigOptions } from './types.js';
-import type { BaseLogger } from '@kubricate/core';
+import type { BaseLogger, KubricateConfig } from '@kubricate/core';
 import { getMatchConfigFile } from './load-config.js';
 import type { GenerateCommandOptions } from '../commands/generate.js';
 import type { SecretsCommandOptions } from '../commands/secrets.js';
@@ -7,6 +7,17 @@ import type { SecretsCommandOptions } from '../commands/secrets.js';
 export function getClassName(obj: unknown): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return obj && typeof obj === 'object' ? (obj as any).constructor.name : 'Unknown';
+}
+
+export function extractStackInfo(config: KubricateConfig) {
+  const stacks = Object.entries(config.stacks || {}).map(([name, stack]) => {
+    return {
+      name,
+      type: getClassName(stack),
+    };
+  });
+
+  return stacks;
 }
 
 export type AllCliConfigs = Partial<GenerateCommandOptions & SecretsCommandOptions & GlobalConfigOptions>;

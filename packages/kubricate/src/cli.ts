@@ -36,6 +36,7 @@ yargs(hideBin(process.argv))
     else if (argv.verbose) level = 'debug';
 
     argv.logger = new ConsoleLogger(level);
+    argv.version = version;
   })
 
   // Register commands

@@ -27,4 +27,8 @@ export interface GlobalConfigOptions {
    * @default ConsoleLogger.LogLevel.INFO
    */
   logger?: ConsoleLogger;
+  /**
+   * Version of the CLI.
+   */
+  version?: string;
 }
