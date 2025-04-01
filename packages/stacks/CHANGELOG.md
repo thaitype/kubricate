@@ -65,7 +65,7 @@
 
 ### Minor Changes
 
-- 031f069: Add Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes manifests in a structured and reusable way.
+- 031f069: Add Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes resources in a structured and reusable way.
 
 ### Patch Changes
 

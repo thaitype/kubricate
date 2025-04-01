@@ -14,7 +14,7 @@ export const secretManager = new SecretManager()
       name: 'secret-application',
       // targetInjects: [
       //   {
-      //     composeId: 'deployment',
+      //     resourceId: 'deployment',
       //     stackIdentifier: AppStack,
       //     path: 'spec.template.spec.containers[0].env',
       //   },

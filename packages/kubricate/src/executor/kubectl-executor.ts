@@ -13,11 +13,11 @@ export class KubectlExecutor {
     private readonly execa: ExecaExecutor
   ) {}
 
-  async apply(manifest: object) {
+  async apply(resource: object) {
     const tempPath = this.createTempFilePath();
-    await writeFile(tempPath, JSON.stringify(manifest), 'utf8');
+    await writeFile(tempPath, JSON.stringify(resource), 'utf8');
 
-    this.logger.info(`Applying secret manifest with kubectl: ${tempPath}`);
+    this.logger.info(`Applying secret resource with kubectl: ${tempPath}`);
     try {
       await this.execa.run(this.kubectlPath, ['apply', '-f', tempPath]);
       this.logger.log('✅ Applied secret via kubectl');

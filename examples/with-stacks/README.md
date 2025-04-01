@@ -2,7 +2,7 @@
 
 ## Usages
 
-Run the following command to generate manifests from all components:
+Run the following command to generate resources from all components:
 
 ```bash
 npx kubricate generate

@@ -19,20 +19,17 @@
     "@kubernetes-models/base": ">=5.0.1 <6.0.0"
   },
   "devDependencies": {
-    "@kosko/env": "^5.1.0",
+    "kubricate": "workspace:*",
     "@kubernetes-models/base": "^5.0.1",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*",
-    "kosko": "^4.3.0",
-    "ts-node": "^10.9.2"
+    "@kubricate/mono": "workspace:*"
   },
   "dependencies": {
     "@kubricate/core": "workspace:*",
     "@kubricate/stacks": "workspace:*",
     "@kubricate/env": "workspace:*",
-    "kubernetes-models": "^4.4.2",
-    "kubricate": "workspace:*"
+    "kubernetes-models": "^4.4.2"
   }
 }
