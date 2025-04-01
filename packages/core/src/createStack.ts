@@ -1,9 +1,9 @@
 import { BaseStack } from './BaseStack.js';
-import type { ManifestComposer } from './ManifestComposer.js';
+import type { ResourceComposer } from './ResourceComposer.js';
 
-type ConfigureComposerFunction<Data, Entries extends Record<string, unknown>> = (
+export type ConfigureComposerFunction<Data, Entries extends Record<string, unknown>> = (
   data: Data
-) => ManifestComposer<Entries>;
+) => ResourceComposer<Entries>;
 
 // Generic stack class that holds builder function internally
 class GenericStack<Data, Entries extends Record<string, unknown>> extends BaseStack<

@@ -1,12 +1,12 @@
 # @kubricate/stacks
 
-Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes manifests in a structured and reusable way.
+Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes resources in a structured and reusable way.
 
 ## Installation
 
 ```bash
 pnpm install @kubricate/stacks 
-pnpm install -D @kubernetes-models/base@^5.0.1 kosko @kosko/env ts-node
+pnpm install -D @kubernetes-models/base@^5.0.1
 ```
 
 `@kubernetes-models/base` is a required peer dependency.
@@ -14,7 +14,7 @@ Please install it manually to ensure compatibility.
 
 ## Usage
 
-Currently, kubricate uses Kosko to compile stacks into Kubernetes manifest YAML files.
+Currently, kubricate uses Kosko to compile stacks into Kubernetes resource YAML files.
 
 Create a component file at `components/MyApp.ts`:
 
@@ -44,27 +44,10 @@ const myApp = new SimpleAppStack()
 export default [namespace, myApp];
 ```
 
-### Kosko Configuration
+### Generate Kubernetes Resources
 
-For CommonJS
-
-In your kosko.toml:
-
-```toml
-require = ["ts-node/register"]
-```
-
-For ESM
-
-```toml
-loaders = ["ts-node/esm"]
-extensions = ["ts", "mts", "cjs", "mjs", "js", "json"]
-```
-
-### Generate Kubernetes Manifests
-
-Run the following command to generate manifests from all components:
+Run the following command to generate resources from all components:
 
 ```
-npx kosko generate "*"
+npx kubricate generate
 ```

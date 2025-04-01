@@ -1,4 +1,4 @@
-import { createStack, ManifestComposer } from '@kubricate/core';
+import { createStack, ResourceComposer } from '@kubricate/core';
 import { Namespace } from 'kubernetes-models/v1';
 
 interface MyInput {
@@ -7,7 +7,7 @@ interface MyInput {
 
 const MyStack = createStack('MyStack', (data: MyInput) => {
   // Dosomething for your data, e.g. Validate the input data
-  return new ManifestComposer().addClass({
+  return new ResourceComposer().addClass({
     id: 'namespace',
     type: Namespace,
     config: {

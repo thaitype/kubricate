@@ -3,7 +3,7 @@ import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 import { get, set } from 'lodash-es';
 
-export type ManifestEntryStore = Record<
+export type ResourceEntryStore = Record<
   string,
   {
     type?: AnyClass;
@@ -20,10 +20,9 @@ export type ManifestEntryStore = Record<
 
 export const LABEL_MANAGED_BY_KEY = 'thaitype.dev/managed-by';
 export const LABEL_MANAGED_BY_VALUE = 'kubricate';
-
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
-  _entries: ManifestEntryStore = {};
+export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
+  _entries: ResourceEntryStore = {};
   _override: Record<string, unknown> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,13 +34,13 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
     return config;
   }
 
-  inject(composeId: string, path: string, value: unknown) {
-    const composed = this._entries[composeId];
+  inject(resourceId: string, path: string, value: unknown) {
+    const composed = this._entries[resourceId];
     if (!composed) {
-      throw new Error(`Cannot inject, resource with ID ${composeId} not found.`);
+      throw new Error(`Cannot inject, resource with ID ${resourceId} not found.`);
     }
     if (!(composed.kind === 'object' || composed.kind === 'class')) {
-      throw new Error(`Cannot inject, resource with ID ${composeId} is not an object or class.`);
+      throw new Error(`Cannot inject, resource with ID ${resourceId} is not an object or class.`);
     }
     const existingConfigFromPath = get(composed.config, path);
     if (!existingConfigFromPath) {
@@ -50,7 +49,7 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
     }
     // TODO: Merge the existing config with the new value
     throw new Error(
-      `Cannot inject, resource with ID ${composeId} already has a value at path ${path}. Existing value: ${JSON.stringify(existingConfigFromPath)}`
+      `Cannot inject, resource with ID ${resourceId} already has a value at path ${path}. Existing value: ${JSON.stringify(existingConfigFromPath)}`
     );
   }
 
@@ -92,7 +91,7 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
       config: params.config,
       kind: 'class',
     };
-    return this as ManifestComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
+    return this as ResourceComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
   /**
@@ -105,7 +104,7 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
       config: params.config,
       kind: 'class',
     };
-    return this as ManifestComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
+    return this as ResourceComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
   }
 
   /**
@@ -116,7 +115,7 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
       config: params.config as Record<string, unknown>,
       kind: 'object',
     };
-    return this as ManifestComposer<Entries & Record<Id, T>>;
+    return this as ResourceComposer<Entries & Record<Id, T>>;
   }
 
   /**
@@ -130,7 +129,7 @@ export class ManifestComposer<Entries extends Record<string, unknown> = {}> {
       config: params.config as Record<string, unknown>,
       kind: 'instance',
     };
-    return this as ManifestComposer<Entries & Record<Id, T>>;
+    return this as ResourceComposer<Entries & Record<Id, T>>;
   }
 
   public override(overrideResources: Call<Objects.PartialDeep, Entries>) {

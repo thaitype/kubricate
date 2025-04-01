@@ -2,7 +2,7 @@
 
 [![Release](https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml)
 
-A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach
+A TypeScript framework for building, managing, and compiling Kubernetes resources with a structured, reusable, and Helm-compatible approach
 
 > Experimental: This project is still in the early stages of development and is not yet ready for production use.
 

@@ -11,7 +11,7 @@ const myApp = new AppStack()
   .useSecrets(secretManager, {
     injectes: [
       {
-        composeId: 'deployment',
+        resourceId: 'deployment',
         path: 'spec.template.spec.containers[0].env',
       },
     ],

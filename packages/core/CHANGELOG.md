@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.8.0
+
+### Minor Changes
+
+- 0c6adef: refactor: rename ManifestComposer to ResourceComposer and update related documentation
+
 ## 0.7.0
 
 ### Minor Changes
@@ -38,7 +44,7 @@
 
 ### Minor Changes
 
-- 031f069: Add Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes manifests in a structured and reusable way.
+- 031f069: Add Official stack definitions for [kubricate](https://github.com/thaitype/kubricate), designed to simplify building Kubernetes resources in a structured and reusable way.
 
 ## 0.2.2
 

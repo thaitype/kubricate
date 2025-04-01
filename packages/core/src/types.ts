@@ -1,5 +1,5 @@
 import type { BaseStack } from './BaseStack.js';
-import { ManifestComposer } from './ManifestComposer.js';
+import { ResourceComposer } from './ResourceComposer.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;
@@ -14,7 +14,7 @@ export type AnyClass = { new (...args: any[]): any };
 export type AnyKey = string | number | symbol;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type InferConfigureComposerFunc<T> = T extends (...args: any[]) => ManifestComposer<infer R> ? R : never;
+export type InferConfigureComposerFunc<T> = T extends (...args: any[]) => ResourceComposer<infer R> ? R : never;
 /**
  * Any String for literal types without losing autocompletion.
  */
