@@ -1,5 +1,5 @@
 import { ManifestComposer } from './ManifestComposer.js';
-import type { AnyKey, BaseLogger, FunctionLike, InferResourceBuilderFunction } from './types.js';
+import type { AnyKey, BaseLogger, FunctionLike, InferConfigureComposerFunc } from './types.js';
 import type { AnySecretManager, EnvOptions, ExtractSecretManager } from './secrets/types.js';
 import type { BaseLoader, BaseProvider, ProviderInjection } from './secrets/index.js';
 import type { Objects, Call } from 'hotscript';
@@ -21,10 +21,10 @@ export interface UseSecretsOptions<Key extends AnyKey> {
 
 export abstract class BaseStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends FunctionLike<any[], ManifestComposer> = FunctionLike<any, ManifestComposer>,
+  ConfigureComposerFunc extends FunctionLike<any[], ManifestComposer> = FunctionLike<any, ManifestComposer>,
   SecretManager extends AnySecretManager = AnySecretManager,
 > {
-  private _composer!: ReturnType<T>;
+  private _composer!: ReturnType<ConfigureComposerFunc>;
   private _secretManagers: Record<string, SecretManager> = {};
   private readonly _defaultSecretManagerId = 'default';
   private _targetInjects: Record<string, ProviderInjection[]> = {};
@@ -111,7 +111,7 @@ export abstract class BaseStack<
    */
   abstract from(data: unknown): unknown;
 
-  override(data: Call<Objects.PartialDeep, InferResourceBuilderFunction<T>>) {
+  override(data: Call<Objects.PartialDeep, InferConfigureComposerFunc<ConfigureComposerFunc>>) {
     this._composer.override(data);
     return this;
   }
@@ -141,7 +141,7 @@ export abstract class BaseStack<
     return this._composer.build();
   }
 
-  protected setComposer(composer: ReturnType<T>) {
+  protected setComposer(composer: ReturnType<ConfigureComposerFunc>) {
     this._composer = composer;
   }
 
