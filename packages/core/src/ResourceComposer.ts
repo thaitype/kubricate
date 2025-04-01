@@ -95,7 +95,11 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
    * Add a resource to the composer, extracting the type and data from the arguments.
    */
 
-  addClass<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
+  addClass<const Id extends string, T extends AnyClass>(params: {
+    id: Id;
+    type: T;
+    config: ConstructorParameters<T>[0];
+  }) {
     this._entries[params.id] = {
       type: params.type,
       config: params.config,
@@ -107,7 +111,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
   /**
    * Add an object to the composer directly. Using this method will support overriding the resource.
    */
-  addObject<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
+  addObject<const Id extends string, T extends object = object>(params: { id: Id; config: T }) {
     this._entries[params.id] = {
       config: params.config as Record<string, unknown>,
       entryType: 'object',

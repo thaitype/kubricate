@@ -29,6 +29,11 @@ export abstract class BaseStack<
   private readonly _defaultSecretManagerId = 'default';
   private _targetInjects: Record<string, ProviderInjection[]> = {};
   public logger?: BaseLogger;
+  /**
+   * The name of the stack.
+   * This is used to identify the stack, generally used with GenericStack.
+   */
+  public _name?: string;
 
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
@@ -155,6 +160,14 @@ export abstract class BaseStack<
    */
   get resources() {
     return this._composer;
+  }
+
+  getName() {
+    return this._name;
+  }
+
+  setName(name: string) {
+    this._name = name;
   }
 
   /**

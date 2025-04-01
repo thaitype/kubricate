@@ -9,6 +9,14 @@ export function getClassName(obj: unknown): string {
   return obj && typeof obj === 'object' ? (obj as any).constructor.name : 'Unknown';
 }
 
+export function getStackName(stack: BaseStack): string {
+  const stackName = stack.getName();
+  if (stackName) {
+    return stackName;
+  }
+  return getClassName(stack);
+}
+
 export interface StackInfo {
   name: string;
   type: string;
@@ -31,7 +39,7 @@ export function extractKindFromResourceEntry(entry: ResourceEntry): string {
 export function extractStackInfo(name: string, stack: BaseStack): StackInfo {
   return {
     name,
-    type: getClassName(stack),
+    type: getStackName(stack),
     kinds: Object.entries(stack.getComposer()._entries).map(([id, entry]) => {
       return {
         id,

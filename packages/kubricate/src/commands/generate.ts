@@ -73,7 +73,6 @@ export class GenerateCommand extends BaseCommand {
 
     this.showStacks(config);
 
-    logger.log('');
     logger.log('-------------------------------------');
     logger.log('Generating stacks...');
 
