@@ -1,5 +1,12 @@
 # @kubricate/env
 
+## 0.8.0
+
+### Patch Changes
+
+- Updated dependencies [0c6adef]
+  - @kubricate/core@0.8.0
+
 ## 0.7.0
 
 ### Minor Changes
