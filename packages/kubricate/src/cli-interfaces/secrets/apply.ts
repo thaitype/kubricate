@@ -2,10 +2,10 @@ import type { CommandModule } from 'yargs';
 import { SecretsCommand, type SecretsCommandOptions } from '../../commands/secrets.js';
 import { ExecaExecutor } from '../../executor/execa-executor.js';
 import { KubectlExecutor } from '../../executor/kubectl-executor.js';
-import type { GlobalConfigOptions } from '../../types.js';
-import { ConsoleLogger } from '../../logger.js';
-import { handlerError } from '../../error.js';
-import { verboseCliConfig } from '../../utils.js';
+import type { GlobalConfigOptions } from '../../internal/types.js';
+import { ConsoleLogger } from '../../internal/logger.js';
+import { handlerError } from '../../internal/error.js';
+import { verboseCliConfig } from '../../internal/utils.js';
 
 export const secretsApplyCommand: CommandModule<GlobalConfigOptions, SecretsCommandOptions> = {
   command: 'apply',

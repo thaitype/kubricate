@@ -3,7 +3,7 @@ import { hideBin } from 'yargs/helpers';
 
 import { generateCommand } from './cli-interfaces/generate.js';
 import { secretsCommand } from './cli-interfaces/secrets/index.js';
-import { ConsoleLogger } from './logger.js';
+import { ConsoleLogger } from './internal/logger.js';
 import type { LogLevel } from '@kubricate/core';
 import { version } from './version.js';
 
