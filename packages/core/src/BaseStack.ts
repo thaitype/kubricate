@@ -1,4 +1,4 @@
-import { ManifestComposer } from './ManifestComposer.js';
+import { ResourceComposer } from './ResourceComposer.js';
 import type { AnyKey, BaseLogger, FunctionLike, InferResourceBuilderFunction } from './types.js';
 import type { AnySecretManager, EnvOptions, ExtractSecretManager } from './secrets/types.js';
 import type { BaseLoader, BaseProvider, ProviderInjection } from './secrets/index.js';
@@ -21,7 +21,7 @@ export interface UseSecretsOptions<Key extends AnyKey> {
 
 export abstract class BaseStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends FunctionLike<any[], ManifestComposer> = FunctionLike<any, ManifestComposer>,
+  T extends FunctionLike<any[], ResourceComposer> = FunctionLike<any, ResourceComposer>,
   SecretManager extends AnySecretManager = AnySecretManager,
 > {
   private _composer!: ReturnType<T>;
@@ -133,7 +133,7 @@ export abstract class BaseStack<
       for (const provider of Object.values(secretManager.getProviders())) {
         for (const inject of provider.injectes) {
           const targetValue = provider.getInjectionPayload();
-          this._composer.inject(inject.composeId, inject.path, targetValue);
+          this._composer.inject(inject.resourceId, inject.path, targetValue);
         }
       }
     }
@@ -146,10 +146,10 @@ export abstract class BaseStack<
   }
 
   /**
-   * Get the manifests from the composer.
-   * @returns The manifests from the composer.
+   * Get the resources from the composer.
+   * @returns The resources from the composer.
    */
-  get manifests() {
+  get resources() {
     return this._composer;
   }
 

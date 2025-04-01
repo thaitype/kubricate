@@ -5,7 +5,7 @@ export interface BaseProvider<Config extends object = object> {
   config: Config;
   /**
    * Secret from SecretManager (This only metadata and not the value)
-   * This is used to inject the secret into the manifest.
+   * This is used to inject the secret into the resource.
    */
   secrets: Record<string, SecretOptions>;
   injectes: ProviderInjection[];
@@ -13,7 +13,7 @@ export interface BaseProvider<Config extends object = object> {
 
   /**
    * Prepares the secret for the given name and value.
-   * This method should return a manifest object that can be applied to Kubernetes.
+   * This method should return a resource object that can be applied to Kubernetes.
    */
   prepare(name: string, value: string): PreparedEffect[];
 
@@ -50,38 +50,38 @@ export interface BaseEffect<Type extends string, T = unknown> {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ManualEffect extends BaseEffect<'manual'> {}
 /**
- * KubricateEffect is used to apply a value to a manifest using Kubricate.
- * This will apply automatically to the manifest when it is created.
+ * KubricateEffect is used to apply a value to a resource using Kubricate.
+ * This will apply automatically to the resource when it is created.
  */
 export interface KubricateEffect extends BaseEffect<'kubricate'> {
   /**
    * ID of the resource as defined in KubricateComposer.
    * Example: `deployment`, `service`, `secret-mykey`
    */
-  composerId: string;
+  resourceId: string;
   /**
-   * Dot path inside the manifest to apply this value to.
+   * Dot path inside the resource to apply this value to.
    * Example: 'spec.template.metadata.annotations'
    *
-   * This is used to deep-merge the value into the manifest.
+   * This is used to deep-merge the value into the resource.
    * Refer to lodash get (Gets the value at path of object.) for more details.
    * https://lodash.com/docs/4.17.15#get
    *
-   * This is a dot-separated path to the property in the manifest where the value should be applied.
+   * This is a dot-separated path to the property in the resource where the value should be applied.
    *
-   * @default '' means the value will be applied to the root of the manifest.
+   * @default '' means the value will be applied to the root of the resource.
    */
   path?: string;
 }
 /**
- * KubectlEffect is used to apply a value to a manifest using kubectl.
- * This will apply automatically to the manifest when it is created.
+ * KubectlEffect is used to apply a value to a resource using kubectl.
+ * This will apply automatically to the resource when it is created.
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
 
-export interface ProviderInjection<ComposeId extends string = string, Path extends string = string> {
-  composeId: ComposeId;
+export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
+  resourceId: ResourceId;
   path: Path;
 }

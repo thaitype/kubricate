@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { ManifestComposer, BaseStack } from '@kubricate/core';
+import { ResourceComposer, BaseStack } from '@kubricate/core';
 
 export interface ISimpleAppStack {
   name: string;
@@ -18,7 +18,7 @@ function configureComposer(data: ISimpleAppStack) {
   const metadata = { name: data.name };
   const labels = { app: data.name };
 
-  return new ManifestComposer()
+  return new ResourceComposer()
     .addClass({
       id: 'deployment',
       type: Deployment,

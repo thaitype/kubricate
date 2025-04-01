@@ -1,14 +1,12 @@
 # Kubricate
 
-A TypeScript framework for building, managing, and compiling Kubernetes manifests with a structured, reusable, and Helm-compatible approach
-
-Leverage [kosko](https://kosko.dev/) generate feature to generate k8s manifests from a structured TypeScript codebase.
+A TypeScript framework for building, managing, and compiling Kubernetes resources with a structured, reusable, and Helm-compatible approach
 
 ## Example
 
 Run example
 ```bash
-bun kosko generate nginx  --cwd examples/SimpleAppStack 
+npx kubricate generate
 ```
 
 ## Usages
