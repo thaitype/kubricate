@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.8.0
+
+### Minor Changes
+
+- 0c6adef: refactor: rename ManifestComposer to ResourceComposer and update related documentation
+
 ## 0.7.0
 
 ### Minor Changes
