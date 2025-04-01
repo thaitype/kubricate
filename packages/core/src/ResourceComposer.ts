@@ -3,26 +3,23 @@ import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 import { get, set } from 'lodash-es';
 
-export type ResourceEntryStore = Record<
-  string,
-  {
-    type?: AnyClass;
-    config: Record<string, unknown>;
-    /**
-     * The kind of resource. This is used to determine how to handle the resource.
-     * - `class`: A class that will be instantiated with the config.
-     * - `object`: An object that will be used as is.
-     * - `instance`: An instance of a class that will be used as is.
-     */
-    kind: 'class' | 'object' | 'instance';
-  }
->;
+export interface ResourceEntry {
+  type?: AnyClass;
+  config: Record<string, unknown>;
+  /**
+   * The kind of resource. This is used to determine how to handle the resource.
+   * - `class`: A class that will be instantiated with the config.
+   * - `object`: An object that will be used as is.
+   * - `instance`: An instance of a class that will be used as is.
+   */
+  entryType: 'class' | 'object' | 'instance';
+}
 
 export const LABEL_MANAGED_BY_KEY = 'thaitype.dev/managed-by';
 export const LABEL_MANAGED_BY_VALUE = 'kubricate';
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
-  _entries: ResourceEntryStore = {};
+  _entries: Record<string, ResourceEntry> = {};
   _override: Record<string, unknown> = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +36,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     if (!composed) {
       throw new Error(`Cannot inject, resource with ID ${resourceId} not found.`);
     }
-    if (!(composed.kind === 'object' || composed.kind === 'class')) {
+    if (!(composed.entryType === 'object' || composed.entryType === 'class')) {
       throw new Error(`Cannot inject, resource with ID ${resourceId} is not an object or class.`);
     }
     const existingConfigFromPath = get(composed.config, path);
@@ -56,7 +53,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
   build() {
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(this._entries)) {
-      const { type, kind } = this._entries[key];
+      const { type, entryType: kind } = this._entries[key];
       let { config } = this._entries[key];
 
       if (kind === 'instance') {
@@ -89,7 +86,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     this._entries[params.id] = {
       type: params.type,
       config: params.config,
-      kind: 'class',
+      entryType: 'class',
     };
     return this as ResourceComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
   }
@@ -98,11 +95,15 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
    * Add a resource to the composer, extracting the type and data from the arguments.
    */
 
-  addClass<Id extends string, T extends AnyClass>(params: { id: Id; type: T; config: ConstructorParameters<T>[0] }) {
+  addClass<const Id extends string, T extends AnyClass>(params: {
+    id: Id;
+    type: T;
+    config: ConstructorParameters<T>[0];
+  }) {
     this._entries[params.id] = {
       type: params.type,
       config: params.config,
-      kind: 'class',
+      entryType: 'class',
     };
     return this as ResourceComposer<Entries & Record<Id, ConstructorParameters<T>[0]>>;
   }
@@ -110,10 +111,10 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
   /**
    * Add an object to the composer directly. Using this method will support overriding the resource.
    */
-  addObject<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
+  addObject<const Id extends string, T extends object = object>(params: { id: Id; config: T }) {
     this._entries[params.id] = {
       config: params.config as Record<string, unknown>,
-      kind: 'object',
+      entryType: 'object',
     };
     return this as ResourceComposer<Entries & Record<Id, T>>;
   }
@@ -127,7 +128,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
   addInstance<Id extends string, T extends object = object>(params: { id: Id; config: T }) {
     this._entries[params.id] = {
       config: params.config as Record<string, unknown>,
-      kind: 'instance',
+      entryType: 'instance',
     };
     return this as ResourceComposer<Entries & Record<Id, T>>;
   }

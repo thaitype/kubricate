@@ -1,6 +1,7 @@
 import { SecretsOrchestrator, type BaseLogger, type KubricateConfig } from '@kubricate/core';
-import { getConfig, getMatchConfigFile } from '../load-config.js';
-import type { GlobalConfigOptions } from '../types.js';
+import { getConfig, getMatchConfigFile } from '../internal/load-config.js';
+import type { GlobalConfigOptions } from '../internal/types.js';
+import c from 'ansis';
 
 export class BaseCommand {
   protected config: KubricateConfig | undefined;
@@ -9,12 +10,18 @@ export class BaseCommand {
   constructor(
     protected options: GlobalConfigOptions,
     protected logger: BaseLogger
-  ) {}
+  ) {
+    this.showVersion();
+  }
 
   protected injectLogger(config: KubricateConfig) {
     for (const stack of Object.values(config.stacks ?? {})) {
       stack.injectLogger(this.logger);
     }
+  }
+
+  protected showVersion() {
+    console.log(c.blue`kubricate` + ` v${this.options.version}\n`);
   }
 
   protected async init() {

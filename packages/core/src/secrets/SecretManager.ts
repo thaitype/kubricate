@@ -1,7 +1,7 @@
 import type { BaseLoader } from './loaders/BaseLoader.js';
 import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
 import type { AnyKey, BaseLogger } from '../types.js';
-import { validateString } from '../utils.js';
+import { validateString } from '../internal/utils.js';
 
 export interface SecretManagerEffect {
   name: string;

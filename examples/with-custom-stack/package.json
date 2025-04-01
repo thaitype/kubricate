@@ -1,0 +1,33 @@
+{
+  "name": "@examples/with-custom-stack",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "kubricate": "kubricate"
+  },
+  "peerDependencies": {
+    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+  },
+  "devDependencies": {
+    "kubricate": "workspace:*",
+    "@kubernetes-models/base": "^5.0.1",
+    "@kubricate/config-eslint": "workspace:*",
+    "@kubricate/config-typescript": "workspace:*",
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*"
+  },
+  "dependencies": {
+    "@kubricate/core": "workspace:*",
+    "kubernetes-models": "^4.4.2"
+  }
+}

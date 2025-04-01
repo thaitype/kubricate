@@ -1,7 +1,7 @@
 import { type BaseLogger } from '@kubricate/core';
-import type { GlobalConfigOptions } from '../types.js';
+import type { GlobalConfigOptions } from '../internal/types.js';
 import type { KubectlExecutor } from '../executor/kubectl-executor.js';
-import { MARK_CHECK } from '../constant.js';
+import { MARK_CHECK } from '../internal/constant.js';
 import c from 'ansis';
 import { BaseCommand } from './base.js';
 

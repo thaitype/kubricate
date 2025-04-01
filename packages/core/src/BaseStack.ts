@@ -1,5 +1,5 @@
 import { ResourceComposer } from './ResourceComposer.js';
-import type { AnyKey, BaseLogger, FunctionLike, InferResourceBuilderFunction } from './types.js';
+import type { AnyKey, BaseLogger, FunctionLike, InferConfigureComposerFunc } from './types.js';
 import type { AnySecretManager, EnvOptions, ExtractSecretManager } from './secrets/types.js';
 import type { BaseLoader, BaseProvider, ProviderInjection } from './secrets/index.js';
 import type { Objects, Call } from 'hotscript';
@@ -21,14 +21,19 @@ export interface UseSecretsOptions<Key extends AnyKey> {
 
 export abstract class BaseStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends FunctionLike<any[], ResourceComposer> = FunctionLike<any, ResourceComposer>,
+  ConfigureComposerFunc extends FunctionLike<any[], ResourceComposer> = FunctionLike<any, ResourceComposer>,
   SecretManager extends AnySecretManager = AnySecretManager,
 > {
-  private _composer!: ReturnType<T>;
+  private _composer!: ReturnType<ConfigureComposerFunc>;
   private _secretManagers: Record<string, SecretManager> = {};
   private readonly _defaultSecretManagerId = 'default';
   private _targetInjects: Record<string, ProviderInjection[]> = {};
   public logger?: BaseLogger;
+  /**
+   * The name of the stack.
+   * This is used to identify the stack, generally used with GenericStack.
+   */
+  public _name?: string;
 
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
@@ -111,7 +116,7 @@ export abstract class BaseStack<
    */
   abstract from(data: unknown): unknown;
 
-  override(data: Call<Objects.PartialDeep, InferResourceBuilderFunction<T>>) {
+  override(data: Call<Objects.PartialDeep, InferConfigureComposerFunc<ConfigureComposerFunc>>) {
     this._composer.override(data);
     return this;
   }
@@ -141,8 +146,12 @@ export abstract class BaseStack<
     return this._composer.build();
   }
 
-  protected setComposer(composer: ReturnType<T>) {
+  protected setComposer(composer: ReturnType<ConfigureComposerFunc>) {
     this._composer = composer;
+  }
+
+  getComposer() {
+    return this._composer;
   }
 
   /**
@@ -151,6 +160,14 @@ export abstract class BaseStack<
    */
   get resources() {
     return this._composer;
+  }
+
+  getName() {
+    return this._name;
+  }
+
+  setName(name: string) {
+    this._name = name;
   }
 
   /**

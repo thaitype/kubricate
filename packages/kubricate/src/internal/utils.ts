@@ -1,28 +1,57 @@
-import { readFileSync } from 'node:fs';
-import path, { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { GlobalConfigOptions } from './types.js';
-import type { BaseLogger } from '@kubricate/core';
+import type { BaseLogger, BaseStack, KubricateConfig, ResourceEntry } from '@kubricate/core';
 import { getMatchConfigFile } from './load-config.js';
-import type { GenerateCommandOptions } from './commands/generate.js';
-import type { SecretsCommandOptions } from './commands/secrets.js';
+import type { GenerateCommandOptions } from '../commands/generate.js';
+import type { SecretsCommandOptions } from '../commands/secrets.js';
 
 export function getClassName(obj: unknown): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return obj && typeof obj === 'object' ? (obj as any).constructor.name : 'Unknown';
 }
 
-export function getPackageVersion(packageJsonPath: string) {
-  let version = '0.0.0';
-  try {
-    // Read "Pure ESM package": https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
-    const filename = fileURLToPath(import.meta.url); // ESM style like __filename in CommonJS
-    const dirname = path.dirname(filename); // ESM style like  __dirname in CommonJS
-    version = JSON.parse(readFileSync(join(dirname, packageJsonPath), 'utf-8')).version;
-  } catch {
-    console.warn('Could not read version from package.json');
+export function getStackName(stack: BaseStack): string {
+  const stackName = stack.getName();
+  if (stackName) {
+    return stackName;
   }
-  return version;
+  return getClassName(stack);
+}
+
+export interface StackInfo {
+  name: string;
+  type: string;
+  kinds: {
+    id: string;
+    kind: string;
+  }[];
+}
+
+export function extractKindFromResourceEntry(entry: ResourceEntry): string {
+  if (entry.entryType === 'class') {
+    return String(entry.type?.name);
+  }
+  if (entry.config.kind) {
+    return entry.config.kind as string;
+  }
+  return 'Unknown';
+}
+
+export function extractStackInfo(name: string, stack: BaseStack): StackInfo {
+  return {
+    name,
+    type: getStackName(stack),
+    kinds: Object.entries(stack.getComposer()._entries).map(([id, entry]) => {
+      return {
+        id,
+        kind: extractKindFromResourceEntry(entry),
+      };
+    }),
+  };
+}
+
+export function extractStackInfoFromConfig(config: KubricateConfig): StackInfo[] {
+  const stacks = Object.entries(config.stacks || {}).map(([name, stack]) => extractStackInfo(name, stack));
+  return stacks;
 }
 
 export type AllCliConfigs = Partial<GenerateCommandOptions & SecretsCommandOptions & GlobalConfigOptions>;
