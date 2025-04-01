@@ -4,13 +4,13 @@ import { hideBin } from 'yargs/helpers';
 import { generateCommand } from './cli-interfaces/generate.js';
 import { secretsCommand } from './cli-interfaces/secrets/index.js';
 import { ConsoleLogger } from './logger.js';
-import { getPackageVersion } from './utils.js';
 import type { LogLevel } from '@kubricate/core';
+import { version } from './version.js';
 
 yargs(hideBin(process.argv))
   .scriptName('kubricate')
   .usage('$0 <command>')
-  .version(getPackageVersion('../../package.json'))
+  .version(version)
   // .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
 
   // Global options

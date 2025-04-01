@@ -20,11 +20,9 @@ export class GenerateCommand extends BaseCommand {
     super(options, logger);
   }
 
-  // const orchestrator = await this.init();
-
   async execute() {
     const logger = this.logger;
-    logger.info('Executing: Generating Kubricate stacks for Kubernetes...');
+    logger.info('Generating stacks for Kubernetes...');
     const { config, orchestrator } = await this.init();
 
     const stacksLength = Object.keys(config.stacks ?? {}).length;
@@ -34,12 +32,12 @@ export class GenerateCommand extends BaseCommand {
       process.exit(1);
     }
 
-    logger.log(`Found ${stacksLength} stacks in config`);
+    logger.log(`Found ${stacksLength} stacks in config:`);
     for (const [name, stack] of Object.entries(config.stacks)) {
-      logger.debug(c.blue`  ${MARK_NODE} ${name}: ${getClassName(stack)}`);
+      logger.log(c.blue`  ${MARK_NODE} ${name} (${getClassName(stack)})`);
     }
     logger.log('\n-------------------------------------');
-    logger.log('Generating Kubricate stacks...');
+    logger.log('Generating stacks...');
 
     logger.debug('GenerateCommand.execute: Injecting Secrets to providers...');
     orchestrator.injectSecretsToProviders();
@@ -48,7 +46,7 @@ export class GenerateCommand extends BaseCommand {
     let output = '';
 
     for (const [name, stack] of Object.entries(config.stacks)) {
-      logger.info(c.blue`${MARK_NODE} Generating stack: ${name}...`);
+      logger.log(c.blue`${MARK_NODE} Generating stack: ${name}...`);
       for (const resource of stack.build()) {
         output += yamlStringify(resource);
         output += '---\n';
@@ -63,7 +61,7 @@ export class GenerateCommand extends BaseCommand {
     await fs.writeFile(outputPath, output);
 
     logger.log('');
-    logger.log(c.green`${MARK_CHECK} YAML file successfully written to:\n   '${path.resolve(outputPath)}\n`);
+    logger.log(`${MARK_CHECK} YAML file successfully written to:\n   ${path.resolve(outputPath)}\n`);
     logger.log(c.green`${MARK_CHECK} Done!`);
   }
 }
