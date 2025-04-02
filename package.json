@@ -14,7 +14,7 @@
     "format:fix": "prettier --write ./**/*.{ts,js}",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
-    "test:coverage-report": "turbo run view-report",
+    "test:view-report": "turbo run view-report",
     "test:coverage": "turbo run report",
     "release": "run-s all && changeset version && changeset publish",
     "graph": "npx nx graph"

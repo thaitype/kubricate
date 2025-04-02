@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveCors, type CorsPolicy } from './cors.js';
+import { resolveCors, type CorsPolicy, type CorsPreset } from './cors.js';
 
 describe('resolveCors', () => {
   const commonMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
@@ -52,5 +52,16 @@ describe('resolveCors', () => {
 
     const result = resolveCors({ type: 'custom', config: customConfig });
     expect(result).toEqual(customConfig);
+  });
+
+  describe('resolveCors', () => {
+    it('returns undefined for unrecognized preset type (default case)', () => {
+      const unknownPreset = {
+        type: 'invalid-type', // not public, strict, or custom
+      } as unknown as CorsPreset;
+
+      const result = resolveCors(unknownPreset);
+      expect(result).toBeUndefined();
+    });
   });
 });
