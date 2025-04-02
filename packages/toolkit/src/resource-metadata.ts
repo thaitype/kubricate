@@ -26,6 +26,7 @@ export const resourceSuffix = {
   networkPolicy: 'netpol',
   httpProxy: 'proxy', // ← Contour
   certificate: 'cert', // ← cert-manager
+  clusterIssuer: 'cluster-issuer', // ← cert-manager
 
   // RBAC
   role: 'role',
