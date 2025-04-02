@@ -1,5 +1,11 @@
 # @kubricate/toolkit
 
+## 0.5.4
+
+### Patch Changes
+
+- c358c6c: Fix Type inference when build with createStack factory helper function
+
 ## 0.5.3
 
 ### Patch Changes
