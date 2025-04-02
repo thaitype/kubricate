@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky && turbo run @kubricate/mono#build --output-logs=errors-only",
-    "build": "turbo run build --filter=!./examples/*",
+    "build": "turbo run build",
     "dev": "turbo run dev --filter=!./tools/template --filter=!./examples/*",
     "all": "run-s build lint:all",
     "lint:husky": "run-p lint:all format",
