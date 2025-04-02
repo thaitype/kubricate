@@ -29,8 +29,6 @@
 - 📦 Type-safe Kubernetes manifest generation with TypeScript
 - ♻️ Reusable, composable stack system
 - 🔐 Secrets injection via `SecretManager` and loaders (e.g., `.env`, process.env)
-- 📂 Structured output with Helm-compatible YAML
-- 🧪 Ready for testing and CI workflows
 
 ## Getting Started
 
@@ -118,8 +116,6 @@ Kubricate offers a type-safe developer experience for building Kubernetes manife
 - `@kubricate/stacks` – Official reusable stack definitions
 - `@kubricate/toolkit` – Utility functions for custom stack authors
 
----
-
 ## Version Compatibility
 
 Ensure the following packages are always on the same version when upgrading:
@@ -129,13 +125,9 @@ Ensure the following packages are always on the same version when upgrading:
 - `@kubricate/env`
 - `@kubricate/stacks`
 
----
-
 ## Documentation & Examples
 
 Explore the [`examples`](https://github.com/thaitype/kubricate/tree/main/examples) directory for real-world usage patterns and advanced features.
-
----
 
 ## Development
 
@@ -154,8 +146,6 @@ To run the examples run with
 ```sh
 pnpm --filter=@examples/with-custom-stack kubricate generate
 ```
-
----
 
 ## How to Publish
 
