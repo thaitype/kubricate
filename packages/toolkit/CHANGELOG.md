@@ -1,5 +1,11 @@
 # @kubricate/toolkit
 
+## 0.6.0
+
+### Minor Changes
+
+- 1531390: feat: add clusterIssuer resource suffix for cert-manager
+
 ## 0.5.4
 
 ### Patch Changes
