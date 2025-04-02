@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.9.1
+
+### Patch Changes
+
+- c358c6c: Fix Type inference when build with createStack factory helper function
+
 ## 0.9.0
 
 ### Minor Changes
