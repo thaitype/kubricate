@@ -6,10 +6,10 @@ export type ConfigureComposerFunction<Data, Entries extends Record<string, unkno
 ) => ResourceComposer<Entries>;
 
 // Generic stack class that holds builder function internally
-class GenericStack<Data, Entries extends Record<string, unknown>> extends BaseStack<
+export class GenericStack<Data, Entries extends Record<string, unknown>> extends BaseStack<
   ConfigureComposerFunction<Data, Entries>
 > {
-  constructor(private builder: ConfigureComposerFunction<Data, Entries>) {
+  constructor(public builder: ConfigureComposerFunction<Data, Entries>) {
     super();
   }
 
