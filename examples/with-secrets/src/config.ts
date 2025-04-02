@@ -1,6 +1,5 @@
 import { SecretManager, KubernetesSecretProvider } from '@kubricate/core';
 import { EnvLoader } from '@kubricate/env';
-import { AppStack } from './stacks/AppStack';
 
 export const config = {
   namespace: 'my-namespace',

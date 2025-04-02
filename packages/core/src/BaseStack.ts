@@ -24,10 +24,10 @@ export abstract class BaseStack<
   ConfigureComposerFunc extends FunctionLike<any[], ResourceComposer> = FunctionLike<any, ResourceComposer>,
   SecretManager extends AnySecretManager = AnySecretManager,
 > {
-  private _composer!: ReturnType<ConfigureComposerFunc>;
-  private _secretManagers: Record<string, SecretManager> = {};
-  private readonly _defaultSecretManagerId = 'default';
-  private _targetInjects: Record<string, ProviderInjection[]> = {};
+  public _composer!: ReturnType<ConfigureComposerFunc>;
+  public _secretManagers: Record<string, SecretManager> = {};
+  public readonly _defaultSecretManagerId = 'default';
+  public _targetInjects: Record<string, ProviderInjection[]> = {};
   public logger?: BaseLogger;
   /**
    * The name of the stack.
@@ -146,7 +146,7 @@ export abstract class BaseStack<
     return this._composer.build();
   }
 
-  protected setComposer(composer: ReturnType<ConfigureComposerFunc>) {
+  public setComposer(composer: ReturnType<ConfigureComposerFunc>) {
     this._composer = composer;
   }
 

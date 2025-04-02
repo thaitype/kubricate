@@ -6,7 +6,6 @@ interface MyInput {
 }
 
 const MyStack = createStack('MyStack', (data: MyInput) => {
-  // Dosomething for your data, e.g. Validate the input data
   return new ResourceComposer().addClass({
     id: 'namespace',
     type: Namespace,
