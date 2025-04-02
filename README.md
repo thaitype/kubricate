@@ -14,6 +14,9 @@
   <a href="https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml">
     <img src="https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml/badge.svg" alt="Build">
   </a>
+  <a href="https://codecov.io/gh/thaitype/kubricate" > 
+    <img src="https://codecov.io/gh/thaitype/kubricate/graph/badge.svg?token=DIBHOOVLDA"/> 
+ </a>
   <a href="https://www.npmjs.com/package/kubricate">
     <img alt="NPM Version" src="https://img.shields.io/npm/v/kubricate">
   </a>
