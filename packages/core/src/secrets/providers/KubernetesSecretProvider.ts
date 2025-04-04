@@ -67,6 +67,16 @@ export interface EnvVar {
   };
 }
 
+/**
+ * KubernetesSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
+ * It uses the Kubernetes API to create a secret with the given name and value.
+ * The secret is created in the specified namespace.
+ *
+ * @see https://kubernetes.io/docs/concepts/configuration/secret/
+ * @deprecated This provider is deprecated and will be removed in the future. Move to use new dedicated providers
+ * like `@kubricate/kubernetes`
+ */
+
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
   secrets: Record<string, SecretOptions> = {};
   injectes: ProviderInjection[] = [];
