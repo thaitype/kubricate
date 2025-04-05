@@ -32,6 +32,7 @@
   "dependencies": {
     "@kubricate/core": "workspace:*",
     "@kubricate/stacks": "workspace:*",
+    "@kubricate/kubernetes": "workspace:*",
     "@kubricate/env": "workspace:*",
     "kubernetes-models": "^4.4.2"
   }

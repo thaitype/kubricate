@@ -1,4 +1,5 @@
-import { SecretManager, KubernetesSecretProvider } from '@kubricate/core';
+import { SecretManager } from '@kubricate/core';
+import { EnvSecretProvider } from '@kubricate/kubernetes';
 import { EnvLoader } from '@kubricate/env';
 
 export const config = {
@@ -9,7 +10,7 @@ export const secretManager = new SecretManager()
   .addLoader('EnvLoader', new EnvLoader())
   .addProvider(
     'Kubernetes.Secret',
-    new KubernetesSecretProvider({
+    new EnvSecretProvider({
       name: 'secret-application',
       // targetInjects: [
       //   {
