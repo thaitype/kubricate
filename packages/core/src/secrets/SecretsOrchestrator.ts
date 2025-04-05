@@ -32,13 +32,13 @@ export class SecretsOrchestrator {
 
     for (const { name, stackName, secretManager } of Object.values(managers)) {
       this.logger.debug(`Injecting secrets for stack: ${stackName}, manager: ${name}`);
-      this.injectStackSecrets(stackName, name, secretManager);
+      this.injectStackSecrets(stackName, secretManager);
     }
 
     this.logger.debug('All secrets injected into providers');
   }
 
-  private injectStackSecrets(stackName: string, managerName: string, secretManager: SecretManager): void {
+  private injectStackSecrets(stackName: string, secretManager: SecretManager): void {
     const secrets = secretManager.getSecrets();
     this.logger.debug(`Stack '${stackName}' has ${Object.keys(secrets).length} secrets`);
 
