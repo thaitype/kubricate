@@ -238,6 +238,28 @@ importers:
         specifier: ^22.13.9
         version: 22.13.14
 
+  packages/kubernetes:
+    dependencies:
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../core
+      js-base64:
+        specifier: ^3.7.7
+        version: 3.7.7
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+
   packages/kubricate:
     dependencies:
       '@kubricate/core':

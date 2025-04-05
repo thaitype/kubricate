@@ -1,6 +1,6 @@
-import type { AnyClass, BaseLogger } from '../../types.js';
-import type { SecretOptions } from '../SecretManager.js';
-import type { BaseProvider, PreparedEffect, ProviderInjection } from './BaseProvider.js';
+import type { AnyClass, BaseLogger } from '@kubricate/core';
+import type { SecretOptions } from '@kubricate/core';
+import type { BaseProvider, PreparedEffect, ProviderInjection } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 
 export interface WithStackIdentifier {
@@ -13,7 +13,7 @@ export interface WithStackIdentifier {
   stackIdentifier: AnyClass;
 }
 
-export interface KubernetesSecretProviderConfig {
+export interface EnvSecretProviderConfig {
   /**
    * The name of the secret to use.
    */
@@ -68,20 +68,19 @@ export interface EnvVar {
 }
 
 /**
- * KubernetesSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
+ * EnvSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
  * It uses the Kubernetes API to create a secret with the given name and value.
  * The secret is created in the specified namespace.
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
- * @deprecated This provider is deprecated and will be removed in the future. Migrated to `EnvSecretProvider` from `@kubernetes/kubernetes`.
  */
 
-export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
+export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig> {
   secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
 
-  constructor(public config: KubernetesSecretProviderConfig) {}
+  constructor(public config: EnvSecretProviderConfig) {}
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
@@ -93,10 +92,10 @@ export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretPr
 
   getInjectionPayload(): EnvVar[] {
     if (!this.secrets) {
-      throw new Error('Secrets not set in KubernetesSecretProvider');
+      throw new Error('Secrets not set in EnvSecretProvider');
     }
     if (Object.keys(this.secrets).length === 0) {
-      this.logger?.warn('Trying to get secrets from KubernetesSecretProvider, but no secrets set');
+      this.logger?.warn('Trying to get secrets from EnvSecretProvider, but no secrets set');
     }
     return Object.entries(this.secrets).map(([name]) => ({
       name,
