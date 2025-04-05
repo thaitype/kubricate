@@ -29,7 +29,9 @@ describe('EnvLoader', () => {
 
   it('validates secret name format', async () => {
     const loader = new EnvLoader();
-    await expect(loader.load(['invalid-secret'])).rejects.toThrow('Invalid env var name');
+    await expect(loader.load(['invalid-secret'])).rejects.toThrow(
+      'Missing environment variable: KUBRICATE_SECRET_invalid-secret'
+    );
   });
 
   it('supports case-insensitive loading', async () => {

@@ -1,5 +1,6 @@
 import type { BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
+import type { SecretValue } from '../types.js';
 
 export interface BaseProvider<Config extends object = object> {
   config: Config;
@@ -15,7 +16,7 @@ export interface BaseProvider<Config extends object = object> {
    * Prepares the secret for the given name and value.
    * This method should return a resource object that can be applied to Kubernetes.
    */
-  prepare(name: string, value: string): PreparedEffect[];
+  prepare(name: string, value: SecretValue): PreparedEffect[];
 
   /**
    * Returns the payload to be injected into the target resource.

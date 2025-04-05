@@ -63,42 +63,27 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
    * @throws Will throw an error if a secret is not found or if the name is invalid.
    */
   async load(names: string[]): Promise<void> {
-    if (this.config?.allowDotEnv ?? true) {
-      loadDotenv({
-        path: this.getEnvFilePath(),
-      });
+    if (this.config.allowDotEnv ?? true) {
+      loadDotenv({ path: this.getEnvFilePath() });
       this.logger?.log(`Loaded .env file from\n   ${this.getEnvFilePath()}`);
     }
 
     for (const name of names) {
       this.logger?.debug(`Loading secret: ${name}`);
-      if (!/^[a-zA-Z0-9_]+$/.test(name)) {
-        throw new Error(`Invalid env var name: ${name}`);
-      }
-
       const expectedKey = this.prefix + name;
-      let actualKey = expectedKey;
 
-      if (this.caseInsensitive) {
-        const match = Object.keys(process.env).find(
-          envKey => this.normalizeName(envKey) === this.normalizeName(expectedKey)
-        );
-        if (!match) {
-          throw new Error(`Missing environment variable: ${expectedKey}`);
-        }
-        actualKey = match;
-      }
+      const matchKey = this.caseInsensitive
+        ? Object.keys(process.env).find(k => this.normalizeName(k) === this.normalizeName(expectedKey))
+        : expectedKey;
 
-      const value = process.env[actualKey];
-
-      if (!value) {
-        throw new Error(`Missing environment variable: ${actualKey}`);
+      if (!matchKey || !process.env[matchKey]) {
+        throw new Error(`Missing environment variable: ${expectedKey}`);
       }
 
       const storeKey = this.normalizeName(name);
-      this.secrets.set(storeKey, value);
+      this.secrets.set(storeKey, process.env[matchKey]!);
       this.logger?.debug(`Loaded secret: ${name} -> ${storeKey}`);
-      this.logger?.debug(`Value: ${maskingValue(value)}`);
+      this.logger?.debug(`Value: ${maskingValue(process.env[matchKey]!)} `);
     }
   }
 

@@ -36,3 +36,18 @@ export interface EnvOptions<EnvSecretRef extends AnyKey = string> {
    */
   secretRef?: EnvSecretRef;
 }
+
+export type PrimitiveSecretValue = string | number | boolean | null | undefined;
+/**
+ * /**
+ * SecretValue represents the expected format for secret values loaded by a BaseLoader
+ * and consumed by a BaseProvider.
+ *
+ * A SecretValue can be either:
+ * - A single primitive (e.g., token, password, string literal)
+ * - A flat object of key-value pairs, where each value is a primitive
+ *
+ * All values must be serializable to string (e.g., for Kubernetes Secret encoding).
+ * Nested objects, arrays, or non-serializable types are not supported.
+ */
+export type SecretValue = PrimitiveSecretValue | Record<string, PrimitiveSecretValue>;

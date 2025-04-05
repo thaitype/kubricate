@@ -2,10 +2,11 @@ import type { BaseLoader } from './loaders/BaseLoader.js';
 import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
 import type { AnyKey, BaseLogger } from '../types.js';
 import { validateString } from '../internal/utils.js';
+import type { SecretValue } from './types.js';
 
 export interface SecretManagerEffect {
   name: string;
-  value: string;
+  value: SecretValue;
   effects: PreparedEffect[];
 }
 
@@ -269,7 +270,7 @@ export class SecretManager<
   async prepare(): Promise<SecretManagerEffect[]> {
     this.validateConfig();
     const secrets = this.getSecrets();
-    const resolved: Record<string, string> = {};
+    const resolved: Record<string, SecretValue> = {};
     const loadedKeys = new Set<string>();
 
     for (const secret of Object.values(secrets)) {
