@@ -78,7 +78,7 @@ export interface EnvVar {
  */
 
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
-  secrets: Record<string, SecretOptions> = {};
+  secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
 

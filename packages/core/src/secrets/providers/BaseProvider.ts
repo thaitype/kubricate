@@ -7,7 +7,7 @@ export interface BaseProvider<Config extends object = object> {
    * Secret from SecretManager (This only metadata and not the value)
    * This is used to inject the secret into the resource.
    */
-  secrets: Record<string, SecretOptions>;
+  secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[];
   logger?: BaseLogger;
 
