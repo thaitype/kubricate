@@ -23,8 +23,6 @@
   "scripts": {
     "test": "mono test",
     "test:watch": "mono test:watch",
-    "lint:check": "mono lint:check",
-    "lint:fix": "mono lint:fix",
     "check-types": "mono check-types"
   },
   "devDependencies": {
