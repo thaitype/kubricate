@@ -1,8 +1,9 @@
 import type { BaseStack } from '../BaseStack.js';
+import type { AnyKey } from '../types.js';
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 import type { SecretManager } from './SecretManager.js';
 
-export class SecretsInjectionContext {
+export class SecretsInjectionContext<Key extends AnyKey = AnyKey> {
   private defaultResourceId: string | undefined;
   private builders: SecretInjectionBuilder[] = [];
 
@@ -26,10 +27,10 @@ export class SecretsInjectionContext {
    * @param secretName - The name of the secret to inject.
    * @returns A SecretInjectionBuilder for chaining inject behavior.
    */
-  secrets(secretName: string): SecretInjectionBuilder {
-    const provider = this.manager.resolveProviderFor(secretName);
+  secrets(secretName: Key): SecretInjectionBuilder {
+    const provider = this.manager.resolveProviderFor(String(secretName));
 
-    const builder = new SecretInjectionBuilder(this.stack, secretName, provider, {
+    const builder = new SecretInjectionBuilder(this.stack, String(secretName), provider, {
       defaultResourceId: this.defaultResourceId,
       secretManagerId: this.secretManagerId,
     });

@@ -9,18 +9,11 @@ export const config = {
 export const secretManager = new SecretManager()
   .addLoader('EnvLoader', new EnvLoader())
   .addProvider(
-    'Kubernetes.Secret',
+    'EnvSecretProvider',
     new EnvSecretProvider({
       name: 'secret-application',
-      // targetInjects: [
-      //   {
-      //     resourceId: 'deployment',
-      //     stackIdentifier: AppStack,
-      //     path: 'spec.template.spec.containers[0].env',
-      //   },
-      // ],
     })
   )
   .setDefaultLoader('EnvLoader')
-  .setDefaultProvider('Kubernetes.Secret')
+  .setDefaultProvider('EnvSecretProvider')
   .addSecret('my_app_key');

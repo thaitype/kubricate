@@ -84,7 +84,7 @@ export abstract class BaseStack<
 
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
-    builder: (injector: SecretsInjectionContext) => void
+    builder: (injector: SecretsInjectionContext<keyof ExtractSecretManager<NewSecretManager>['secretEntries']>) => void
   ): this;
 
   useSecrets<NewSecretManager extends AnySecretManager>(
