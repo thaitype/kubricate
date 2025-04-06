@@ -105,7 +105,7 @@ export abstract class BaseStack<
       const ctx = new SecretsInjectionContext(this, secretManager, secretManagerNextId);
       this._secretContext = ctx;
       secondArg(ctx); // invoke builder
-      ctx.resolveAll(); 
+      ctx.resolveAll();
       return this;
     }
 
@@ -152,13 +152,16 @@ export abstract class BaseStack<
     const secretManager = this._secretManagers[secretManagerId];
     for (const provider of Object.values(secretManager.getProviders())) {
       const targetInjects = this._targetInjects[secretManagerId] ?? [];
-      if(targetInjects.length === 0) {
-        this.logger?.warn(`BaseStack.setTargetInjects: No injectes found for secret manager with ID "${secretManagerId}".`);
+      if (targetInjects.length === 0) {
+        this.logger?.warn(
+          `BaseStack.setTargetInjects: No injectes found for secret manager with ID "${secretManagerId}".`
+        );
       }
       provider.setInjects(targetInjects);
       if (this.logger?.debug) {
-        const stringifyInjects =
-          (this._targetInjects[secretManagerId] ?? []).map(inject => JSON.stringify(inject)).join('\n  ');
+        const stringifyInjects = (this._targetInjects[secretManagerId] ?? [])
+          .map(inject => JSON.stringify(inject))
+          .join('\n  ');
         this.logger?.debug(
           `BaseStack.setTargetInjects: Provider "${provider.constructor.name}" injects set for secret manager with ID "${secretManagerId}": \n  "${stringifyInjects}" `
         );

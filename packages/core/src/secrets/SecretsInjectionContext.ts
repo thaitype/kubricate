@@ -10,7 +10,7 @@ export class SecretsInjectionContext {
     private stack: BaseStack,
     private manager: SecretManager,
     private secretManagerId: number
-  ) { }
+  ) {}
 
   /**
    * Set the default resourceId to use when no explicit resource is defined in a secret injection.
