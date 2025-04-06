@@ -1,6 +1,6 @@
 import type { BaseLoader } from './loaders/BaseLoader.js';
 import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
-import type { AnyKey, BaseLogger } from '../types.js';
+import type { AnyKey, BaseLogger, FallbackIfNever } from '../types.js';
 import { validateString } from '../internal/utils.js';
 import type { SecretValue } from './types.js';
 import type { Pipe, Tuples, Unions } from 'hotscript';
@@ -73,7 +73,10 @@ export class SecretManager<
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   > = {},
-  DefaultProvider extends AnyKey = AnyKey,
+  /**
+   * Default provider to use if no specific provider is specified.
+   */
+  DefaultProvider extends AnyKey = never,
 > {
   /**
    * Internal runtime storage for secret values (not type-safe).
@@ -109,7 +112,9 @@ export class SecretManager<
       LoaderInstances,
       ProviderInstances & Record<NewProviderKey, NewProvider>,
       SecretEntries,
-      DefaultProvider
+      // If the default provider is never, use the new provider key
+      // Otherwise, use the existing default provider
+      FallbackIfNever<DefaultProvider, NewProviderKey>
     >;
   }
 
