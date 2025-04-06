@@ -1,10 +1,16 @@
 import type { BaseStack, SecretInjectionStrategy } from '../BaseStack.js';
+import type { FallbackIfNever } from '../types.js';
 import type { BaseProvider } from './providers/BaseProvider.js';
+
+type ExtractAllowedKinds<Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind']> = Extract<
+  SecretInjectionStrategy,
+  { kind: Kinds }
+>;
 
 /**
  * SecretInjectionBuilder provides a fluent API to define how a secret should be injected into a resource.
  */
-export class SecretInjectionBuilder {
+export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind']> {
   private strategy?: SecretInjectionStrategy;
   private resourceIdOverride?: string;
 
@@ -15,7 +21,7 @@ export class SecretInjectionBuilder {
     private readonly ctx: { defaultResourceId?: string; secretManagerId: number }
   ) {}
 
-  inject(strategy: SecretInjectionStrategy): this {
+  inject(strategy: FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>): this {
     this.strategy = strategy;
     return this;
   }

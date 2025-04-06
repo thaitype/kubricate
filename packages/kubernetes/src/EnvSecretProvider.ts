@@ -67,6 +67,8 @@ export interface EnvVar {
   };
 }
 
+type SupportedKinds = 'env';
+
 /**
  * EnvSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
  * It uses the Kubernetes API to create a secret with the given name and value.
@@ -74,14 +76,13 @@ export interface EnvVar {
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
  */
-
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
   secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
-  readonly supportedKinds: ('env')[] = ['env'];
+  readonly supportedKinds: SupportedKinds[] = ['env'];
 
-  constructor(public config: EnvSecretProviderConfig) { }
+  constructor(public config: EnvSecretProviderConfig) {}
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;

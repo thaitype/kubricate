@@ -84,14 +84,14 @@ export abstract class BaseStack<
 
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
-    builder: (injector: SecretsInjectionContext<keyof ExtractSecretManager<NewSecretManager>['secretEntries']>) => void
+    builder: (injector: SecretsInjectionContext<NewSecretManager>) => void
   ): this;
 
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
     secondArg:
       | UseSecretsOptions<keyof ExtractSecretManager<NewSecretManager>['secretEntries']>
-      | ((injector: SecretsInjectionContext) => void)
+      | ((injector: SecretsInjectionContext<NewSecretManager>) => void)
   ): this {
     if (!secretManager) {
       throw new Error(`Cannot BaseStack.useSecrets, secret manager is not provided.`);
@@ -103,7 +103,7 @@ export abstract class BaseStack<
     if (typeof secondArg === 'function') {
       // ✨ New builder-style API
       const ctx = new SecretsInjectionContext(this, secretManager, secretManagerNextId);
-      this._secretContext = ctx;
+      this._secretContext = ctx as unknown as SecretsInjectionContext;
       secondArg(ctx); // invoke builder
       ctx.resolveAll();
       return this;

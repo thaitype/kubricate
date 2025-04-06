@@ -14,6 +14,15 @@ export const secretManager = new SecretManager()
       name: 'secret-application',
     })
   )
+  .addProvider(
+    'EnvSecretProvider_tmp',
+    new EnvSecretProvider({
+      name: 'secret-application',
+    })
+  )
   .setDefaultLoader('EnvLoader')
-  .setDefaultProvider('EnvSecretProvider')
-  .addSecret('my_app_key');
+  .setDefaultProvider('EnvSecretProvider_tmp')
+  .addSecret({
+    name: 'my_app_key',
+    // provider: 'EnvSecretProvider'
+  });
