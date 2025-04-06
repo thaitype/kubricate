@@ -61,7 +61,6 @@ export abstract class BaseStack<
    * This is used to identify the stack, generally used with GenericStack.
    */
   public _name?: string;
-
   /**
    * Registers a secret injection to be processed during stack build/render.
    */
@@ -134,6 +133,23 @@ export abstract class BaseStack<
   }
 
   /**
+   * Custom JSON serializer for BaseStack.
+   *
+   * We explicitly exclude `_secretContext` because it contains a circular reference:
+   * - `BaseStack._secretContext` references a `SecretsInjectionContext`
+   * - which holds a back-reference to the original `BaseStack`
+   *
+   * This would otherwise cause `JSON.stringify()` to throw a `TypeError`.
+   *
+   * This method ensures safe serialization for debugging, logging, or diffing.
+   */
+  toJSON() {
+    const clone = { ...this };
+    delete clone._secretContext;
+    return clone;
+  }
+
+  /**
    * Set the target injects for the secret manager in all providers
    * @param secretManagerId
    * @param injectes
@@ -149,9 +165,8 @@ export abstract class BaseStack<
     for (const provider of Object.values(secretManager.getProviders())) {
       provider.setInjects(this._targetInjects[secretManagerId]);
       if (this.logger?.debug) {
-        const stringifyInjects = this._targetInjects[secretManagerId]
-          .map(inject => JSON.stringify(inject))
-          .join('\n  ');
+        const stringifyInjects =
+          this._targetInjects[secretManagerId] ?? [].map(inject => JSON.stringify(inject)).join('\n  ');
         this.logger?.debug(
           `BaseStack.setTargetInjects: Provider "${provider.constructor.name}" injects set for secret manager with ID "${secretManagerId}": \n  "${stringifyInjects}" `
         );

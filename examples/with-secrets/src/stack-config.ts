@@ -11,6 +11,24 @@ const myApp = new AppStack()
   .useSecrets(secretManager, injector => {
     injector.secrets('my_app_key').inject({ kind: 'env', containerIndex: 0 }).intoResource('deployment');
   })
+  // .useSecrets(secretManager, {
+  //   injectes: [
+  //     {
+  //       resourceId: 'deployment',
+  //       path: 'spec.template.spec.containers[0].env',
+  //     },
+  //   ],
+  //   env: [
+  //     {
+  //       name: 'MY_ENV',
+  //       value: 'my-value',
+  //     },
+  //     {
+  //       name: 'my_app_key',
+  //       secretRef: 'my_app_key',
+  //     },
+  //   ],
+  // })
   .from({
     namespace: config.namespace,
     imageName: 'nginx',
