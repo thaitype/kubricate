@@ -80,6 +80,7 @@ export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretPr
   secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
+  readonly supportedKinds: ('custom')[] = ['custom'];
 
   constructor(public config: KubernetesSecretProviderConfig) {}
 

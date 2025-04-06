@@ -75,12 +75,13 @@ export interface EnvVar {
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
  */
 
-export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig> {
+export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
   secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
+  readonly supportedKinds: ('env')[] = ['env'];
 
-  constructor(public config: EnvSecretProviderConfig) {}
+  constructor(public config: EnvSecretProviderConfig) { }
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
