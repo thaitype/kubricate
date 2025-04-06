@@ -7,7 +7,8 @@ export class SecretsInjectionContext {
 
   constructor(
     private stack: BaseStack,
-    private manager: SecretManager
+    private manager: SecretManager,
+    private secretManagerId: number
   ) {}
 
   /**
@@ -29,6 +30,7 @@ export class SecretsInjectionContext {
 
     return new SecretInjectionBuilder(this.stack, secretName, provider, {
       defaultResourceId: this.defaultResourceId,
+      secretManagerId: this.secretManagerId,
     });
   }
 }

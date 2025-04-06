@@ -1,3 +1,4 @@
+import type { SecretInjectionStrategy } from '../../BaseStack.js';
 import type { BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
 import type { SecretValue } from '../types.js';
@@ -40,6 +41,12 @@ export interface BaseProvider<Config extends object = object> {
    * @param injectes
    */
   setInjects(injectes: ProviderInjection[]): void;
+
+  /**
+   * Return the Kubernetes path this provider expects for a given strategy.
+   * This is used to generate the target path in the manifest for injection.
+   */
+  getTargetPath(strategy: SecretInjectionStrategy): string;
 }
 
 export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;

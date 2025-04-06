@@ -1,4 +1,4 @@
-import type { AnyClass, BaseLogger } from '@kubricate/core';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy } from '@kubricate/core';
 import type { SecretOptions } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect, ProviderInjection } from '@kubricate/core';
 import { Base64 } from 'js-base64';
@@ -88,6 +88,15 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig> 
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;
+  }
+
+  getTargetPath(strategy: SecretInjectionStrategy): string {
+    if (strategy.kind === 'env') {
+      const index = strategy.containerIndex ?? 0;
+      return `spec.template.spec.containers[${index}].env`;
+    }
+
+    throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
 
   getInjectionPayload(): EnvVar[] {

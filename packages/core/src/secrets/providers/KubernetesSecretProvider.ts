@@ -91,6 +91,10 @@ export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretPr
     this.injectes = injectes;
   }
 
+  getTargetPath(): string {
+    throw new Error('The deprecated KubernetesSecretProvider does not support target path');
+  }
+
   getInjectionPayload(): EnvVar[] {
     if (!this.secrets) {
       throw new Error('Secrets not set in KubernetesSecretProvider');

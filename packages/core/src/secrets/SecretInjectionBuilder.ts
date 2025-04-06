@@ -12,7 +12,7 @@ export class SecretInjectionBuilder {
     private readonly stack: BaseStack,
     private readonly secretName: string,
     private readonly provider: BaseProvider,
-    private readonly ctx: { defaultResourceId?: string }
+    private readonly ctx: { defaultResourceId?: string; secretManagerId: number }
   ) {}
 
   inject(strategy: SecretInjectionStrategy): this {
@@ -34,11 +34,13 @@ export class SecretInjectionBuilder {
     if (!resourceId) {
       throw new Error(`Missing resource ID for injecting secret: ${this.secretName}`);
     }
-
-    this.stack.registerSecretInjection({
-      secretRef: this.secretName,
-      resourceId,
-      strategy: this.strategy,
-    });
+    const path = this.provider.getTargetPath(this.strategy);
+    this.stack.registerSecretInjection(
+      {
+        resourceId,
+        path,
+      },
+      this.ctx.secretManagerId
+    );
   }
 }

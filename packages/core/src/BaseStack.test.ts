@@ -55,7 +55,7 @@ describe('BaseStack', () => {
   it('throws if env is missing', () => {
     expect(() => {
       stack.useSecrets(new FakeSecretManager(), {});
-    }).toThrow('Cannot BaseStack.useSecrets, secret manager with ID default requires env options.');
+    }).toThrow('Cannot BaseStack.useSecrets, secret manager with ID 0 requires env options.');
   });
 
   it('registers secret manager with injects', () => {
@@ -65,8 +65,8 @@ describe('BaseStack', () => {
       injectes: [{ resourceId: 'deployment', path: 'spec.template.spec' }],
     });
 
-    expect(stack.getSecretManager()).toBe(manager);
-    expect(stack.getSecretManagers()).toHaveProperty('default');
+    expect(stack.getSecretManager(0)).toBe(manager);
+    expect(stack.getSecretManagers()).toHaveProperty('0');
   });
 
   it('setTargetInjects calls provider.setInjects', () => {
@@ -87,7 +87,7 @@ describe('BaseStack', () => {
     const injectes = [{ resourceId: 'foo', path: 'metadata.labels' }];
     stack.useSecrets(manager as any, { env: [{ name: 'FOO' }], injectes });
 
-    stack.setTargetInjects('default');
+    stack.setTargetInjects(0);
 
     // ✅ Assert the spy was called correctly
     expect(mockProvider.setInjects).toHaveBeenCalledWith(injectes);
@@ -110,8 +110,8 @@ describe('BaseStack', () => {
   });
 
   it('getSecretManager throws if not found', () => {
-    expect(() => stack.getSecretManager('unknown')).toThrow(
-      "Secret manager with ID unknown is not defined. Make sure to use the 'useSecrets' method to define it, and call before 'from' method in the stack."
+    expect(() => stack.getSecretManager(-1)).toThrow(
+      "Secret manager with ID -1 is not defined. Make sure to use the 'useSecrets' method to define it, and call before 'from' method in the stack."
     );
   });
 });
