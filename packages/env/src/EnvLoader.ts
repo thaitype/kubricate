@@ -22,6 +22,14 @@ export interface EnvLoaderConfig {
    * @default `false`
    */
   caseInsensitive?: boolean;
+
+  /**
+   * The working directory to load the .env file from.
+   * This is useful for loading .env files from different directories.
+   * 
+   * @default `process.cwd()`
+   */
+  workingDir?: string;
 }
 
 /**
@@ -35,12 +43,13 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
   private secrets = new Map<string, string>();
   private caseInsensitive: boolean;
   public logger?: BaseLogger;
-  private workingDir = process.cwd(); // Default working directory
+  private workingDir;
 
   constructor(config?: EnvLoaderConfig) {
     this.config = config ?? {};
     this.prefix = config?.prefix ?? 'KUBRICATE_SECRET_';
     this.caseInsensitive = config?.caseInsensitive ?? false;
+    this.workingDir = config?.workingDir ?? process.cwd();
   }
   /**
    * Set the working directory for loading .env files.
