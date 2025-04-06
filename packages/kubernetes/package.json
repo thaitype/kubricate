@@ -31,7 +31,9 @@
   },
   "dependencies": {
     "@kubricate/core": "workspace:*",
-    "js-base64": "^3.7.7"
+    "js-base64": "^3.7.7",
+    "zod": "^3.24.2",
+    "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",

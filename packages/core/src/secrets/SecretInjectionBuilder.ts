@@ -43,10 +43,10 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
     const path = this.provider.getTargetPath(this.strategy);
     this.stack.registerSecretInjection(
       {
+        provider: this.provider,
         resourceId,
         path,
       },
-      this.ctx.secretManagerId
     );
   }
 }

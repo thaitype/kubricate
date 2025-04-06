@@ -14,13 +14,7 @@ describe('KubernetesSecretProvider', () => {
     provider.setSecrets(secrets);
     expect(provider.secrets).toEqual(secrets);
   });
-
-  it('should store injectes via setInjects', () => {
-    const injectes = [{ resourceId: 'foo', path: 'bar' }];
-    provider.setInjects(injectes);
-    expect(provider.injectes).toEqual(injectes);
-  });
-
+  
   it('should generate EnvVar[] via getInjectionPayload', () => {
     provider.setSecrets({
       MY_ENV: { name: 'MY_ENV', provider: 'k8s' },

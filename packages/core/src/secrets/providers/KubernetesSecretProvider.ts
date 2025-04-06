@@ -1,6 +1,6 @@
 import type { AnyClass, BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
-import type { BaseProvider, PreparedEffect, ProviderInjection } from './BaseProvider.js';
+import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
 import { Base64 } from 'js-base64';
 
 export interface WithStackIdentifier {
@@ -78,7 +78,6 @@ export interface EnvVar {
 
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
   secrets: Record<string, SecretOptions> | undefined;
-  injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly supportedKinds: 'custom'[] = ['custom'];
 
@@ -86,10 +85,6 @@ export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretPr
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
-  }
-
-  setInjects(injectes: ProviderInjection[]): void {
-    this.injectes = injectes;
   }
 
   getTargetPath(): string {

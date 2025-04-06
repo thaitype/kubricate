@@ -1,4 +1,4 @@
-import { merge } from 'lodash-es';
+import { merge, isPlainObject } from 'lodash-es';
 import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 import { get, set } from 'lodash-es';
@@ -39,14 +39,33 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     if (!(composed.entryType === 'object' || composed.entryType === 'class')) {
       throw new Error(`Cannot inject, resource with ID ${resourceId} is not an object or class.`);
     }
-    const existingConfigFromPath = get(composed.config, path);
-    if (!existingConfigFromPath) {
+  
+    const existingValue = get(composed.config, path);
+  
+    if (existingValue === undefined) {
+      // No value yet — safe to set directly
       set(composed.config, path, value);
       return;
     }
-    // TODO: Merge the existing config with the new value
+  
+    if (Array.isArray(existingValue) && Array.isArray(value)) {
+      // Append array elements (e.g. env vars, volumeMounts)
+      const mergedArray = [...existingValue, ...value];
+      set(composed.config, path, mergedArray);
+      return;
+    }
+  
+    if (isPlainObject(existingValue) && isPlainObject(value)) {
+      // Deep merge objects
+      const mergedObject = merge({}, existingValue, value);
+      set(composed.config, path, mergedObject);
+      return;
+    }
+  
+    // Fallback: do not overwrite primitive or incompatible types
     throw new Error(
-      `Cannot inject, resource with ID ${resourceId} already has a value at path ${path}. Existing value: ${JSON.stringify(existingConfigFromPath)}`
+      `Cannot inject, resource "${resourceId}" already has a value at path "${path}". ` +
+      `Existing: ${JSON.stringify(existingValue)}. New value: ${JSON.stringify(value)}`
     );
   }
 

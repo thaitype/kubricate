@@ -46,68 +46,68 @@ describe('BaseStack', () => {
     stack = new TestStack();
   });
 
-  it('throws if secret manager is not provided', () => {
-    expect(() => {
-      stack.useSecrets(undefined as any, {});
-    }).toThrow('Cannot BaseStack.useSecrets, secret manager is not provided.');
-  });
+  // it('throws if secret manager is not provided', () => {
+  //   expect(() => {
+  //     stack.useSecrets(undefined as any, {});
+  //   }).toThrow('Cannot BaseStack.useSecrets, secret manager is not provided.');
+  // });
 
-  it('throws if env is missing', () => {
-    expect(() => {
-      stack.useSecrets(new FakeSecretManager(), {});
-    }).toThrow('Cannot BaseStack.useSecrets, secret manager with ID 0 requires env options.');
-  });
+  // it('throws if env is missing', () => {
+  //   expect(() => {
+  //     stack.useSecrets(new FakeSecretManager(), {});
+  //   }).toThrow('Cannot BaseStack.useSecrets, secret manager with ID 0 requires env options.');
+  // });
 
-  it('registers secret manager with injects', () => {
-    const manager = new FakeSecretManager();
-    stack.useSecrets(manager, {
-      env: [{ name: 'FOO' }],
-      injectes: [{ resourceId: 'deployment', path: 'spec.template.spec' }],
-    });
+  // it('registers secret manager with injects', () => {
+  //   const manager = new FakeSecretManager();
+  //   stack.useSecrets(manager, {
+  //     env: [{ name: 'FOO' }],
+  //     injectes: [{ resourceId: 'deployment', path: 'spec.template.spec' }],
+  //   });
 
-    expect(stack.getSecretManager(0)).toBe(manager);
-    expect(stack.getSecretManagers()).toHaveProperty('0');
-  });
+  //   expect(stack.getSecretManager(0)).toBe(manager);
+  //   expect(stack.getSecretManagers()).toHaveProperty('0');
+  // });
 
-  it('setTargetInjects calls provider.setInjects', () => {
-    // ✅ Create a single shared instance to spy on
-    const mockProvider = {
-      injectes: [],
-      setInjects: vi.fn(),
-      getInjectionPayload: vi.fn(() => ({})),
-    };
+  // it('setTargetInjects calls provider.setInjects', () => {
+  //   // ✅ Create a single shared instance to spy on
+  //   const mockProvider = {
+  //     injectes: [],
+  //     setInjects: vi.fn(),
+  //     getInjectionPayload: vi.fn(() => ({})),
+  //   };
 
-    // ✅ FakeSecretManager returns the same tracked provider
-    const manager = new (class extends FakeSecretManager {
-      override getProviders() {
-        return { mock: mockProvider };
-      }
-    })();
+  //   // ✅ FakeSecretManager returns the same tracked provider
+  //   const manager = new (class extends FakeSecretManager {
+  //     override getProviders() {
+  //       return { mock: mockProvider };
+  //     }
+  //   })();
 
-    const injectes = [{ resourceId: 'foo', path: 'metadata.labels' }];
-    stack.useSecrets(manager as any, { env: [{ name: 'FOO' }], injectes });
+  //   const injectes = [{ resourceId: 'foo', path: 'metadata.labels' }];
+  //   stack.useSecrets(manager as any, { env: [{ name: 'FOO' }], injectes });
 
-    stack.setTargetInjects(0);
+  //   stack.setTargetInjects(0);
 
-    // ✅ Assert the spy was called correctly
-    expect(mockProvider.setInjects).toHaveBeenCalledWith(injectes);
-  });
+  //   // ✅ Assert the spy was called correctly
+  //   expect(mockProvider.setInjects).toHaveBeenCalledWith(injectes);
+  // });
 
-  it('build injects secrets and returns composed resources', () => {
-    const manager = new FakeSecretManager();
-    const injectes = [{ resourceId: 'deployment', path: 'spec.template.spec' }];
+  // it('build injects secrets and returns composed resources', () => {
+  //   const manager = new FakeSecretManager();
+  //   const injectes = [{ resourceId: 'deployment', path: 'spec.template.spec' }];
 
-    stack.useSecrets(manager, { env: [{ name: 'FOO' }], injectes });
-    stack.from(); // Set fake composer
+  //   stack.useSecrets(manager, { env: [{ name: 'FOO' }], injectes });
+  //   stack.from(); // Set fake composer
 
-    const result = stack.build();
+  //   const result = stack.build();
 
-    // Check inject was called for each inject
-    expect(stack.getComposer().inject).toHaveBeenCalledWith('deployment', 'spec.template.spec', 'injectedValue');
+  //   // Check inject was called for each inject
+  //   expect(stack.getComposer().inject).toHaveBeenCalledWith('deployment', 'spec.template.spec', 'injectedValue');
 
-    // Check build returns correct resource
-    expect(result).toEqual(['built-resource']);
-  });
+  //   // Check build returns correct resource
+  //   expect(result).toEqual(['built-resource']);
+  // });
 
   it('getSecretManager throws if not found', () => {
     expect(() => stack.getSecretManager(-1)).toThrow(

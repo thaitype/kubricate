@@ -13,7 +13,6 @@ export interface BaseProvider<
    * This is used to inject the secret into the resource.
    */
   secrets: Record<string, SecretOptions> | undefined;
-  injectes: ProviderInjection[];
   logger?: BaseLogger;
 
   /**
@@ -37,13 +36,6 @@ export interface BaseProvider<
    * @param secrets The secrets to be set in the provider.
    */
   setSecrets(secrets: Record<string, SecretOptions>): void;
-
-  /**
-   * @internal Sets the injects in the provider.
-   *
-   * @param injectes
-   */
-  setInjects(injectes: ProviderInjection[]): void;
 
   /**
    * Return the Kubernetes path this provider expects for a given strategy.
@@ -95,6 +87,7 @@ export interface KubricateEffect extends BaseEffect<'kubricate'> {
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
 
 export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
+  provider: BaseProvider;
   resourceId: ResourceId;
   path: Path;
 }

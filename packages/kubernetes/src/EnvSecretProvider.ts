@@ -1,6 +1,6 @@
 import type { AnyClass, BaseLogger, SecretInjectionStrategy } from '@kubricate/core';
 import type { SecretOptions } from '@kubricate/core';
-import type { BaseProvider, PreparedEffect, ProviderInjection } from '@kubricate/core';
+import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 
 export interface WithStackIdentifier {
@@ -78,7 +78,7 @@ type SupportedKinds = 'env';
  */
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
   secrets: Record<string, SecretOptions> | undefined;
-  injectes: ProviderInjection[] = [];
+
   logger?: BaseLogger;
   readonly supportedKinds: SupportedKinds[] = ['env'];
 
@@ -86,10 +86,6 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
-  }
-
-  setInjects(injectes: ProviderInjection[]): void {
-    this.injectes = injectes;
   }
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
