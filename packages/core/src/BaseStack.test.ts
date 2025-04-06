@@ -48,8 +48,8 @@ describe('BaseStack', () => {
 
   it('throws if secret manager is not provided', () => {
     expect(() => {
-      stack.useSecrets(undefined as any);
-    }).toThrow('Cannot BaseStack.useSecrets, secret manager with ID default is not defined.');
+      stack.useSecrets(undefined as any, {});
+    }).toThrow('Cannot BaseStack.useSecrets, secret manager is not provided.');
   });
 
   it('throws if env is missing', () => {

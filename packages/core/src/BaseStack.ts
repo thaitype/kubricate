@@ -1,8 +1,27 @@
 import { ResourceComposer } from './ResourceComposer.js';
 import type { AnyKey, BaseLogger, FunctionLike, InferConfigureComposerFunc } from './types.js';
 import type { AnySecretManager, EnvOptions, ExtractSecretManager } from './secrets/types.js';
-import type { BaseLoader, BaseProvider, ProviderInjection } from './secrets/index.js';
+import {
+  SecretsInjectionContext,
+  type BaseLoader,
+  type BaseProvider,
+  type ProviderInjection,
+} from './secrets/index.js';
 import type { Objects, Call } from 'hotscript';
+
+export type SecretInjectionStrategy =
+  | { kind: 'env'; containerIndex?: number }
+  | { kind: 'volume'; mountPath: string; containerIndex?: number }
+  | { kind: 'annotation' }
+  | { kind: 'imagePullSecret' }
+  | { kind: 'envFrom'; containerIndex?: number }
+  | { kind: 'custom'; strategy: string; args: unknown[] };
+
+export interface NewProviderInjection {
+  secretRef: string;
+  strategy: SecretInjectionStrategy;
+  resourceId: string;
+}
 
 export interface UseSecretsOptions<Key extends AnyKey> {
   /**
@@ -19,6 +38,11 @@ export interface UseSecretsOptions<Key extends AnyKey> {
   injectes?: ProviderInjection[];
 }
 
+/**
+ * BaseStack is the base class for all stacks.
+ *
+ * @note BaseStack fields and methods need to be public, type inference is not working with private fields when using with `createSt`
+ */
 export abstract class BaseStack<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ConfigureComposerFunc extends FunctionLike<any[], ResourceComposer> = FunctionLike<any, ResourceComposer>,
@@ -29,35 +53,83 @@ export abstract class BaseStack<
   public readonly _defaultSecretManagerId = 'default';
   public _targetInjects: Record<string, ProviderInjection[]> = {};
   public logger?: BaseLogger;
+
+  public _secretContext?: SecretsInjectionContext;
+  public _secretInjects: NewProviderInjection[] = [];
   /**
    * The name of the stack.
    * This is used to identify the stack, generally used with GenericStack.
    */
   public _name?: string;
 
+  /**
+   * Registers a secret injection to be processed during stack build/render.
+   */
+  registerSecretInjection(injection: NewProviderInjection): void {
+    this._secretInjects.push(injection);
+  }
+
+  /**
+   * Retrieves all registered secret injections.
+   */
+  getSecretInjections(): NewProviderInjection[] {
+    return this._secretInjects;
+  }
+
+  getSecretContext(): SecretsInjectionContext | undefined {
+    return this._secretContext;
+  }
+
+  /**
+   * @deprecated consider to mirgate to the new builder-style API, the second argument is a function that will be called with the SecretsInjectionContext
+   */
   useSecrets<NewSecretManager extends AnySecretManager>(
     secretManager: NewSecretManager,
-    options: UseSecretsOptions<keyof ExtractSecretManager<NewSecretManager>['secretEntries']> = {}
-  ) {
-    const secretManagerId = options.id ?? this._defaultSecretManagerId;
+    options: UseSecretsOptions<keyof ExtractSecretManager<NewSecretManager>['secretEntries']>
+  ): this;
+
+  useSecrets<NewSecretManager extends AnySecretManager>(
+    secretManager: NewSecretManager,
+    builder: (injector: SecretsInjectionContext) => void
+  ): this;
+
+  useSecrets<NewSecretManager extends AnySecretManager>(
+    secretManager: NewSecretManager,
+    secondArg:
+      | UseSecretsOptions<keyof ExtractSecretManager<NewSecretManager>['secretEntries']>
+      | ((injector: SecretsInjectionContext) => void)
+  ): this {
     if (!secretManager) {
-      throw new Error(`Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} is not defined.`);
+      throw new Error(`Cannot BaseStack.useSecrets, secret manager is not provided.`);
     }
+    const secretManagerId =
+      typeof secondArg === 'function' ? this._defaultSecretManagerId : (secondArg.id ?? this._defaultSecretManagerId);
     if (this._secretManagers[secretManagerId]) {
       throw new Error(`Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} already exists.`);
     }
-    if (!options.env) {
-      throw new Error(`Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} requires env options.`);
-    }
+
     this.logger?.debug(`BaseStack.useSecrets: secret manager with ID ${secretManagerId} is defined.`);
     this._secretManagers[secretManagerId] = secretManager as unknown as SecretManager;
 
+    if (typeof secondArg === 'function') {
+      // ✨ New builder-style API
+      const ctx = new SecretsInjectionContext(this, secretManager);
+      this._secretContext = ctx;
+      secondArg(ctx); // invoke builder
+      return this;
+    }
+
+    // 🧩 Existing object-mode API
+    if (!secondArg.env) {
+      throw new Error(`Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} requires env options.`);
+    }
     if (this._targetInjects[secretManagerId]) {
       throw new Error(
         `Cannot BaseStack.useSecrets, secret manager with ID ${secretManagerId} already has injectes defined.`
       );
     }
-    this._targetInjects[secretManagerId] = options.injectes ?? [];
+
+    this._targetInjects[secretManagerId] = secondArg.injectes ?? [];
     return this;
   }
 

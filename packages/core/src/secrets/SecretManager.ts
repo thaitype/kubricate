@@ -287,9 +287,53 @@ export class SecretManager<
       const provider = this.resolveProvider(secret.provider);
       return {
         name: secret.name,
+        // TODO: Consider to remove the value from provider, due to only `secrets apply` is using it
         value: resolved[secret.name],
         effects: provider.prepare(secret.name, resolved[secret.name]),
       };
     });
+  }
+
+  /**
+   * Resolves the registered provider instance for a given secret name.
+   * This method is used during the secret injection planning phase (e.g., `useSecrets`)
+   * and does not resolve or load secret values.
+   *
+   * @param secretName - The name of the secret to resolve.
+   * @returns The BaseProvider associated with the secret.
+   * @throws If the secret is not registered or has no provider.
+   */
+  resolveProviderFor(secretName: string): BaseProvider {
+    const secret = this._secrets[secretName];
+    if (!secret) {
+      throw new Error(`Secret "${secretName}" is not registered.`);
+    }
+    return this.resolveProvider(secret.provider);
+  }
+
+  /**
+   * Resolves the actual secret value and its associated provider for a given secret name.
+   * This method is used at runtime when the secret is being applied (e.g., `secrets apply`).
+   * It loads the value from the appropriate loader and returns both the value and the provider.
+   *
+   * @param secretName - The name of the secret to resolve and load.
+   * @returns An object containing the resolved provider and loaded secret value.
+   * @throws If the secret is not registered or its loader/provider cannot be found.
+   */
+  async resolveSecretValueForApply(secretName: string): Promise<{
+    provider: BaseProvider;
+    value: SecretValue;
+  }> {
+    const secret = this._secrets[secretName];
+    if (!secret) {
+      throw new Error(`Secret "${secretName}" is not registered.`);
+    }
+
+    const loader = this.resolveLoader(secret.loader);
+    await loader.load([secret.name]);
+    const value = loader.get(secret.name);
+
+    const provider = this.resolveProvider(secret.provider);
+    return { provider, value };
   }
 }
