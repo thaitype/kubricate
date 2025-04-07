@@ -13,8 +13,8 @@ const myApp = new AppStack()
     name: 'my-app',
   })
   .useSecrets(secretManager, c => {
-    c.secrets('my_app_key').forName('ENV_APP_KEY').inject({ kind: 'env', containerIndex: 0 });
-    c.secrets('DOCKER_SECRET').inject({ kind: 'imagePullSecret' })
+    c.secrets('my_app_key').forName('ENV_APP_KEY').inject();
+    c.secrets('DOCKER_SECRET').inject()
   })
   .override({
     service: {

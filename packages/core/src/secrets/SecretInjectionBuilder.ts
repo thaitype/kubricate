@@ -63,12 +63,64 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
   }
 
   /**
-   * Define how this secret should be injected.
-   * Enforces only allowed `kind` types based on the provider's supported kinds.
+   * Define how this secret should be injected into the Kubernetes resource.
+   *
+   * 👉 You can call `.inject(strategy)` with a specific strategy, or use `.inject()` with no arguments
+   * if the provider only supports **one** strategy kind (e.g. `'env'`).
+   *
+   * This method is **type-safe** and enforces allowed `kind` values per provider via TypeScript inference.
+   *
+   * @example
+   *   // Explicit strategy:
+   *   injector.secrets('APP_SECRET').inject({ kind: 'env', containerIndex: 0 });
+   *
+   *   // Implicit (default strategy):
+   *   injector.secrets('APP_SECRET').inject(); // uses first provider-supported default
    */
-  inject(strategy: FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>): this {
-    this.strategy = strategy;
+  inject(): this;
+  inject(strategy: FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>): this;
+
+  inject(strategy?: FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>): this {
+    if (!strategy) {
+      // If no strategy is provided, we can only default if exactly one is supported.
+      if (this.provider.supportedStrategies.length !== 1) {
+        throw new Error(
+          `[SecretInjectionBuilder] inject() requires a strategy because provider supports multiple strategies: ${this.provider.supportedStrategies.join(', ')}`
+        );
+      }
+
+      const kind = this.provider.supportedStrategies[0];
+      this.strategy = this.resolveDefaultStrategy(kind)
+    } else {
+      this.strategy = strategy;
+    }
+
     return this;
+  }
+
+  /**
+   * Resolves a default injection strategy based on the `kind` supported by the provider.
+   * This allows `.inject()` to be used without arguments when the provider supports exactly one kind.
+   *
+   * Each kind has its own defaults:
+   * - `env` → `{ kind: 'env', containerIndex: 0 }`
+   * - `imagePullSecret` → `{ kind: 'imagePullSecret' }`
+   * - `annotation` → `{ kind: 'annotation' }`
+   *
+   * If the kind is unsupported for defaulting, an error is thrown.
+   */
+  resolveDefaultStrategy(kind: SecretInjectionStrategy['kind']): SecretInjectionStrategy {
+    let strategy: SecretInjectionStrategy;
+    if (kind === 'env') {
+      strategy = { kind: 'env', containerIndex: 0 };
+    } else if (kind === 'imagePullSecret') {
+      strategy = { kind: 'imagePullSecret' };
+    } else if (kind === 'annotation') {
+      strategy = { kind: 'annotation' };
+    } else {
+      throw new Error(`[SecretInjectionBuilder] inject() with no args is not implemented for kind="${kind}" yet`);
+    }
+    return strategy;
   }
 
   /**
