@@ -72,27 +72,30 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
    *
    * @example
    *   // Explicit strategy:
-   *   injector.secrets('APP_SECRET').inject({ kind: 'env', containerIndex: 0 });
+   *   injector.secrets('APP_SECRET').inject('env', { containerIndex: 0 });
    *
    *   // Implicit (default strategy):
    *   injector.secrets('APP_SECRET').inject(); // uses first provider-supported default
    */
   inject(): this;
-  inject(strategy: FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>): this;
+  inject(kind?: ExtractAllowedKinds<Kinds>['kind'], strategyOptions?: Omit<FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>, 'kind'>): this;
 
-  inject(strategy?: FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>): this {
-    if (!strategy) {
-      // If no strategy is provided, we can only default if exactly one is supported.
+  inject(kind?: ExtractAllowedKinds<Kinds>['kind'], strategyOptions?: Omit<FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>, 'kind'>): this {
+    if (kind === undefined) {
+      // no arguments provided
       if (this.provider.supportedStrategies.length !== 1) {
         throw new Error(
           `[SecretInjectionBuilder] inject() requires a strategy because provider supports multiple strategies: ${this.provider.supportedStrategies.join(', ')}`
         );
       }
 
-      const kind = this.provider.supportedStrategies[0];
-      this.strategy = this.resolveDefaultStrategy(kind)
+      const defaultKind = this.provider.supportedStrategies[0];
+      this.strategy = this.resolveDefaultStrategy(defaultKind);
     } else {
-      this.strategy = strategy;
+      this.strategy = {
+        kind,
+        ...strategyOptions,
+      } as SecretInjectionStrategy;
     }
 
     return this;

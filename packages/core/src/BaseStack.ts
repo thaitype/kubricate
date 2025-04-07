@@ -15,7 +15,7 @@ export type SecretInjectionStrategy =
   | { kind: 'annotation' }
   | { kind: 'imagePullSecret' }
   | { kind: 'envFrom'; containerIndex?: number }
-  | { kind: 'custom'; strategy: string; args: unknown[] };
+  | { kind: 'plugin'; action?: string; args?: unknown[]; [key: string]: unknown; };
 
 export interface UseSecretsOptions<Key extends AnyKey> {
   env?: EnvOptions<Key>[];
