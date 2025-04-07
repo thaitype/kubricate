@@ -1,6 +1,6 @@
 {
   "name": "@kubricate/kubernetes",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",

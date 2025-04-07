@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.11.0
+
+### Minor Changes
+
+- 0de0144: Refactor inject() API to Support 2-Args Design for Secret Injection
+
 ## 0.10.0
 
 ### Minor Changes
