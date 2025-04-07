@@ -4,7 +4,6 @@ import type {
   PreparedEffect,
   ProviderInjection,
   SecretInjectionStrategy,
-  SecretOptions,
   SecretValue,
 } from '@kubricate/core';
 import { Base64 } from 'js-base64';
@@ -16,7 +15,6 @@ export const dockerRegistrySecretSchema = z.object({
   password: z.string(),
   registry: z.string(),
 });
-
 
 export interface ImagePullSecretProviderConfig {
   /**
@@ -36,17 +34,12 @@ type SupportedStrategies = 'imagePullSecret';
 export class ImagePullSecretProvider
   implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies>
 {
-  secrets: Record<string, SecretOptions> | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['imagePullSecret'];
 
   constructor(public config: ImagePullSecretProviderConfig) {}
-
-  setSecrets(secrets: Record<string, SecretOptions>): void {
-    this.secrets = secrets;
-  }
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;

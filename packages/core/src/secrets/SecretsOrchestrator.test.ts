@@ -10,7 +10,6 @@ vi.mock('./manager.js', () => ({
 }));
 
 import { collectSecretManagers, validateSecretManagers, prepareSecretEffects } from './manager.js';
-import type { SecretOptions } from './SecretManager.js';
 
 describe('SecretsOrchestrator', () => {
   let mockLogger: any;
@@ -44,52 +43,4 @@ describe('SecretsOrchestrator', () => {
     expect(mockLogger.debug).toHaveBeenCalledWith('Preparing secret effects...');
   });
 
-  it('injects secrets into providers correctly', () => {
-    const mockSetSecrets = vi.fn();
-    const mockSecretManager = {
-      getSecrets: () => ({
-        foo: { provider: 'k8s' },
-        bar: { provider: 'k8s' },
-      }),
-      getProviders: () => ({
-        k8s: { setSecrets: mockSetSecrets },
-      }),
-      getDefaultProvider: () => 'k8s',
-    };
-
-    (collectSecretManagers as any).mockReturnValue({
-      'my-stack.default': {
-        name: 'default',
-        stackName: 'my-stack',
-        secretManager: mockSecretManager,
-      },
-    });
-
-    orchestrator.injectSecretsToProviders();
-
-    expect(mockLogger.debug).toHaveBeenCalledWith('Injecting secrets for 1 secret managers');
-    expect(mockSetSecrets).toHaveBeenCalledWith({
-      foo: { provider: 'k8s' },
-      bar: { provider: 'k8s' },
-    });
-  });
-
-  it('filters secrets correctly by provider', () => {
-    const secrets: Record<string, SecretOptions> = {
-      db: { name: 'db', provider: 'k8s' },
-      token: { name: 'token', provider: 'vault' },
-      noProvider: { name: 'noProvider' },
-    };
-
-    const mockSecretManager = {
-      getDefaultProvider: () => 'k8s',
-    };
-
-    const filtered = (orchestrator as any).filterSecretsByProvider(secrets, 'k8s', mockSecretManager);
-
-    expect(filtered).toEqual({
-      db: { name: 'db', provider: 'k8s' },
-      noProvider: { name: 'noProvider' },
-    });
-  });
 });

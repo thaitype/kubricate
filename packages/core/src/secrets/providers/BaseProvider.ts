@@ -1,6 +1,5 @@
 import type { SecretInjectionStrategy } from '../../BaseStack.js';
 import type { BaseLogger } from '../../types.js';
-import type { SecretOptions } from '../SecretManager.js';
 import type { SecretValue } from '../types.js';
 
 export interface BaseProvider<
@@ -9,13 +8,6 @@ export interface BaseProvider<
 > {
   config: Config;
 
-  /**
-   * Secret from SecretManager (This only metadata and not the value)
-   * This is used to inject the secret into the resource.
-   * 
-   * @deprecated Use `injectes` instead.
-   */
-  secrets: Record<string, SecretOptions> | undefined;
   logger?: BaseLogger;
 
   injectes: ProviderInjection[]; // already carries everything
@@ -33,15 +25,6 @@ export interface BaseProvider<
    * However, when the `kubricate generate` command is executed, the secrets will be set.
    */
   getInjectionPayload(): unknown;
-
-  /**
-   * @interal Sets the secrets in the provider.
-   * This will be called by secretOrchestrator during `kubricate generate`
-   *
-   * @param secrets The secrets to be set in the provider.
-   * @deprecated Use `setInjects` instead.
-   */
-  setSecrets(secrets: Record<string, SecretOptions>): void;
 
   /**
    * Return the Kubernetes path this provider expects for a given strategy.

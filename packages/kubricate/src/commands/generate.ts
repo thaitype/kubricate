@@ -69,17 +69,13 @@ export class GenerateCommand extends BaseCommand {
     logger.info('Generating stacks for Kubernetes...');
     logger.log('-------------------------------------\n');
 
-    const { config, orchestrator } = await this.init();
+    const { config } = await this.init();
 
     this.showStacks(config);
 
     logger.log('-------------------------------------');
     logger.log('Generating stacks...');
-
-    logger.debug('GenerateCommand.execute: Injecting Secrets to providers...');
-    orchestrator.injectSecretsToProviders();
-    logger.debug('GenerateCommand.execute: Secrets injected to providers successfully');
-
+    
     const output = this.generateStacks(config);
 
     logger.log(c.green`${MARK_CHECK} All stacks generated successfully`);

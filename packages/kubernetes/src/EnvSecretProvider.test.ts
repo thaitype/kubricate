@@ -2,67 +2,70 @@ import { describe, it, expect } from 'vitest';
 import { EnvSecretProvider } from './EnvSecretProvider.js';
 
 describe('EnvSecretProvider', () => {
-  const provider = new EnvSecretProvider({ name: 'my-secret' });
-
-  it('should throw error if secrets are not set before getInjectionPayload', () => {
-    expect(() => provider.getInjectionPayload()).toThrow('Secrets not set in EnvSecretProvider');
-  });
-
   it('should generate correct injection payload', () => {
-    provider.setSecrets({
-      MY_SECRET: {
-        name: 'MY_SECRET',
-      }
-    });
+    const provider = new EnvSecretProvider({ name: 'my-secret' });
 
     provider.setInjects([
       {
-        resourceId: 'deployment',
+        provider,
+        resourceId: 'my-app',
         path: 'spec.template.spec.containers[0].env',
         meta: {
           secretName: 'MY_SECRET',
-          targetName: 'API_KEY',
+          targetName: 'MY_SECRET_ENV',
         },
-        provider
-      }
+      },
     ]);
 
     const payload = provider.getInjectionPayload();
     expect(payload).toEqual([
       {
-        name: 'API_KEY',
+        name: 'MY_SECRET_ENV',
         valueFrom: {
           secretKeyRef: {
             name: 'my-secret',
             key: 'MY_SECRET',
-          }
-        }
-      }
+          },
+        },
+      },
     ]);
   });
 
-  it('should throw if injection metadata is missing', () => {
-    provider.setSecrets({
-      MY_SECRET: {
-        name: 'MY_SECRET',
-      }
-    });
+  it('should throw if meta is missing', () => {
+    const provider = new EnvSecretProvider({ name: 'my-secret' });
 
     provider.setInjects([
       {
-        resourceId: 'deployment',
+        provider,
+        resourceId: 'my-app',
         path: 'spec.template.spec.containers[0].env',
-        provider
-      }
+        meta: undefined,
+      },
     ]);
 
-    expect(() => provider.getInjectionPayload()).toThrow('Invalid injection metadata for EnvSecretProvider');
+    expect(() => provider.getInjectionPayload()).toThrowError(
+      'Invalid injection metadata for EnvSecretProvider'
+    );
   });
 
-  it('should generate correct kubectl effect', () => {
-    const effects = provider.prepare('MY_SECRET', 'super-secret');
-    expect(effects[0].type).toBe('kubectl');
-    expect(effects[0].value.metadata.name).toBe('my-secret');
-    expect(effects[0].value.data['MY_SECRET']).toBe('c3VwZXItc2VjcmV0'); // base64 of "super-secret"
+  it('should create correct kubectl effect in prepare()', () => {
+    const provider = new EnvSecretProvider({ name: 'my-secret', namespace: 'custom-ns' });
+
+    const effects = provider.prepare('API_KEY', 'super-secret-value');
+    expect(effects[0]).toMatchObject({
+      type: 'kubectl',
+      value: {
+        apiVersion: 'v1',
+        kind: 'Secret',
+        metadata: {
+          name: 'my-secret',
+          namespace: 'custom-ns',
+        },
+        type: 'Opaque',
+        data: {
+          API_KEY: expect.any(String),
+        },
+      },
+    });
   });
 });

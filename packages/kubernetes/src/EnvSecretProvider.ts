@@ -1,5 +1,4 @@
 import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection} from '@kubricate/core';
-import type { SecretOptions } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 
@@ -78,17 +77,13 @@ type SupportedStrategies = 'env';
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
  */
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
-  secrets: Record<string, SecretOptions> | undefined;
+
   logger?: BaseLogger;
   injectes: ProviderInjection[] = [];
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
   constructor(public config: EnvSecretProviderConfig) {}
-
-  setSecrets(secrets: Record<string, SecretOptions>): void {
-    this.secrets = secrets;
-  }
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;
@@ -104,8 +99,8 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
   }
 
   getInjectionPayload(): EnvVar[] {
-    if (!this.secrets) {
-      throw new Error('Secrets not set in EnvSecretProvider');
+    if (!this.injectes) {
+      throw new Error('injects is not set in EnvSecretProvider');
     }
   
     return this.injectes.map((inject) => {
