@@ -2,6 +2,7 @@ import type {
   BaseLogger,
   BaseProvider,
   PreparedEffect,
+  ProviderInjection,
   SecretInjectionStrategy,
   SecretOptions,
   SecretValue,
@@ -30,15 +31,16 @@ export interface ImagePullSecretProviderConfig {
   namespace?: string;
 }
 
-type SupportedStrategies = 'imagePull';
+type SupportedStrategies = 'imagePullSecret';
 
 export class ImagePullSecretProvider
   implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies>
 {
   secrets: Record<string, SecretOptions> | undefined;
+  injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
-  readonly supportedStrategies: SupportedStrategies[] = ['imagePull'];
+  readonly supportedStrategies: SupportedStrategies[] = ['imagePullSecret'];
 
   constructor(public config: ImagePullSecretProviderConfig) {}
 
@@ -46,9 +48,13 @@ export class ImagePullSecretProvider
     this.secrets = secrets;
   }
 
+  setInjects(injectes: ProviderInjection[]): void {
+    this.injectes = injectes;
+  }
+
   getTargetPath(strategy: SecretInjectionStrategy): string {
-    if (strategy.kind === 'imagePull') {
-      return `spec.template.spec.imagePullSecrets`;
+    if (strategy.kind === 'imagePullSecret') {
+      return `spec.template.spec.imagePullSecretSecrets`;
     }
     throw new Error(`[ImagePullSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }

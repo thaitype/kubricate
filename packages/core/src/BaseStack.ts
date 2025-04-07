@@ -13,7 +13,7 @@ export type SecretInjectionStrategy =
   | { kind: 'env'; containerIndex?: number }
   | { kind: 'volume'; mountPath: string; containerIndex?: number }
   | { kind: 'annotation' }
-  | { kind: 'imagePull' }
+  | { kind: 'imagePullSecret' }
   | { kind: 'envFrom'; containerIndex?: number }
   | { kind: 'custom'; strategy: string; args: unknown[] };
 
@@ -116,6 +116,17 @@ export abstract class BaseStack<
    */
   build() {
     this.logger?.debug('BaseStack.build: Starting to build the stack.');
+
+    for (const secretManagerId of Object.keys(this._secretManagers)) {
+      this.logger?.debug(`BaseStack.build: Setup injects for secret manager ID=${secretManagerId}`);
+      const secretManager = this._secretManagers[Number(secretManagerId)];
+    
+      for (const provider of Object.values(secretManager.getProviders())) {
+        const providerInjects = this._targetInjects.filter(inject => inject.provider === provider);
+        provider.setInjects(providerInjects);
+        this.logger?.debug(`[${this.constructor.name}] setInjects: Registered ${providerInjects.length} inject(s)`);
+      }
+    }
 
     this.logger?.debug('BaseStack.build: Injecting secrets into providers.');
     for (const targetInject of this._targetInjects) {

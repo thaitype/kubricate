@@ -1,4 +1,4 @@
-import type { AnyClass, BaseLogger, SecretInjectionStrategy } from '@kubricate/core';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection} from '@kubricate/core';
 import type { SecretOptions } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
@@ -33,6 +33,7 @@ export interface EnvSecretProviderConfig {
  * EnvVar represents an environment variable present in a Container.
  *
  * Ported from import { IEnvVar } from 'kubernetes-models/v1/EnvVar';
+import ProviderInjection from '@kubricate/core';
  */
 export interface EnvVar {
   /**
@@ -79,6 +80,7 @@ type SupportedStrategies = 'env';
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
   secrets: Record<string, SecretOptions> | undefined;
   logger?: BaseLogger;
+  injectes: ProviderInjection[] = [];
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
@@ -86,6 +88,10 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
+  }
+
+  setInjects(injectes: ProviderInjection[]): void {
+    this.injectes = injectes;
   }
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
@@ -101,18 +107,25 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     if (!this.secrets) {
       throw new Error('Secrets not set in EnvSecretProvider');
     }
-    if (Object.keys(this.secrets).length === 0) {
-      this.logger?.warn('Trying to get secrets from EnvSecretProvider, but no secrets set');
-    }
-    return Object.entries(this.secrets).map(([name]) => ({
-      name,
-      valueFrom: {
-        secretKeyRef: {
-          name: this.config.name,
-          key: name,
+  
+    return this.injectes.map((inject) => {
+      const name = inject.meta?.targetName ?? inject.meta?.secretName;
+      const key = inject.meta?.secretName;
+  
+      if (!name || !key) {
+        throw new Error('Invalid injection metadata for EnvSecretProvider');
+      }
+  
+      return {
+        name,
+        valueFrom: {
+          secretKeyRef: {
+            name: this.config.name,
+            key,
+          },
         },
-      },
-    }));
+      };
+    });
   }
 
   prepare(name: string, value: string): PreparedEffect[] {

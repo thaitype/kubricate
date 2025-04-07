@@ -22,6 +22,13 @@ type ExtractAllowedKinds<Kinds extends SecretInjectionStrategy['kind'] = SecretI
 export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind']> {
   private strategy?: SecretInjectionStrategy;
   private resourceIdOverride?: string;
+  /**
+   * The injected name override (used when `.forName(...)` is called).
+   * 
+   * This will appear in the final manifest, such as an env var name or volume mount name.
+   * If not provided, the original secretName will be used.
+   */
+  private targetName?: string;
 
   constructor(
     private readonly stack: BaseStack,
@@ -29,6 +36,31 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
     private readonly provider: BaseProvider,
     private readonly ctx: { defaultResourceId?: string; secretManagerId: number }
   ) { }
+
+  /**
+ * Override the name to be injected into the target manifest.
+ *
+ * This is useful when the name used inside the resource (e.g., env var name)
+ * should differ from the registered secret name in the SecretManager.
+ *
+ * If not provided, the original secret name will be used.
+ *
+ * Example:
+ *   .secrets('MY_SECRET').forName('API_KEY').inject({ kind: 'env' });
+ *
+ * Output:
+ *   - name: API_KEY
+ *     valueFrom:
+ *       secretKeyRef:
+ *         name: secret-application
+ *         key: MY_SECRET
+ *
+ * @param name The name to use in the final manifest (e.g., environment variable name).
+ */
+  forName(name: string): this {
+    this.targetName = name;
+    return this;
+  }
 
   /**
    * Define how this secret should be injected.
@@ -67,6 +99,10 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
         provider: this.provider,
         resourceId,
         path,
+        meta: {
+          secretName: this.secretName,
+          targetName: this.targetName ?? this.secretName,
+        },
       },
     );
   }

@@ -12,9 +12,9 @@ const myApp = new AppStack()
     imageName: 'nginx',
     name: 'my-app',
   })
-  .useSecrets(secretManager, injector => {
-    injector.secrets('my_app_key').inject({ kind: 'env', containerIndex: 0 });
-    injector.secrets('DOCKER_SECRET').inject({ kind: 'imagePull' })
+  .useSecrets(secretManager, c => {
+    c.secrets('my_app_key').forName('ENV_APP_KEY').inject({ kind: 'env', containerIndex: 0 });
+    c.secrets('DOCKER_SECRET').inject({ kind: 'imagePullSecret' })
   })
   .override({
     service: {

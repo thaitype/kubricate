@@ -1,6 +1,6 @@
 import type { AnyClass, BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
-import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
+import type { BaseProvider, PreparedEffect, ProviderInjection } from './BaseProvider.js';
 import { Base64 } from 'js-base64';
 
 export interface WithStackIdentifier {
@@ -33,6 +33,7 @@ export interface KubernetesSecretProviderConfig {
  * EnvVar represents an environment variable present in a Container.
  *
  * Ported from import { IEnvVar } from 'kubernetes-models/v1/EnvVar';
+import ProviderInjection from '@kubricate/core';
  */
 export interface EnvVar {
   /**
@@ -78,11 +79,16 @@ export interface EnvVar {
 
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
   secrets: Record<string, SecretOptions> | undefined;
+  injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: 'custom'[] = ['custom'];
 
   constructor(public config: KubernetesSecretProviderConfig) {}
+
+  setInjects(injectes: ProviderInjection[]): void {
+    this.injectes = injectes;
+  }
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;

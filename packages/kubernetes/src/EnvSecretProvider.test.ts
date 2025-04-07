@@ -1,73 +1,68 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { EnvSecretProvider } from './EnvSecretProvider.js';
-import type { SecretOptions } from '@kubricate/core';
 
 describe('EnvSecretProvider', () => {
-  const provider = new EnvSecretProvider({ name: 'my-secret', namespace: 'myns' });
+  const provider = new EnvSecretProvider({ name: 'my-secret' });
 
-  it('should store secrets via setSecrets', () => {
-    const secrets: Record<string, SecretOptions> = {
-      FOO: { name: 'FOO', provider: 'k8s' },
-    };
-
-    provider.setSecrets(secrets);
-    expect(provider.secrets).toEqual(secrets);
+  it('should throw error if secrets are not set before getInjectionPayload', () => {
+    expect(() => provider.getInjectionPayload()).toThrow('Secrets not set in EnvSecretProvider');
   });
 
-  it('should generate EnvVar[] via getInjectionPayload', () => {
+  it('should generate correct injection payload', () => {
     provider.setSecrets({
-      MY_ENV: { name: 'MY_ENV', provider: 'k8s' },
+      MY_SECRET: {
+        name: 'MY_SECRET',
+      }
     });
+
+    provider.setInjects([
+      {
+        resourceId: 'deployment',
+        path: 'spec.template.spec.containers[0].env',
+        meta: {
+          secretName: 'MY_SECRET',
+          targetName: 'API_KEY',
+        },
+        provider
+      }
+    ]);
 
     const payload = provider.getInjectionPayload();
     expect(payload).toEqual([
       {
-        name: 'MY_ENV',
+        name: 'API_KEY',
         valueFrom: {
           secretKeyRef: {
             name: 'my-secret',
-            key: 'MY_ENV',
-          },
-        },
-      },
+            key: 'MY_SECRET',
+          }
+        }
+      }
     ]);
   });
 
-  it('should warn if secrets is empty in getInjectionPayload', () => {
-    const spyWarn = vi.fn();
-    provider.logger = { warn: spyWarn } as any;
+  it('should throw if injection metadata is missing', () => {
+    provider.setSecrets({
+      MY_SECRET: {
+        name: 'MY_SECRET',
+      }
+    });
 
-    provider.setSecrets({});
-    const result = provider.getInjectionPayload();
-    expect(spyWarn).toHaveBeenCalledWith('Trying to get secrets from EnvSecretProvider, but no secrets set');
-    expect(result).toEqual([]);
-  });
-
-  it('should throw if getInjectionPayload is called before setSecrets', () => {
-    const uninitProvider = new EnvSecretProvider({ name: 'unset' });
-    expect(() => uninitProvider.getInjectionPayload()).toThrow('Secrets not set in EnvSecretProvider');
-  });
-
-  it('should return kubectl effect with base64 encoded value in prepare', () => {
-    const result = provider.prepare('MY_SECRET', 'supersecret');
-
-    expect(result).toEqual([
+    provider.setInjects([
       {
-        type: 'kubectl',
-        value: {
-          apiVersion: 'v1',
-          kind: 'Secret',
-          metadata: {
-            name: 'my-secret',
-            namespace: 'myns',
-          },
-          type: 'Opaque',
-          data: {
-            MY_SECRET: 'c3VwZXJzZWNyZXQ=', // Base64 of 'supersecret'
-          },
-        },
-      },
+        resourceId: 'deployment',
+        path: 'spec.template.spec.containers[0].env',
+        provider
+      }
     ]);
+
+    expect(() => provider.getInjectionPayload()).toThrow('Invalid injection metadata for EnvSecretProvider');
+  });
+
+  it('should generate correct kubectl effect', () => {
+    const effects = provider.prepare('MY_SECRET', 'super-secret');
+    expect(effects[0].type).toBe('kubectl');
+    expect(effects[0].value.metadata.name).toBe('my-secret');
+    expect(effects[0].value.data['MY_SECRET']).toBe('c3VwZXItc2VjcmV0'); // base64 of "super-secret"
   });
 });

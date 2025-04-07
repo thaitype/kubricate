@@ -12,10 +12,14 @@ export interface BaseProvider<
   /**
    * Secret from SecretManager (This only metadata and not the value)
    * This is used to inject the secret into the resource.
+   * 
+   * @deprecated Use `injectes` instead.
    */
   secrets: Record<string, SecretOptions> | undefined;
   logger?: BaseLogger;
 
+  injectes: ProviderInjection[]; // already carries everything
+  setInjects(injectes: ProviderInjection[]): void;
   /**
    * Prepares the secret for the given name and value.
    * This method should return a resource object that can be applied to Kubernetes.
@@ -35,6 +39,7 @@ export interface BaseProvider<
    * This will be called by secretOrchestrator during `kubricate generate`
    *
    * @param secrets The secrets to be set in the provider.
+   * @deprecated Use `setInjects` instead.
    */
   setSecrets(secrets: Record<string, SecretOptions>): void;
 
@@ -87,4 +92,12 @@ export interface ProviderInjection<ResourceId extends string = string, Path exte
    * This is a dot-separated path to the property in the resource where the value should be applied.
    */
   path: Path;
+
+  /**
+   * Extra metadata passed during injection.
+   */
+  meta?: {
+    secretName: string;
+    targetName: string;
+  };
 }
