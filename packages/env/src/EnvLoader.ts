@@ -43,13 +43,13 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
   private secrets = new Map<string, SecretValue>();
   private caseInsensitive: boolean;
   public logger?: BaseLogger;
-  private workingDir;
+  private workingDir?: string;
 
   constructor(config?: EnvLoaderConfig) {
     this.config = config ?? {};
     this.prefix = config?.prefix ?? 'KUBRICATE_SECRET_';
     this.caseInsensitive = config?.caseInsensitive ?? false;
-    this.workingDir = config?.workingDir ?? process.cwd();
+    this.workingDir = config?.workingDir;
   }
   /**
    * Set the working directory for loading .env files.
@@ -59,8 +59,16 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
     this.workingDir = path;
   }
 
+  /**
+   * Get the working directory for loading .env files.
+   * @returns The path to the working directory.
+   */
+  getWorkingDir(): string | undefined {
+    return this.workingDir;
+  }
+
   getEnvFilePath(): string {
-    return path.join(this.workingDir, '.env');
+    return path.join(this.workingDir ?? process.cwd(), '.env');
   }
 
   normalizeName(name: string): string {

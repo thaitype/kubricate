@@ -41,5 +41,15 @@ export interface BaseLoader<Config extends object = object> {
    * If not implemented, it will be a no-op.
    * @param path The path to the working directory.
    */
-  setWorkingDir?(path: string): void;
+  setWorkingDir?(path: string | undefined): void;
+
+  /**
+   * Get the working directory for the loader.
+   * This is useful for loaders that need to read files from a specific directory.
+   *
+   * For example, the EnvLoader may need to read a .env file from a specific path.
+   * This method is optional and may not be implemented by all loaders.
+   * If not implemented, it will return undefined.
+   */
+  getWorkingDir?(): string | undefined;
 }

@@ -53,21 +53,28 @@ export function collectSecretManagers(config: KubricateConfig): MergedSecretMana
 /**
  * Validate all loaders by attempting to load secrets
  */
-export async function validateSecretManagers(managers: MergedSecretManager): Promise<void> {
+export async function validateSecretManagers(managers: MergedSecretManager, options: EffectsOptions): Promise<void> {
   for (const entry of Object.values(managers)) {
     const secrets = entry.secretManager.getSecrets();
     for (const name of Object.keys(secrets)) {
       const loader = entry.secretManager.resolveLoader(secrets[name].loader);
+      if (loader.getWorkingDir && loader.getWorkingDir() === undefined) {
+        if (loader.setWorkingDir) loader.setWorkingDir(options.workingDir);
+      }
       await loader.load([name]);
       loader.get(name); // throws if not found
     }
   }
 }
 
+export interface EffectsOptions {
+  workingDir?: string;
+}
+
 /**
  * Prepare all effects across all providers
  */
-export async function prepareSecretEffects(managers: MergedSecretManager): Promise<PreparedEffect[]> {
+export async function prepareSecretEffects(managers: MergedSecretManager, options: EffectsOptions): Promise<PreparedEffect[]> {
   const effects: PreparedEffect[] = [];
 
   for (const entry of Object.values(managers)) {
@@ -79,6 +86,9 @@ export async function prepareSecretEffects(managers: MergedSecretManager): Promi
     for (const name of Object.keys(secrets)) {
       if (!loaded.has(name)) {
         const loader = secretManager.resolveLoader(secrets[name].loader);
+        if (loader.getWorkingDir && loader.getWorkingDir() === undefined) {
+          if (loader.setWorkingDir) loader.setWorkingDir(options.workingDir);
+        }
         await loader.load([name]);
         resolved[name] = loader.get(name);
         loaded.add(name);

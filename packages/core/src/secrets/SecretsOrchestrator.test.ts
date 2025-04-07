@@ -22,7 +22,7 @@ describe('SecretsOrchestrator', () => {
       debug: vi.fn(),
     };
 
-    orchestrator = new SecretsOrchestrator({ stacks: {} } as any, mockLogger);
+    orchestrator = new SecretsOrchestrator({ stacks: {} } as any, {}, mockLogger);
   });
 
   it('calls collect and validate secret managers', async () => {

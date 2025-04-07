@@ -50,7 +50,7 @@ describe('validateSecretManagers', () => {
       },
     };
 
-    await validateSecretManagers(managers);
+    await validateSecretManagers(managers, {});
     expect(fakeLoader.load).toHaveBeenCalledWith(['mySecret']);
     expect(fakeLoader.get).toHaveBeenCalledWith('mySecret');
   });
@@ -81,7 +81,7 @@ describe('prepareSecretEffects', () => {
       },
     };
 
-    const effects = await prepareSecretEffects(managers);
+    const effects = await prepareSecretEffects(managers, {});
     expect(fakeLoader.load).toHaveBeenCalledWith(['token']);
     expect(fakeLoader.get).toHaveBeenCalledWith('token');
     expect(fakeProvider.prepare).toHaveBeenCalledWith('token', 'secret-value');
