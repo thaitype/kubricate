@@ -1,4 +1,4 @@
-import { type BaseLoader, type BaseLogger } from '@kubricate/core';
+import { type BaseLoader, type BaseLogger, type SecretValue } from '@kubricate/core';
 import { config as loadDotenv } from 'dotenv';
 import path from 'node:path';
 import { maskingValue } from './utilts.js';
@@ -22,6 +22,14 @@ export interface EnvLoaderConfig {
    * @default `false`
    */
   caseInsensitive?: boolean;
+
+  /**
+   * The working directory to load the .env file from.
+   * This is useful for loading .env files from different directories.
+   * 
+   * @default `process.cwd()`
+   */
+  workingDir?: string;
 }
 
 /**
@@ -32,15 +40,16 @@ export interface EnvLoaderConfig {
 export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
   public config: EnvLoaderConfig;
   private prefix: string;
-  private secrets = new Map<string, string>();
+  private secrets = new Map<string, SecretValue>();
   private caseInsensitive: boolean;
   public logger?: BaseLogger;
-  private workingDir = process.cwd(); // Default working directory
+  private workingDir;
 
   constructor(config?: EnvLoaderConfig) {
     this.config = config ?? {};
     this.prefix = config?.prefix ?? 'KUBRICATE_SECRET_';
     this.caseInsensitive = config?.caseInsensitive ?? false;
+    this.workingDir = config?.workingDir ?? process.cwd();
   }
   /**
    * Set the working directory for loading .env files.
@@ -63,42 +72,48 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
    * @throws Will throw an error if a secret is not found or if the name is invalid.
    */
   async load(names: string[]): Promise<void> {
-    if (this.config?.allowDotEnv ?? true) {
-      loadDotenv({
-        path: this.getEnvFilePath(),
-      });
+    if (this.config.allowDotEnv ?? true) {
+      loadDotenv({ path: this.getEnvFilePath() });
       this.logger?.log(`Loaded .env file from\n   ${this.getEnvFilePath()}`);
     }
 
     for (const name of names) {
       this.logger?.debug(`Loading secret: ${name}`);
-      if (!/^[a-zA-Z0-9_]+$/.test(name)) {
-        throw new Error(`Invalid env var name: ${name}`);
-      }
-
       const expectedKey = this.prefix + name;
-      let actualKey = expectedKey;
 
-      if (this.caseInsensitive) {
-        const match = Object.keys(process.env).find(
-          envKey => this.normalizeName(envKey) === this.normalizeName(expectedKey)
-        );
-        if (!match) {
-          throw new Error(`Missing environment variable: ${expectedKey}`);
-        }
-        actualKey = match;
-      }
+      const matchKey = this.caseInsensitive
+        ? Object.keys(process.env).find(k => this.normalizeName(k) === this.normalizeName(expectedKey))
+        : expectedKey;
 
-      const value = process.env[actualKey];
-
-      if (!value) {
-        throw new Error(`Missing environment variable: ${actualKey}`);
+      if (!matchKey || !process.env[matchKey]) {
+        throw new Error(`Missing environment variable: ${expectedKey}`);
       }
 
       const storeKey = this.normalizeName(name);
-      this.secrets.set(storeKey, value);
+      this.secrets.set(storeKey, this.tryParseSecretValue(process.env[matchKey]));
       this.logger?.debug(`Loaded secret: ${name} -> ${storeKey}`);
-      this.logger?.debug(`Value: ${maskingValue(value)}`);
+      this.logger?.debug(`Value: ${maskingValue(process.env[matchKey]!)} `);
+    }
+  }
+
+  tryParseSecretValue(value: string): SecretValue {
+    try {
+      const parsed = JSON.parse(value);
+
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        !Array.isArray(parsed) &&
+        Object.values(parsed).every(
+          v => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' || v === null
+        )
+      ) {
+        return parsed; // ✅ Valid flat object
+      }
+
+      return value; // fallback: keep original string
+    } catch {
+      return value; // Not JSON, use raw string
     }
   }
 
@@ -108,7 +123,7 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
    * @returns The value of the secret.
    * @throws Will throw an error if the secret is not loaded.
    */
-  get(name: string): string {
+  get(name: string): SecretValue {
     const key = this.caseInsensitive ? name.toLowerCase() : name;
     if (!this.secrets.has(key)) {
       throw new Error(`Secret '${name}' not loaded. Did you call load()?`);

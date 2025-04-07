@@ -1,6 +1,7 @@
 import type { KubricateConfig } from '../types.js';
 import type { SecretManager } from './SecretManager.js';
 import type { PreparedEffect } from './providers/BaseProvider.js';
+import type { SecretValue } from './types.js';
 
 export type StackName = string;
 export type SecretManagerName = string;
@@ -72,7 +73,7 @@ export async function prepareSecretEffects(managers: MergedSecretManager): Promi
   for (const entry of Object.values(managers)) {
     const secretManager = entry.secretManager;
     const secrets = secretManager.getSecrets();
-    const resolved: Record<string, string> = {};
+    const resolved: Record<string, SecretValue> = {};
     const loaded = new Set<string>();
 
     for (const name of Object.keys(secrets)) {

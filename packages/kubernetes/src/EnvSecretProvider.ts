@@ -1,6 +1,6 @@
-import type { AnyClass, BaseLogger } from '../../types.js';
-import type { SecretOptions } from '../SecretManager.js';
-import type { BaseProvider, PreparedEffect } from './BaseProvider.js';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy } from '@kubricate/core';
+import type { SecretOptions } from '@kubricate/core';
+import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 
 export interface WithStackIdentifier {
@@ -13,7 +13,7 @@ export interface WithStackIdentifier {
   stackIdentifier: AnyClass;
 }
 
-export interface KubernetesSecretProviderConfig {
+export interface EnvSecretProviderConfig {
   /**
    * The name of the secret to use.
    */
@@ -67,36 +67,42 @@ export interface EnvVar {
   };
 }
 
+type SupportedKinds = 'env';
+
 /**
- * KubernetesSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
+ * EnvSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
  * It uses the Kubernetes API to create a secret with the given name and value.
  * The secret is created in the specified namespace.
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
- * @deprecated This provider is deprecated and will be removed in the future. Migrated to `EnvSecretProvider` from `@kubernetes/kubernetes`.
  */
-
-export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
+export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
   secrets: Record<string, SecretOptions> | undefined;
-  logger?: BaseLogger;
-  readonly supportedKinds: 'custom'[] = ['custom'];
 
-  constructor(public config: KubernetesSecretProviderConfig) {}
+  logger?: BaseLogger;
+  readonly supportedKinds: SupportedKinds[] = ['env'];
+
+  constructor(public config: EnvSecretProviderConfig) {}
 
   setSecrets(secrets: Record<string, SecretOptions>): void {
     this.secrets = secrets;
   }
 
-  getTargetPath(): string {
-    throw new Error('The deprecated KubernetesSecretProvider does not support target path');
+  getTargetPath(strategy: SecretInjectionStrategy): string {
+    if (strategy.kind === 'env') {
+      const index = strategy.containerIndex ?? 0;
+      return `spec.template.spec.containers[${index}].env`;
+    }
+
+    throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
 
   getInjectionPayload(): EnvVar[] {
     if (!this.secrets) {
-      throw new Error('Secrets not set in KubernetesSecretProvider');
+      throw new Error('Secrets not set in EnvSecretProvider');
     }
     if (Object.keys(this.secrets).length === 0) {
-      this.logger?.warn('Trying to get secrets from KubernetesSecretProvider, but no secrets set');
+      this.logger?.warn('Trying to get secrets from EnvSecretProvider, but no secrets set');
     }
     return Object.entries(this.secrets).map(([name]) => ({
       name,

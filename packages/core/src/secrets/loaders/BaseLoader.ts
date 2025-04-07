@@ -1,4 +1,5 @@
 import type { BaseLogger } from '../../types.js';
+import type { SecretValue } from '../types.js';
 
 /**
  * BaseLoader is the interface for secret loaders,
@@ -19,6 +20,8 @@ export interface BaseLoader<Config extends object = object> {
    * Pre-load and validate a list of secret names.
    * Should fail fast if required secrets are missing or invalid.
    *
+   * These names must correspond to top-level keys.
+   *
    * This method is required before calling `get()`.
    */
   load(names: string[]): Promise<void>;
@@ -27,7 +30,7 @@ export interface BaseLoader<Config extends object = object> {
    * Return a secret by name after it has been loaded.
    * Throws if the secret was not previously loaded via `load()`.
    */
-  get(name: string): string;
+  get(name: string): SecretValue;
 
   /**
    * Set the working directory for the loader.

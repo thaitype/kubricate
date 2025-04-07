@@ -1,4 +1,5 @@
-import { SecretManager, KubernetesSecretProvider } from '@kubricate/core';
+import { SecretManager } from '@kubricate/core';
+import { EnvSecretProvider, ImagePullSecretProvider } from '@kubricate/kubernetes';
 import { EnvLoader } from '@kubricate/env';
 
 export const config = {
@@ -8,18 +9,23 @@ export const config = {
 export const secretManager = new SecretManager()
   .addLoader('EnvLoader', new EnvLoader())
   .addProvider(
-    'Kubernetes.Secret',
-    new KubernetesSecretProvider({
+    'EnvSecretProvider',
+    new EnvSecretProvider({
       name: 'secret-application',
-      // targetInjects: [
-      //   {
-      //     resourceId: 'deployment',
-      //     stackIdentifier: AppStack,
-      //     path: 'spec.template.spec.containers[0].env',
-      //   },
-      // ],
+    })
+  )
+  .addProvider(
+    'ImagePullSecretProvider',
+    new ImagePullSecretProvider({
+      name: 'secret-application-provider',
     })
   )
   .setDefaultLoader('EnvLoader')
-  .setDefaultProvider('Kubernetes.Secret')
-  .addSecret('my_app_key');
+  .setDefaultProvider('EnvSecretProvider')
+  .addSecret({
+    name: 'my_app_key',
+  })
+  .addSecret({
+    name: 'DOCKER_SECRET',
+    provider: 'ImagePullSecretProvider',
+  })

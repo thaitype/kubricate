@@ -8,23 +8,10 @@ const namespace = new NamespaceStack().from({
 
 const myApp = new AppStack()
   // Use secrets before the from method
-  .useSecrets(secretManager, {
-    injectes: [
-      {
-        resourceId: 'deployment',
-        path: 'spec.template.spec.containers[0].env',
-      },
-    ],
-    env: [
-      {
-        name: 'MY_ENV',
-        value: 'my-value',
-      },
-      {
-        name: 'my_app_key',
-        secretRef: 'my_app_key',
-      },
-    ],
+  .useSecrets(secretManager, injector => {
+    injector.setDefaultResourceId('deployment');
+    injector.secrets('my_app_key').inject({ kind: 'env', containerIndex: 0 });
+    injector.secrets('DOCKER_SECRET').inject({ kind: 'imagePull'})
   })
   .from({
     namespace: config.namespace,

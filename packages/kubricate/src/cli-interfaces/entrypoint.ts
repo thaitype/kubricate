@@ -34,6 +34,10 @@ export function cliEntryPoint(argv: string[], options: CliEntryPointOptions) {
       type: 'boolean',
       describe: 'Suppress all output',
     })
+    .option('dry-run', {
+      type: 'boolean',
+      describe: 'Do not execute any commands, just print what would be done',
+    })
     .middleware(argv => {
       let level: LogLevel = 'info';
       if (argv.silent) level = 'silent';

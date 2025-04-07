@@ -1,21 +1,25 @@
+import type { SecretInjectionStrategy } from '../../BaseStack.js';
 import type { BaseLogger } from '../../types.js';
 import type { SecretOptions } from '../SecretManager.js';
+import type { SecretValue } from '../types.js';
 
-export interface BaseProvider<Config extends object = object> {
+export interface BaseProvider<
+  Config extends object = object,
+  SupportedKinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
+> {
   config: Config;
   /**
    * Secret from SecretManager (This only metadata and not the value)
    * This is used to inject the secret into the resource.
    */
   secrets: Record<string, SecretOptions> | undefined;
-  injectes: ProviderInjection[];
   logger?: BaseLogger;
 
   /**
    * Prepares the secret for the given name and value.
    * This method should return a resource object that can be applied to Kubernetes.
    */
-  prepare(name: string, value: string): PreparedEffect[];
+  prepare(name: string, value: SecretValue): PreparedEffect[];
 
   /**
    * Returns the payload to be injected into the target resource.
@@ -34,11 +38,12 @@ export interface BaseProvider<Config extends object = object> {
   setSecrets(secrets: Record<string, SecretOptions>): void;
 
   /**
-   * @internal Sets the injects in the provider.
-   *
-   * @param injectes
+   * Return the Kubernetes path this provider expects for a given strategy.
+   * This is used to generate the target path in the manifest for injection.
    */
-  setInjects(injectes: ProviderInjection[]): void;
+  getTargetPath(strategy: SecretInjectionStrategy): string;
+
+  readonly supportedKinds: SupportedKinds[];
 }
 
 export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;
@@ -82,6 +87,7 @@ export interface KubricateEffect extends BaseEffect<'kubricate'> {
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
 
 export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
+  provider: BaseProvider;
   resourceId: ResourceId;
   path: Path;
 }

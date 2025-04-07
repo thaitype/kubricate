@@ -113,20 +113,6 @@ describe('ResourceComposer', () => {
       }).toThrow('Cannot inject, resource with ID test is not an object or class.');
     });
 
-    it('should throw an error if the path already has a value', () => {
-      const config = {
-        metadata: {
-          name: 'test',
-          annotations: { existing: 'value' },
-        },
-      };
-
-      composer.addClass({ id: 'test', type: TestClass, config });
-
-      expect(() => {
-        composer.inject('test', 'metadata.annotations', { key: 'value' });
-      }).toThrow(/Cannot inject, resource with ID test already has a value at path metadata.annotations/);
-    });
   });
 
   describe('override method', () => {

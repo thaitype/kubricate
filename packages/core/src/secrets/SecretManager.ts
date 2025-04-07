@@ -1,14 +1,20 @@
 import type { BaseLoader } from './loaders/BaseLoader.js';
 import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
-import type { AnyKey, BaseLogger } from '../types.js';
+import type { AnyKey, BaseLogger, FallbackIfNever } from '../types.js';
 import { validateString } from '../internal/utils.js';
+import type { SecretValue } from './types.js';
+import type { Pipe, Tuples, Unions } from 'hotscript';
 
 export interface SecretManagerEffect {
   name: string;
-  value: string;
+  value: SecretValue;
   effects: PreparedEffect[];
 }
 
+type ExtractWithDefault<Input extends AnyKey, Default extends AnyKey> =
+  Pipe<Input, [Unions.ToTuple, Tuples.At<1>]> extends undefined ? Input : Default;
+
+// type A = ExtractWithDefault<'A' | 'B', 'C'>; // C
 /**
  * SecretOptions defines the structure of a secret entry in the SecretManager.
  * It includes the name of the secret, the loader to use for loading it,
@@ -54,13 +60,23 @@ export class SecretManager<
    * Keys are provider names, values are typically unique string identifiers.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  ProviderInstances extends Record<string, string> = {},
+  ProviderInstances extends Record<string, BaseProvider> = {},
   /**
    * Secret entries added to the registry.
    * Keys are secret names, values are their associated string identifiers.
    */
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  SecretEntries extends Record<string, string> = {},
+
+  SecretEntries extends Record<
+    string,
+    {
+      provider: keyof ProviderInstances;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  > = {},
+  /**
+   * Default provider to use if no specific provider is specified.
+   */
+  DefaultProvider extends AnyKey = never,
 > {
   /**
    * Internal runtime storage for secret values (not type-safe).
@@ -84,12 +100,22 @@ export class SecretManager<
    * @param options - Configuration specific to the provider type.
    * @returns A SecretManager instance with the provider added.
    */
-  addProvider<NewProvider extends string>(provider: NewProvider, options: BaseProvider) {
+  addProvider<NewProviderKey extends string, NewProvider extends BaseProvider>(
+    provider: NewProviderKey,
+    options: NewProvider
+  ) {
     if (this._providers[provider]) {
       throw new Error(`Provider ${provider} already exists`);
     }
     this._providers[provider] = options;
-    return this as SecretManager<LoaderInstances, ProviderInstances & Record<NewProvider, string>, SecretEntries>;
+    return this as SecretManager<
+      LoaderInstances,
+      ProviderInstances & Record<NewProviderKey, NewProvider>,
+      SecretEntries,
+      // If the default provider is never, use the new provider key
+      // Otherwise, use the existing default provider
+      FallbackIfNever<DefaultProvider, NewProviderKey>
+    >;
   }
 
   /**
@@ -101,9 +127,9 @@ export class SecretManager<
    * @param provider - The unique name of the provider (e.g., 'Kubernetes.Secret').
    * @returns A SecretManager instance with the provider added.
    */
-  setDefaultProvider(provider: keyof ProviderInstances) {
+  setDefaultProvider<NewDefaultProvider extends keyof ProviderInstances>(provider: NewDefaultProvider) {
     this._defaultProvider = provider;
-    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries>;
+    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries, NewDefaultProvider>;
   }
 
   /**
@@ -119,7 +145,12 @@ export class SecretManager<
       throw new Error(`Loader ${loader} already exists`);
     }
     this._loaders[loader] = options;
-    return this as SecretManager<LoaderInstances & Record<NewLoader, string>, ProviderInstances, SecretEntries>;
+    return this as SecretManager<
+      LoaderInstances & Record<NewLoader, string>,
+      ProviderInstances,
+      SecretEntries,
+      DefaultProvider
+    >;
   }
 
   /**
@@ -133,7 +164,7 @@ export class SecretManager<
    */
   setDefaultLoader(loader: keyof LoaderInstances) {
     this._defaultLoader = loader;
-    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries>;
+    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries, DefaultProvider>;
   }
 
   /**
@@ -142,8 +173,8 @@ export class SecretManager<
    * @param optionsOrName - SecretOptions
    * @returns A new SecretManager instance with the secret added.
    */
-  addSecret<NewSecret extends string>(
-    optionsOrName: NewSecret | SecretOptions<NewSecret, keyof LoaderInstances, keyof ProviderInstances>
+  addSecret<NewSecret extends string, NewProvider extends keyof ProviderInstances = keyof ProviderInstances>(
+    optionsOrName: NewSecret | SecretOptions<NewSecret, keyof LoaderInstances, NewProvider>
   ) {
     if (typeof optionsOrName === 'string') {
       if (this._secrets[optionsOrName]) {
@@ -158,7 +189,18 @@ export class SecretManager<
       }
       this._secrets[optionsOrName.name] = optionsOrName;
     }
-    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries & Record<NewSecret, string>>;
+    return this as SecretManager<
+      LoaderInstances,
+      ProviderInstances,
+      SecretEntries &
+        Record<
+          NewSecret,
+          {
+            provider: ExtractWithDefault<NewProvider, DefaultProvider>;
+          }
+        >,
+      DefaultProvider
+    >;
   }
 
   /**
@@ -269,7 +311,7 @@ export class SecretManager<
   async prepare(): Promise<SecretManagerEffect[]> {
     this.validateConfig();
     const secrets = this.getSecrets();
-    const resolved: Record<string, string> = {};
+    const resolved: Record<string, SecretValue> = {};
     const loadedKeys = new Set<string>();
 
     for (const secret of Object.values(secrets)) {
@@ -286,9 +328,53 @@ export class SecretManager<
       const provider = this.resolveProvider(secret.provider);
       return {
         name: secret.name,
+        // TODO: Consider to remove the value from provider, due to only `secrets apply` is using it
         value: resolved[secret.name],
         effects: provider.prepare(secret.name, resolved[secret.name]),
       };
     });
+  }
+
+  /**
+   * Resolves the registered provider instance for a given secret name.
+   * This method is used during the secret injection planning phase (e.g., `useSecrets`)
+   * and does not resolve or load secret values.
+   *
+   * @param secretName - The name of the secret to resolve.
+   * @returns The BaseProvider associated with the secret.
+   * @throws If the secret is not registered or has no provider.
+   */
+  resolveProviderFor(secretName: string): BaseProvider {
+    const secret = this._secrets[secretName];
+    if (!secret) {
+      throw new Error(`Secret "${secretName}" is not registered.`);
+    }
+    return this.resolveProvider(secret.provider);
+  }
+
+  /**
+   * Resolves the actual secret value and its associated provider for a given secret name.
+   * This method is used at runtime when the secret is being applied (e.g., `secrets apply`).
+   * It loads the value from the appropriate loader and returns both the value and the provider.
+   *
+   * @param secretName - The name of the secret to resolve and load.
+   * @returns An object containing the resolved provider and loaded secret value.
+   * @throws If the secret is not registered or its loader/provider cannot be found.
+   */
+  async resolveSecretValueForApply(secretName: string): Promise<{
+    provider: BaseProvider;
+    value: SecretValue;
+  }> {
+    const secret = this._secrets[secretName];
+    if (!secret) {
+      throw new Error(`Secret "${secretName}" is not registered.`);
+    }
+
+    const loader = this.resolveLoader(secret.loader);
+    await loader.load([secret.name]);
+    const value = loader.get(secret.name);
+
+    const provider = this.resolveProvider(secret.provider);
+    return { provider, value };
   }
 }

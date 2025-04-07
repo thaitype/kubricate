@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest';
-import { KubernetesSecretProvider } from './KubernetesSecretProvider.js';
-import type { SecretOptions } from '../SecretManager.js';
+import { EnvSecretProvider } from './EnvSecretProvider.js';
+import type { SecretOptions } from '@kubricate/core';
 
-describe('KubernetesSecretProvider', () => {
-  const provider = new KubernetesSecretProvider({ name: 'my-secret', namespace: 'myns' });
+describe('EnvSecretProvider', () => {
+  const provider = new EnvSecretProvider({ name: 'my-secret', namespace: 'myns' });
 
   it('should store secrets via setSecrets', () => {
     const secrets: Record<string, SecretOptions> = {
@@ -14,7 +14,7 @@ describe('KubernetesSecretProvider', () => {
     provider.setSecrets(secrets);
     expect(provider.secrets).toEqual(secrets);
   });
-  
+
   it('should generate EnvVar[] via getInjectionPayload', () => {
     provider.setSecrets({
       MY_ENV: { name: 'MY_ENV', provider: 'k8s' },
@@ -40,13 +40,13 @@ describe('KubernetesSecretProvider', () => {
 
     provider.setSecrets({});
     const result = provider.getInjectionPayload();
-    expect(spyWarn).toHaveBeenCalledWith('Trying to get secrets from KubernetesSecretProvider, but no secrets set');
+    expect(spyWarn).toHaveBeenCalledWith('Trying to get secrets from EnvSecretProvider, but no secrets set');
     expect(result).toEqual([]);
   });
 
   it('should throw if getInjectionPayload is called before setSecrets', () => {
-    const uninitProvider = new KubernetesSecretProvider({ name: 'unset' });
-    expect(() => uninitProvider.getInjectionPayload()).toThrow('Secrets not set in KubernetesSecretProvider');
+    const uninitProvider = new EnvSecretProvider({ name: 'unset' });
+    expect(() => uninitProvider.getInjectionPayload()).toThrow('Secrets not set in EnvSecretProvider');
   });
 
   it('should return kubectl effect with base64 encoded value in prepare', () => {
