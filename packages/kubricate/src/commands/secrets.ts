@@ -6,7 +6,7 @@ import c from 'ansis';
 import { BaseCommand } from './base.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface SecretsCommandOptions extends GlobalConfigOptions {}
+export interface SecretsCommandOptions extends GlobalConfigOptions { }
 
 export class SecretsCommand extends BaseCommand {
   constructor(
@@ -37,7 +37,11 @@ export class SecretsCommand extends BaseCommand {
       if (effect.type === 'kubectl') {
         const name = effect.value?.metadata?.name ?? 'unnamed';
         this.logger.info(`Applying secret: ${name}`);
-        await this.kubectl.apply(effect.value);
+        if (this.options.dryRun) {
+          this.logger.log(c.yellow`${MARK_CHECK} [DRY RUN] Would apply: ${name} with kubectl using payload: ${JSON.stringify(effect.value)}`);
+        } else {
+          await this.kubectl.apply(effect.value);
+        }
         this.logger.log(c.green`${MARK_CHECK} Applied: ${name}`);
       }
     }

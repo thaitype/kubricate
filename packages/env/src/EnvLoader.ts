@@ -1,4 +1,4 @@
-import { type BaseLoader, type BaseLogger } from '@kubricate/core';
+import { type BaseLoader, type BaseLogger, type SecretValue } from '@kubricate/core';
 import { config as loadDotenv } from 'dotenv';
 import path from 'node:path';
 import { maskingValue } from './utilts.js';
@@ -40,7 +40,7 @@ export interface EnvLoaderConfig {
 export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
   public config: EnvLoaderConfig;
   private prefix: string;
-  private secrets = new Map<string, string>();
+  private secrets = new Map<string, SecretValue>();
   private caseInsensitive: boolean;
   public logger?: BaseLogger;
   private workingDir;
@@ -90,9 +90,30 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
       }
 
       const storeKey = this.normalizeName(name);
-      this.secrets.set(storeKey, process.env[matchKey]!);
+      this.secrets.set(storeKey, this.tryParseSecretValue(process.env[matchKey]));
       this.logger?.debug(`Loaded secret: ${name} -> ${storeKey}`);
       this.logger?.debug(`Value: ${maskingValue(process.env[matchKey]!)} `);
+    }
+  }
+
+  tryParseSecretValue(value: string): SecretValue {
+    try {
+      const parsed = JSON.parse(value);
+
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        !Array.isArray(parsed) &&
+        Object.values(parsed).every(
+          v => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' || v === null
+        )
+      ) {
+        return parsed; // ✅ Valid flat object
+      }
+
+      return value; // fallback: keep original string
+    } catch {
+      return value; // Not JSON, use raw string
     }
   }
 
@@ -102,7 +123,7 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
    * @returns The value of the secret.
    * @throws Will throw an error if the secret is not loaded.
    */
-  get(name: string): string {
+  get(name: string): SecretValue {
     const key = this.caseInsensitive ? name.toLowerCase() : name;
     if (!this.secrets.has(key)) {
       throw new Error(`Secret '${name}' not loaded. Did you call load()?`);
