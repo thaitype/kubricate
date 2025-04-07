@@ -67,7 +67,7 @@ export interface EnvVar {
   };
 }
 
-type SupportedKinds = 'env';
+type SupportedStrategies = 'env';
 
 /**
  * EnvSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
@@ -80,7 +80,7 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
   secrets: Record<string, SecretOptions> | undefined;
 
   logger?: BaseLogger;
-  readonly supportedKinds: SupportedKinds[] = ['env'];
+  readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
   constructor(public config: EnvSecretProviderConfig) {}
 

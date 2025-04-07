@@ -79,7 +79,7 @@ export interface EnvVar {
 export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
   secrets: Record<string, SecretOptions> | undefined;
   logger?: BaseLogger;
-  readonly supportedKinds: 'custom'[] = ['custom'];
+  readonly supportedStrategies: 'custom'[] = ['custom'];
 
   constructor(public config: KubernetesSecretProviderConfig) {}
 

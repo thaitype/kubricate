@@ -30,14 +30,14 @@ export interface ImagePullSecretProviderConfig {
   namespace?: string;
 }
 
-type SupportedKinds = 'imagePull';
+type SupportedStrategies = 'imagePull';
 
 export class ImagePullSecretProvider
-  implements BaseProvider<ImagePullSecretProviderConfig, SupportedKinds>
+  implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies>
 {
   secrets: Record<string, SecretOptions> | undefined;
   logger?: BaseLogger;
-  readonly supportedKinds: SupportedKinds[] = ['imagePull'];
+  readonly supportedStrategies: SupportedStrategies[] = ['imagePull'];
 
   constructor(public config: ImagePullSecretProviderConfig) {}
 

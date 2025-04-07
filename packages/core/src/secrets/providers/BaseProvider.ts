@@ -5,9 +5,10 @@ import type { SecretValue } from '../types.js';
 
 export interface BaseProvider<
   Config extends object = object,
-  SupportedKinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
+  SupportedStrategies extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
 > {
   config: Config;
+
   /**
    * Secret from SecretManager (This only metadata and not the value)
    * This is used to inject the secret into the resource.
@@ -43,7 +44,7 @@ export interface BaseProvider<
    */
   getTargetPath(strategy: SecretInjectionStrategy): string;
 
-  readonly supportedKinds: SupportedKinds[];
+  readonly supportedStrategies: SupportedStrategies[];
 }
 
 export type PreparedEffect = ManualEffect | KubectlEffect;
