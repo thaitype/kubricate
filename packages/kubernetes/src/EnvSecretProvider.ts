@@ -1,6 +1,5 @@
-import type { AnyClass, BaseLogger } from '../../types.js';
-import type { SecretOptions } from '../SecretManager.js';
-import type { BaseProvider, PreparedEffect, ProviderInjection } from './BaseProvider.js';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection} from '@kubricate/core';
+import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 
 export interface WithStackIdentifier {
@@ -13,7 +12,7 @@ export interface WithStackIdentifier {
   stackIdentifier: AnyClass;
 }
 
-export interface KubernetesSecretProviderConfig {
+export interface EnvSecretProviderConfig {
   /**
    * The name of the secret to use.
    */
@@ -33,6 +32,7 @@ export interface KubernetesSecretProviderConfig {
  * EnvVar represents an environment variable present in a Container.
  *
  * Ported from import { IEnvVar } from 'kubernetes-models/v1/EnvVar';
+import ProviderInjection from '@kubricate/core';
  */
 export interface EnvVar {
   /**
@@ -67,37 +67,60 @@ export interface EnvVar {
   };
 }
 
-export class KubernetesSecretProvider implements BaseProvider<KubernetesSecretProviderConfig> {
-  secrets: Record<string, SecretOptions> = {};
-  injectes: ProviderInjection[] = [];
+type SupportedStrategies = 'env';
+
+/**
+ * EnvSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
+ * It uses the Kubernetes API to create a secret with the given name and value.
+ * The secret is created in the specified namespace.
+ *
+ * @see https://kubernetes.io/docs/concepts/configuration/secret/
+ */
+export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
+
   logger?: BaseLogger;
+  injectes: ProviderInjection[] = [];
+  readonly targetKind = 'Deployment';
+  readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
-  constructor(public config: KubernetesSecretProviderConfig) {}
-
-  setSecrets(secrets: Record<string, SecretOptions>): void {
-    this.secrets = secrets;
-  }
+  constructor(public config: EnvSecretProviderConfig) {}
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;
   }
 
+  getTargetPath(strategy: SecretInjectionStrategy): string {
+    if (strategy.kind === 'env') {
+      const index = strategy.containerIndex ?? 0;
+      return `spec.template.spec.containers[${index}].env`;
+    }
+
+    throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
+  }
+
   getInjectionPayload(): EnvVar[] {
-    if (!this.secrets) {
-      throw new Error('Secrets not set in KubernetesSecretProvider');
+    if (!this.injectes) {
+      throw new Error('injects is not set in EnvSecretProvider');
     }
-    if (Object.keys(this.secrets).length === 0) {
-      this.logger?.warn('Trying to get secrets from KubernetesSecretProvider, but no secrets set');
-    }
-    return Object.entries(this.secrets).map(([name]) => ({
-      name,
-      valueFrom: {
-        secretKeyRef: {
-          name: this.config.name,
-          key: name,
+  
+    return this.injectes.map((inject) => {
+      const name = inject.meta?.targetName ?? inject.meta?.secretName;
+      const key = inject.meta?.secretName;
+  
+      if (!name || !key) {
+        throw new Error('Invalid injection metadata for EnvSecretProvider');
+      }
+  
+      return {
+        name,
+        valueFrom: {
+          secretKeyRef: {
+            name: this.config.name,
+            key,
+          },
         },
-      },
-    }));
+      };
+    });
   }
 
   prepare(name: string, value: string): PreparedEffect[] {

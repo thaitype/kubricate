@@ -1,6 +1,7 @@
 import type { KubricateConfig } from '../types.js';
 import type { SecretManager } from './SecretManager.js';
 import type { PreparedEffect } from './providers/BaseProvider.js';
+import type { SecretValue } from './types.js';
 
 export type StackName = string;
 export type SecretManagerName = string;
@@ -52,32 +53,42 @@ export function collectSecretManagers(config: KubricateConfig): MergedSecretMana
 /**
  * Validate all loaders by attempting to load secrets
  */
-export async function validateSecretManagers(managers: MergedSecretManager): Promise<void> {
+export async function validateSecretManagers(managers: MergedSecretManager, options: EffectsOptions): Promise<void> {
   for (const entry of Object.values(managers)) {
     const secrets = entry.secretManager.getSecrets();
     for (const name of Object.keys(secrets)) {
       const loader = entry.secretManager.resolveLoader(secrets[name].loader);
+      if (loader.getWorkingDir && loader.getWorkingDir() === undefined) {
+        if (loader.setWorkingDir) loader.setWorkingDir(options.workingDir);
+      }
       await loader.load([name]);
       loader.get(name); // throws if not found
     }
   }
 }
 
+export interface EffectsOptions {
+  workingDir?: string;
+}
+
 /**
  * Prepare all effects across all providers
  */
-export async function prepareSecretEffects(managers: MergedSecretManager): Promise<PreparedEffect[]> {
+export async function prepareSecretEffects(managers: MergedSecretManager, options: EffectsOptions): Promise<PreparedEffect[]> {
   const effects: PreparedEffect[] = [];
 
   for (const entry of Object.values(managers)) {
     const secretManager = entry.secretManager;
     const secrets = secretManager.getSecrets();
-    const resolved: Record<string, string> = {};
+    const resolved: Record<string, SecretValue> = {};
     const loaded = new Set<string>();
 
     for (const name of Object.keys(secrets)) {
       if (!loaded.has(name)) {
         const loader = secretManager.resolveLoader(secrets[name].loader);
+        if (loader.getWorkingDir && loader.getWorkingDir() === undefined) {
+          if (loader.setWorkingDir) loader.setWorkingDir(options.workingDir);
+        }
         await loader.load([name]);
         resolved[name] = loader.get(name);
         loaded.add(name);

@@ -37,10 +37,14 @@ export function extractKindFromResourceEntry(entry: ResourceEntry): string {
 }
 
 export function extractStackInfo(name: string, stack: BaseStack): StackInfo {
+  const composer = stack.getComposer();
+  if (!composer) {
+    throw new Error(`Stack ${name} does not have a composer.`);
+  }
   return {
     name,
     type: getStackName(stack),
-    kinds: Object.entries(stack.getComposer()._entries).map(([id, entry]) => {
+    kinds: Object.entries(composer._entries).map(([id, entry]) => {
       return {
         id,
         kind: extractKindFromResourceEntry(entry),

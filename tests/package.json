@@ -1,10 +1,18 @@
 {
-  "name": "@examples/with-secrets",
+  "name": "@kubricate/tests",
+  "version": "0.0.1",
   "type": "module",
-  "version": "0.0.5",
   "private": true,
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
   },
   "files": [
     "dist",
@@ -13,21 +21,15 @@
     "README.md"
   ],
   "scripts": {
-    "kubricate": "kubricate",
-    "lint:check": "mono lint:check",
-    "lint:fix": "mono lint:fix",
+    "test": "mono test",
+    "test:watch": "mono test:watch",
     "check-types": "mono check-types"
   },
-  "peerDependencies": {
-    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
-  },
   "devDependencies": {
-    "@kubernetes-models/base": "^5.0.1",
+    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*",
-    "kubricate": "workspace:*"
+    "@kubricate/config-vitest": "workspace:*"
   },
   "dependencies": {
     "@kubricate/core": "workspace:*",

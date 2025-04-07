@@ -31,4 +31,13 @@ export interface GlobalConfigOptions {
    * Version of the CLI.
    */
   version?: string;
+
+  /**
+   * Dry run mode.
+   * If set to true, the CLI will not execute any commands,
+   * but will print what would be done.
+   *
+   * @default false
+   */
+  dryRun?: boolean;
 }

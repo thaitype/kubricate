@@ -2,6 +2,7 @@ import { SecretsOrchestrator, type BaseLogger, type KubricateConfig } from '@kub
 import { getConfig, getMatchConfigFile } from '../internal/load-config.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
 import c from 'ansis';
+import path from 'node:path';
 
 export class BaseCommand {
   protected config: KubricateConfig | undefined;
@@ -43,7 +44,10 @@ export class BaseCommand {
       this.injectLogger(this.config);
       logger.debug('Injected logger into stacks.');
       logger.debug('Creating secrets orchestrator...');
-      this.orchestrator = new SecretsOrchestrator(this.config, logger);
+      const workingDir = this.options.root ? path.resolve(this.options.root) : undefined;
+      this.orchestrator = new SecretsOrchestrator(this.config, {
+        workingDir,
+      }, logger);
       logger.debug('Secrets orchestrator created.');
     }
     return {

@@ -13,6 +13,16 @@ export type AnyClass = { new (...args: any[]): any };
  */
 export type AnyKey = string | number | symbol;
 
+/**
+ * Check is the type is never, return true if the type is never, false otherwise.
+ */
+export type IsNever<T> = [T] extends [never] ? true : false;
+/**
+ * FallbackIfNever checks if the type T is never, and if so, returns the fallback type.
+ * Otherwise, it returns the original type T.
+ */
+export type FallbackIfNever<T, Fallback> = IsNever<T> extends true ? Fallback : T;
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InferConfigureComposerFunc<T> = T extends (...args: any[]) => ResourceComposer<infer R> ? R : never;
 /**

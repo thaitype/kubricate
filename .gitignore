@@ -36,7 +36,12 @@ yarn-error.log*
 dist
 generated
 
-.env
+# Ignore all .env files
+*.env
+
+# EXCEPTION: allow .env files in test fixtures
+!tests/fixtures/**/.env
+
 
 coverage.json
 
