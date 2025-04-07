@@ -157,7 +157,13 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     return this;
   }
 
-  findResourceIdByKind(kind: string): string | undefined {
+  /**
+   * @interal Find all resource IDs of a specific kind.
+   * This method is useful for filtering resources based on their kind.
+   */
+
+  findResourceIdsByKind(kind: string): string[] {
+    const resourceIds: string[] = [];
     const buildResources: unknown[] = this.build();
     const entryIds = Object.keys(this._entries);
 
@@ -172,12 +178,12 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
         typeof resource.kind === 'string'
       ) {
         if (resource.kind.toLowerCase() === kind.toLowerCase()) {
-          return resourceId;
+          resourceIds.push(resourceId);
         }
       }
     }
 
-    return undefined;
+    return resourceIds;
   }
 
 

@@ -129,15 +129,21 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
       );
     }
 
-    const resourceId = composer.findResourceIdByKind(kind);
-    if (!resourceId) {
+    const helperMessage =
+      `Please specify a resourceId explicitly \n` +
+      ` → Use .intoResource(...) to specify a resource ID explicitly,\n` +
+      ` → or call setDefaultResourceId(...) in SecretsInjectionContext.`
+
+    const resourceId = composer.findResourceIdsByKind(kind);
+    if (resourceId.length === 0) {
       throw new Error(
-        `[SecretInjectionBuilder] Could not resolve resourceId from provider.targetKind="${kind}".\n` +
-        ` → Use .intoResource(...) to specify a resource ID explicitly,\n` +
-        ` → or call setDefaultResourceId(...) in SecretsInjectionContext.`
+        `[SecretInjectionBuilder] Could not resolve resourceId from provider.targetKind="${kind}".\n` + helperMessage
+      );
+    } else if (resourceId.length > 1) {
+      throw new Error(
+        `[SecretInjectionBuilder] Multiple resourceIds found for provider.targetKind="${kind}".\n` + helperMessage
       );
     }
-
-    return resourceId;
+    return resourceId[0];
   }
 }
