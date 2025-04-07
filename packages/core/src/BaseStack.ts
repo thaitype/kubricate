@@ -133,7 +133,7 @@ export abstract class BaseStack<
     this._composer = composer;
   }
 
-  getComposer() {
+  getComposer(): ReturnType<ConfigureComposerFunc> | undefined {
     return this._composer;
   }
 

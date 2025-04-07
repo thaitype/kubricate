@@ -39,29 +39,29 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     if (!(composed.entryType === 'object' || composed.entryType === 'class')) {
       throw new Error(`Cannot inject, resource with ID ${resourceId} is not an object or class.`);
     }
-  
+
     const existingValue = get(composed.config, path);
-  
+
     if (existingValue === undefined) {
       // No value yet — safe to set directly
       set(composed.config, path, value);
       return;
     }
-  
+
     if (Array.isArray(existingValue) && Array.isArray(value)) {
       // Append array elements (e.g. env vars, volumeMounts)
       const mergedArray = [...existingValue, ...value];
       set(composed.config, path, mergedArray);
       return;
     }
-  
+
     if (isPlainObject(existingValue) && isPlainObject(value)) {
       // Deep merge objects
       const mergedObject = merge({}, existingValue, value);
       set(composed.config, path, mergedObject);
       return;
     }
-  
+
     // Fallback: do not overwrite primitive or incompatible types
     throw new Error(
       `Cannot inject, resource "${resourceId}" already has a value at path "${path}". ` +
@@ -156,4 +156,29 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     this._override = overrideResources;
     return this;
   }
+
+  findResourceIdByKind(kind: string): string | undefined {
+    const buildResources: unknown[] = this.build();
+    const entryIds = Object.keys(this._entries);
+
+    for (let i = 0; i < buildResources.length; i++) {
+      const resource = buildResources[i];
+      const resourceId = entryIds[i];
+
+      if (
+        typeof resource === 'object' &&
+        resource !== null &&
+        'kind' in resource &&
+        typeof resource.kind === 'string'
+      ) {
+        if (resource.kind.toLowerCase() === kind.toLowerCase()) {
+          return resourceId;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+
 }

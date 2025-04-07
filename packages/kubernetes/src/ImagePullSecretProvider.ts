@@ -37,6 +37,7 @@ export class ImagePullSecretProvider
 {
   secrets: Record<string, SecretOptions> | undefined;
   logger?: BaseLogger;
+  readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['imagePull'];
 
   constructor(public config: ImagePullSecretProviderConfig) {}

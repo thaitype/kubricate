@@ -78,8 +78,8 @@ type SupportedStrategies = 'env';
  */
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
   secrets: Record<string, SecretOptions> | undefined;
-
   logger?: BaseLogger;
+  readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
   constructor(public config: EnvSecretProviderConfig) {}

@@ -43,6 +43,12 @@ export interface BaseProvider<
    * This is used to generate the target path in the manifest for injection.
    */
   getTargetPath(strategy: SecretInjectionStrategy): string;
+  /**
+   * Kubernetes resource kind this provider expects for a given strategy.
+   * 
+   * e.g. `Deployment`, `StatefulSet`, `DaemonSet`, etc.
+   */
+  readonly targetKind: string;
 
   readonly supportedStrategies: SupportedStrategies[];
 }
@@ -54,14 +60,14 @@ export interface BaseEffect<Type extends string, T = unknown> {
   value: T;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ManualEffect extends BaseEffect<'manual'> {}
+export interface ManualEffect extends BaseEffect<'manual'> { }
 
 /**
  * KubectlEffect is used to apply a value to a resource using kubectl.
  * This will apply automatically to the resource when it is created.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
-export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
+export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> { }
 
 export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
   /**
