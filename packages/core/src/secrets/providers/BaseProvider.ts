@@ -46,7 +46,7 @@ export interface BaseProvider<
   readonly supportedKinds: SupportedKinds[];
 }
 
-export type PreparedEffect = ManualEffect | KubricateEffect | KubectlEffect;
+export type PreparedEffect = ManualEffect | KubectlEffect;
 
 export interface BaseEffect<Type extends string, T = unknown> {
   type: Type;
@@ -54,40 +54,30 @@ export interface BaseEffect<Type extends string, T = unknown> {
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ManualEffect extends BaseEffect<'manual'> {}
-/**
- * KubricateEffect is used to apply a value to a resource using Kubricate.
- * This will apply automatically to the resource when it is created.
- */
-export interface KubricateEffect extends BaseEffect<'kubricate'> {
-  /**
-   * ID of the resource as defined in KubricateComposer.
-   * Example: `deployment`, `service`, `secret-mykey`
-   */
-  resourceId: string;
-  /**
-   * Dot path inside the resource to apply this value to.
-   * Example: 'spec.template.metadata.annotations'
-   *
-   * This is used to deep-merge the value into the resource.
-   * Refer to lodash get (Gets the value at path of object.) for more details.
-   * https://lodash.com/docs/4.17.15#get
-   *
-   * This is a dot-separated path to the property in the resource where the value should be applied.
-   *
-   * @default '' means the value will be applied to the root of the resource.
-   */
-  path?: string;
-}
+
 /**
  * KubectlEffect is used to apply a value to a resource using kubectl.
  * This will apply automatically to the resource when it is created.
  */
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
 
 export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
+  /**
+   * Provider Instance use for get injectionPayload
+   */
   provider: BaseProvider;
+  /**
+   * Target resource ID in the composer which the secret will be injected.
+   */
   resourceId: ResourceId;
+  /**
+   * Target path in the resource where the secret will be injected.
+   * This is used to deep-merge the value into the resource.
+   * Refer to lodash get (Gets the value at path of object.) for more details.
+   * https://lodash.com/docs/4.17.15#get
+   * 
+   * This is a dot-separated path to the property in the resource where the value should be applied.
+   */
   path: Path;
 }
