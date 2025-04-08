@@ -24,9 +24,6 @@ export interface EnvSecretProviderConfig {
    * @default 'default'
    */
   namespace?: string;
-
-  // TODO: add support for targetInjects
-  // targetInjects?: (ProviderSecretsInjection & WithStackIdentifier)[];
 }
 
 /**

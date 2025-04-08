@@ -11,16 +11,16 @@ export interface BaseProvider<
   logger?: BaseLogger;
 
   /**
-   * Prepares the secret for the given name and value.
-   * This method should return a resource object that can be applied to Kubernetes.
+   * prepare() is used to provision secret values into the cluster or remote backend.
+   * It is only called during `kubricate secret apply`.
+   *
+   * It should return the full secret resource (e.g., Kubernetes Secret, Vault payload).
    */
   prepare(name: string, value: SecretValue): PreparedEffect[];
 
   /**
-   * Returns the payload to be injected into the target resource.
-   *
-   * getInjectionPayload, will be called multiple times, sometime may no secrets set, this will be happen when read config from `kubricate.config` file
-   * However, when the `kubricate generate` command is executed, the secrets will be set.
+   * getInjectionPayload() is used to return runtime resource values (e.g., container.env).
+   * This is used during manifest generation (`kubricate generate`) and must be pure.
    */
   getInjectionPayload(injectes: ProviderInjection[]): unknown;
 
