@@ -1,4 +1,4 @@
-import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection} from '@kubricate/core';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 
@@ -79,15 +79,10 @@ type SupportedStrategies = 'env';
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
 
   logger?: BaseLogger;
-  injectes: ProviderInjection[] = [];
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
-  constructor(public config: EnvSecretProviderConfig) {}
-
-  setInjects(injectes: ProviderInjection[]): void {
-    this.injectes = injectes;
-  }
+  constructor(public config: EnvSecretProviderConfig) { }
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'env') {
@@ -98,19 +93,15 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
 
-  getInjectionPayload(): EnvVar[] {
-    if (!this.injectes) {
-      throw new Error('injects is not set in EnvSecretProvider');
-    }
-  
-    return this.injectes.map((inject) => {
+  getInjectionPayload(injectes: ProviderInjection[]): EnvVar[] {
+    return injectes.map((inject) => {
       const name = inject.meta?.targetName ?? inject.meta?.secretName;
       const key = inject.meta?.secretName;
-  
+
       if (!name || !key) {
-        throw new Error('Invalid injection metadata for EnvSecretProvider');
+        throw new Error('[EnvSecretProvider] Invalid injection metadata: name or key is missing.');
       }
-  
+
       return {
         name,
         valueFrom: {
@@ -144,3 +135,5 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     ];
   }
 }
+
+

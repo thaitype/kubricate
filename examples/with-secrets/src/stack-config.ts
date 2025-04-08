@@ -14,6 +14,7 @@ const myApp = new AppStack()
   })
   .useSecrets(secretManager, c => {
     c.secrets('my_app_key').forName('ENV_APP_KEY').inject();
+    c.secrets('my_app_key_2').forName('ENV_APP_KEY_2').inject();
     c.secrets('DOCKER_SECRET').inject()
   })
   .override({

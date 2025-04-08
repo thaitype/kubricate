@@ -26,6 +26,9 @@ export const secretManager = new SecretManager()
     name: 'my_app_key',
   })
   .addSecret({
+    name: 'my_app_key_2',
+  })
+  .addSecret({
     name: 'DOCKER_SECRET',
     provider: 'ImagePullSecretProvider',
   })

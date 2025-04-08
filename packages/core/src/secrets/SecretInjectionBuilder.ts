@@ -34,7 +34,7 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
     private readonly stack: BaseStack,
     private readonly secretName: string,
     private readonly provider: BaseProvider,
-    private readonly ctx: { defaultResourceId?: string; secretManagerId: number }
+    private readonly ctx: { defaultResourceId?: string; secretManagerId: number; providerId: string; }
   ) { }
 
   /**
@@ -152,6 +152,7 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
     this.stack.registerSecretInjection(
       {
         provider: this.provider,
+        providerId: this.ctx.providerId,
         resourceId,
         path,
         meta: {

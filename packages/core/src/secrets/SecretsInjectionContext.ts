@@ -51,11 +51,12 @@ export class SecretsInjectionContext<
     NewKey extends keyof ExtractSecretManager<SM>['secretEntries'] = keyof ExtractSecretManager<SM>['secretEntries'],
     ProviderKinds extends GetProviderKinds<SM, NewKey> = GetProviderKinds<SM, NewKey>,
   >(secretName: NewKey): SecretInjectionBuilder<ProviderKinds> {
-    const provider = this.manager.resolveProviderFor(String(secretName));
+    const { providerInstance, providerId } = this.manager.resolveProviderFor(String(secretName));
 
-    const builder = new SecretInjectionBuilder(this.stack, String(secretName), provider, {
+    const builder = new SecretInjectionBuilder(this.stack, String(secretName), providerInstance, {
       defaultResourceId: this.defaultResourceId,
       secretManagerId: this.secretManagerId,
+      providerId
     });
 
     this.builders.push(builder);
