@@ -76,7 +76,7 @@ type SupportedStrategies = 'env';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
  */
-export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 'env'> {
+export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, SupportedStrategies> {
 
   logger?: BaseLogger;
   injectes: ProviderInjection[] = [];
