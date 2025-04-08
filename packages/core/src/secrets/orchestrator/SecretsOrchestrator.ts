@@ -1,6 +1,6 @@
-import type { PreparedEffect } from './providers/BaseProvider.js';
+import type { PreparedEffect } from '../providers/BaseProvider.js';
 import { collectSecretManagers, validateSecretManagers, prepareSecretEffects } from './manager.js';
-import type { KubricateConfig, BaseLogger } from '../types.js';
+import type { KubricateConfig, BaseLogger } from '../../types.js';
 import type { EffectsOptions } from './manager.js';
 
 export class SecretsOrchestrator {

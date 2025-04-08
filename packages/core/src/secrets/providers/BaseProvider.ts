@@ -47,6 +47,8 @@ export type MergeLevel =
   | 'stackLevel'
   | 'workspaceLevel';
 
+export type MergeStrategy = 'autoMerge' | 'warn' | 'error' | 'skip';
+
 export interface MergeCandidate {
   key: string;
   value: SecretValue;
@@ -59,7 +61,7 @@ export interface MergeCandidate {
 
 export interface MergeSecretsContext {
   level: MergeLevel;
-  configValue: 'autoMerge' | 'warn' | 'error' | 'skip';
+  configValue: MergeStrategy;
   key: string;
   candidates: MergeCandidate[];
 }

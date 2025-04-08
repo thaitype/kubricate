@@ -1,7 +1,7 @@
-import type { KubricateConfig } from '../types.js';
-import type { SecretManager } from './SecretManager.js';
-import type { PreparedEffect } from './providers/BaseProvider.js';
-import type { SecretValue } from './types.js';
+import type { KubricateConfig } from '../../types.js';
+import type { SecretManager } from '../SecretManager.js';
+import type { PreparedEffect } from '../providers/BaseProvider.js';
+import type { SecretValue } from '../types.js';
 
 export type StackName = string;
 export type SecretManagerName = string;
