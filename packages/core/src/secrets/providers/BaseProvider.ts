@@ -37,6 +37,31 @@ export interface BaseProvider<
   readonly targetKind: string;
 
   readonly supportedStrategies: SupportedStrategies[];
+
+  mergeSecrets?(context: MergeSecretsContext): Record<string, SecretValue>;
+}
+
+export type MergeLevel =
+  | 'providerLevel'
+  | 'managerLevel'
+  | 'stackLevel'
+  | 'workspaceLevel';
+
+export interface MergeCandidate {
+  key: string;
+  value: SecretValue;
+  source: {
+    providerId: string;
+    secretManagerId: string;
+    stackId: string;
+  };
+}
+
+export interface MergeSecretsContext {
+  level: MergeLevel;
+  configValue: 'autoMerge' | 'warn' | 'error' | 'skip';
+  key: string;
+  candidates: MergeCandidate[];
 }
 
 export type PreparedEffect = ManualEffect | KubectlEffect;

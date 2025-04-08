@@ -1,6 +1,7 @@
-import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection } from '@kubricate/core';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection, MergeSecretsContext, SecretValue} from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
+import { createKubernetesMergeHandler } from './utilts.js';
 
 export interface WithStackIdentifier {
   /**
@@ -112,6 +113,11 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
         },
       };
     });
+  }
+
+  mergeSecrets(context: MergeSecretsContext): Record<string, SecretValue> {
+    const merged = createKubernetesMergeHandler({ logger: this.logger })(context);
+    return merged; // no internal state kept!
   }
 
   prepare(name: string, value: string): PreparedEffect[] {

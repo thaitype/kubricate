@@ -1,6 +1,7 @@
 import type {
   BaseLogger,
   BaseProvider,
+  MergeSecretsContext,
   PreparedEffect,
   ProviderInjection,
   SecretInjectionStrategy,
@@ -8,7 +9,7 @@ import type {
 } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 import { z } from 'zod';
-import { parseZodSchema } from './utilts.js';
+import { createKubernetesMergeHandler, parseZodSchema } from './utilts.js';
 
 export const dockerRegistrySecretSchema = z.object({
   username: z.string(),
@@ -32,14 +33,13 @@ export interface ImagePullSecretProviderConfig {
 type SupportedStrategies = 'imagePullSecret';
 
 export class ImagePullSecretProvider
-  implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies>
-{
+  implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies> {
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['imagePullSecret'];
 
-  constructor(public config: ImagePullSecretProviderConfig) {}
+  constructor(public config: ImagePullSecretProviderConfig) { }
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;
@@ -54,6 +54,11 @@ export class ImagePullSecretProvider
 
   getInjectionPayload(): Array<{ name: string }> {
     return [{ name: this.config.name }];
+  }
+
+  mergeSecrets(context: MergeSecretsContext): Record<string, SecretValue> {
+    const merged = createKubernetesMergeHandler({ logger: this.logger })(context);
+    return merged;
   }
 
   prepare(name: string, value: SecretValue): PreparedEffect[] {
