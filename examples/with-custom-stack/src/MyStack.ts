@@ -15,6 +15,10 @@ const MyStack = createStack('MyStack', (data: MyInput) => {
   });
 });
 
-export const myStack = MyStack.from({
-  name: 'my-namespace',
+export const frontend = MyStack.from({
+  name: 'frontend-namespace',
+});
+
+export const backend = MyStack.from({
+  name: 'backend-namespace',
 });
