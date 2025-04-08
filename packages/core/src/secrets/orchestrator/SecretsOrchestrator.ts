@@ -1,5 +1,4 @@
 import type { PreparedEffect } from '../providers/BaseProvider.js';
-import { collectSecretManagers, validateSecretManagers, prepareSecretEffects } from './manager.js';
 import type { KubricateConfig, BaseLogger } from '../../types.js';
 import type { EffectsOptions } from './manager.js';
 import { SecretManagerEngine } from './SecretManagerEngine.js';
@@ -13,7 +12,7 @@ export class SecretsOrchestrator {
     private effectOptions: EffectsOptions,
     private logger: BaseLogger
   ) {
-    this.engine = new SecretManagerEngine(config, effectOptions);
+    this.engine = new SecretManagerEngine(config, effectOptions, logger);
   }
 
   /**
@@ -34,17 +33,8 @@ export class SecretsOrchestrator {
    * @throws If a loader fails or a secret cannot be loaded.
    */
   async validate(): Promise<void> {
-    const logger = this.logger;
-    logger.info('Collecting secret managers...');
-
-    const managers = collectSecretManagers(this.config);
-
-    logger.debug(`Found ${Object.keys(managers).length} secret managers`);
-    logger.info('Validating secret managers...');
-
-    await validateSecretManagers(managers, this.effectOptions);
-
-    logger.debug('Secret managers validated successfully');
+    const managers = this.engine.collect();
+    await this.engine.validate(managers);
   }
 
   /**
@@ -64,14 +54,8 @@ export class SecretsOrchestrator {
    * @throws If loading or provider preparation fails
    */
   async prepareForApply(): Promise<PreparedEffect[]> {
-    const logger = this.logger;
-    logger.debug('Preparing secret effects...');
-
-    const managers = collectSecretManagers(this.config);
-
-    logger.debug(`Preparing secrets for ${Object.keys(managers).length} managers`);
-
-    return prepareSecretEffects(managers, this.effectOptions);
+    const managers = this.engine.collect();
+    return this.engine.prepareEffects(managers)
   }
 
 }
