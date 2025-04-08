@@ -1,8 +1,9 @@
 import { defineConfig } from 'kubricate';
-import { myStack } from './src/MyStack';
+import { backend, frontend } from './src/MyStack';
 
 export default defineConfig({
   stacks: {
-    myStack,
+    frontend,
+    backend
   },
 });
