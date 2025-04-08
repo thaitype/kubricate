@@ -1,7 +1,7 @@
-import type { BaseLogger, KubricateConfig } from '../../types.js';
 import type { SecretManager, SecretOptions } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
+import type { SecretsOrchestratorOptions } from './types.js';
 
 export type StackName = string;
 export type SecretManagerName = string;
@@ -39,22 +39,20 @@ export interface EffectsOptions {
  * across all stacks defined in the Kubricate config.
  */
 export class SecretManagerEngine {
-  constructor(
-    private readonly config: KubricateConfig,
-    private readonly options: EffectsOptions,
-    private logger: BaseLogger
-  ) { }
+  constructor(private options: SecretsOrchestratorOptions) { }
 
   /**
    * Collect all SecretManager instances across stacks in workspace
    */
   collect(): MergedSecretManager {
-    this.logger.info('Collecting secret managers...');
+    const { config, logger } = this.options;
+
+    logger.info('Collecting secret managers...');
     const result: MergedSecretManager = {};
 
-    for (const [stackName, stack] of Object.entries(this.config.stacks ?? {})) {
+    for (const [stackName, stack] of Object.entries(config.stacks ?? {})) {
       if (typeof stack.getSecretManagers !== 'function') {
-        this.logger.warn(`Stack ${stackName} does not have a getSecretManagers method`);
+        logger.warn(`Stack ${stackName} does not have a getSecretManagers method`);
         continue;
       }
 
@@ -67,7 +65,7 @@ export class SecretManagerEngine {
       }
     }
 
-    this.logger.debug(`Found ${Object.keys(result).length} secret managers`);
+    logger.debug(`Found ${Object.keys(result).length} secret managers`);
 
     return result;
   }
@@ -77,12 +75,14 @@ export class SecretManagerEngine {
    * Will throw if any secret can't be loaded.
    */
   async validate(managers: MergedSecretManager): Promise<void> {
-    this.logger.info('Validating secret managers...');
+    const { logger } = this.options;
+
+    logger.info('Validating secret managers...');
     for (const entry of Object.values(managers)) {
       const secrets = entry.secretManager.getSecrets();
       await this.loadSecrets(entry.secretManager, secrets);
     }
-    this.logger.debug('Secret managers validated successfully');
+    logger.debug('Secret managers validated successfully');
   }
 
   /**
@@ -112,6 +112,8 @@ export class SecretManagerEngine {
     secretManager: SecretManager,
     secrets: Record<string, SecretOptions>
   ): Promise<Record<string, SecretValue>> {
+    const { effectOptions } = this.options;
+    
     const resolved: Record<string, SecretValue> = {};
     const loaded = new Set<string>();
 
@@ -122,7 +124,7 @@ export class SecretManagerEngine {
 
       // Set working directory into loader if not already set
       if (loader.getWorkingDir?.() === undefined && loader.setWorkingDir) {
-        loader.setWorkingDir(this.options.workingDir);
+        loader.setWorkingDir(effectOptions.workingDir);
       }
 
       // Load the secret

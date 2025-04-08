@@ -1,18 +1,14 @@
 import type { PreparedEffect } from '../providers/BaseProvider.js';
-import type { KubricateConfig, BaseLogger } from '../../types.js';
-import type { EffectsOptions } from './manager.js';
 import { SecretManagerEngine } from './SecretManagerEngine.js';
+import type { SecretsOrchestratorOptions } from './types.js';
 
 export class SecretsOrchestrator {
 
-  public engine: SecretManagerEngine;
+  constructor(private engine: SecretManagerEngine) {}
 
-  constructor(
-    private config: KubricateConfig,
-    private effectOptions: EffectsOptions,
-    private logger: BaseLogger
-  ) {
-    this.engine = new SecretManagerEngine(config, effectOptions, logger);
+  static create(options: SecretsOrchestratorOptions): SecretsOrchestrator {
+    const engine = new SecretManagerEngine(options);
+    return new SecretsOrchestrator(engine);
   }
 
   /**

@@ -47,14 +47,14 @@ describe('SecretManagerEngine', () => {
   });
 
   it('should collect secret managers from config', () => {
-    const engine = new SecretManagerEngine(config, effectsOptions, mockLogger);
+    const engine = new SecretManagerEngine({config, effectOptions: effectsOptions, logger: mockLogger});
     const result = engine.collect();
     expect(Object.keys(result)).toContain('auth.main');
     expect(result['auth.main'].secretManager).toBe(mockSecretManager);
   });
 
   it('should validate secret managers', async () => {
-    const engine = new SecretManagerEngine(config, effectsOptions, mockLogger);
+    const engine = new SecretManagerEngine({config, effectOptions: effectsOptions, logger: mockLogger});
     const managers = engine.collect();
     await engine.validate(managers);
     expect(mockLoader.load).toHaveBeenCalledWith(['DB_PASSWORD']);
@@ -62,7 +62,7 @@ describe('SecretManagerEngine', () => {
   });
 
   it('should prepare effects correctly', async () => {
-    const engine = new SecretManagerEngine(config, effectsOptions, mockLogger);
+    const engine = new SecretManagerEngine({config, effectOptions: effectsOptions, logger: mockLogger});
     const managers = engine.collect();
     const effects = await engine.prepareEffects(managers);
     expect(effects).toHaveLength(1);
