@@ -53,7 +53,7 @@ export class SecretsOrchestrator {
    *
    * @throws If loading or provider preparation fails
    */
-  async prepareForApply(): Promise<PreparedEffect[]> {
+  async apply(): Promise<PreparedEffect[]> {
     const managers = this.engine.collect();
     return this.engine.prepareEffects(managers)
   }
