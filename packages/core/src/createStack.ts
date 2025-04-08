@@ -28,7 +28,11 @@ export function createStack<Data, Entries extends Record<string, unknown> = {}>(
   name: string,
   builder: ConfigureComposerFunction<Data, Entries>
 ) {
-  const stack = new GenericStack<Data, Entries>(builder);
-  stack.setName(name);
-  return stack;
+  return {
+    from(data: Data) {
+      const stack = new GenericStack<Data, Entries>(builder);
+      stack.setName(name);
+      return stack.from(data);
+    },
+  };
 }
