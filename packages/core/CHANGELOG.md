@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.11.1
+
+### Patch Changes
+
+- 84d0e72: Fix bug for issue #62, #63, #66
+
 ## 0.11.0
 
 ### Minor Changes
