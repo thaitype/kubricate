@@ -10,8 +10,6 @@ export interface BaseProvider<
 
   logger?: BaseLogger;
 
-  injectes: ProviderInjection[]; // already carries everything
-  setInjects(injectes: ProviderInjection[]): void;
   /**
    * Prepares the secret for the given name and value.
    * This method should return a resource object that can be applied to Kubernetes.
@@ -24,7 +22,7 @@ export interface BaseProvider<
    * getInjectionPayload, will be called multiple times, sometime may no secrets set, this will be happen when read config from `kubricate.config` file
    * However, when the `kubricate generate` command is executed, the secrets will be set.
    */
-  getInjectionPayload(): unknown;
+  getInjectionPayload(injectes: ProviderInjection[]): unknown;
 
   /**
    * Return the Kubernetes path this provider expects for a given strategy.
@@ -58,6 +56,11 @@ export interface ManualEffect extends BaseEffect<'manual'> { }
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> { }
 
 export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
+  /**
+   * A stable identifier for the provider instance.
+   */
+  providerId: string;
+
   /**
    * Provider Instance use for get injectionPayload
    */

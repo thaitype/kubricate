@@ -71,7 +71,7 @@ export class SecretManager<
     {
       provider: keyof ProviderInstances;
     }
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   > = {},
   /**
    * Default provider to use if no specific provider is specified.
@@ -91,7 +91,7 @@ export class SecretManager<
 
   logger?: BaseLogger;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Registers a new provider instance using a valid provider name
@@ -193,12 +193,12 @@ export class SecretManager<
       LoaderInstances,
       ProviderInstances,
       SecretEntries &
-        Record<
-          NewSecret,
-          {
-            provider: ExtractWithDefault<NewProvider, DefaultProvider>;
-          }
-        >,
+      Record<
+        NewSecret,
+        {
+          provider: ExtractWithDefault<NewProvider, DefaultProvider>;
+        }
+      >,
       DefaultProvider
     >;
   }
@@ -344,12 +344,18 @@ export class SecretManager<
    * @returns The BaseProvider associated with the secret.
    * @throws If the secret is not registered or has no provider.
    */
-  resolveProviderFor(secretName: string): BaseProvider {
+  resolveProviderFor(secretName: string): {
+    providerInstance: BaseProvider;
+    providerId: string;
+  } {
     const secret = this._secrets[secretName];
     if (!secret) {
       throw new Error(`Secret "${secretName}" is not registered.`);
     }
-    return this.resolveProvider(secret.provider);
+    return {
+      providerInstance: this.resolveProvider(secret.provider),
+      providerId: String(secret.provider ?? this._defaultProvider),
+    }
   }
 
   /**

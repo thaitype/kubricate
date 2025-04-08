@@ -71,7 +71,6 @@ export abstract class BaseStack<
     this._secretManagers[secretManagerNextId] = secretManager as unknown as SecretManager;
 
     const ctx = new SecretsInjectionContext(this, secretManager, secretManagerNextId);
-    // this._secretContext = ctx as unknown as SecretsInjectionContext;
     builder(ctx); // invoke builder
     ctx.resolveAll();
     return this;
@@ -117,27 +116,62 @@ export abstract class BaseStack<
   build() {
     this.logger?.debug('BaseStack.build: Starting to build the stack.');
 
-    for (const secretManagerId of Object.keys(this._secretManagers)) {
-      this.logger?.debug(`BaseStack.build: Setup injects for secret manager ID=${secretManagerId}`);
-      const secretManager = this._secretManagers[Number(secretManagerId)];
-    
-      for (const provider of Object.values(secretManager.getProviders())) {
-        const providerInjects = this._targetInjects.filter(inject => inject.provider === provider);
-        provider.setInjects(providerInjects);
-        this.logger?.debug(`[${this.constructor.name}] setInjects: Registered ${providerInjects.length} inject(s)`);
+    type InjectionKey = string;
+    const injectGroups = new Map<
+      InjectionKey,
+      {
+        providerId: string;
+        provider: BaseProvider;
+        resourceId: string;
+        path: string;
+        injects: ProviderInjection[];
       }
+    >();
+  
+    for (const inject of this._targetInjects) {
+      const key = `${inject.providerId}:${inject.resourceId}:${inject.path}`;
+      if (!injectGroups.has(key)) {
+        injectGroups.set(key, {
+          providerId: inject.providerId,
+          provider: inject.provider,
+          resourceId: inject.resourceId,
+          path: inject.path,
+          injects: [],
+        });
+      }
+      injectGroups.get(key)!.injects.push(inject);
     }
-
-    this.logger?.debug('BaseStack.build: Injecting secrets into providers.');
-    for (const targetInject of this._targetInjects) {
-      const provider = targetInject.provider;
-      const targetValue = provider.getInjectionPayload();
+  
+    for (const { providerId, provider, resourceId, path, injects } of injectGroups.values()) {
+      const payload = provider.getInjectionPayload(injects);
+  
+      this.logger?.debug(`BaseStack.build: Injecting value into resource:`);
+      this.logger?.debug(JSON.stringify({
+        providerId,
+        resourceId,
+        path,
+        payload
+      }, null, 2));
+  
+      this._composer.inject(resourceId, path, payload);
+  
       this.logger?.debug(
-        `BaseStack.build: Injecting secrets into provider "${provider.constructor.name}" with ID "${targetInject.resourceId}" at path: ${targetInject.path}.`
+        `BaseStack.build: Injected secrets from provider "${providerId}" into resource "${resourceId}" at path "${path}".`
       );
-      this._composer.inject(targetInject.resourceId, targetInject.path, targetValue);
     }
+  
     return this._composer.build();
+
+    // for (const targetInject of this._targetInjects) {
+    //   const provider = targetInject.provider;
+    //   const injectsForProvider = this._targetInjects.filter(i => i.provider === provider);
+    //   const targetValue = provider.getInjectionPayload(injectsForProvider);
+    //   this.logger?.debug(`BaseStack.build: Injecting value: ${JSON.stringify(targetValue, null, 2)}`);
+    //   this._composer.inject(targetInject.resourceId, targetInject.path, targetValue);
+    //   this.logger?.debug(`
+    //     BaseStack.build: Injected secrets into provider "${provider.constructor.name}" with ID "${targetInject.resourceId}" at path: ${targetInject.path}.`);
+    // }
+    // return this._composer.build();
   }
 
   public setComposer(composer: ReturnType<ConfigureComposerFunc>) {
