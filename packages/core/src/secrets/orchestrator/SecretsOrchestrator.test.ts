@@ -38,7 +38,7 @@ describe('SecretsOrchestrator', () => {
     (collectSecretManagers as any).mockReturnValue({});
     (prepareSecretEffects as any).mockResolvedValue(fakeEffects);
 
-    const result = await orchestrator.prepare();
+    const result = await orchestrator.prepareForApply();
     expect(result).toEqual(fakeEffects);
     expect(mockLogger.debug).toHaveBeenCalledWith('Preparing secret effects...');
   });
