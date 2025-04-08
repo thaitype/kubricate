@@ -1,5 +1,13 @@
 # @kubricate/kubernetes
 
+## 0.10.2
+
+### Patch Changes
+
+- 84d0e72: Fix bug for issue #62, #63, #66
+- Updated dependencies [84d0e72]
+  - @kubricate/core@0.11.1
+
 ## 0.10.1
 
 ### Patch Changes
