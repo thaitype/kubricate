@@ -21,6 +21,7 @@ describe('SecretsOrchestrator', () => {
 
     mockProvider = {
       prepare: vi.fn((name, value) => [{
+        providerName: 'kubernetes',
         type: 'kubectl',
         value: {
           kind: 'Secret',
@@ -103,6 +104,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
 
     mockProvider = {
       prepare: vi.fn((name, value) => [{
+        providerName: 'kubernetes',
         type: 'kubectl',
         value: {
           kind: 'Secret',
@@ -298,6 +300,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 
     mockProvider = {
       prepare: vi.fn((name, value) => [{
+        providerName: 'kubernetes',
         type: 'kubectl',
         value: {
           kind: 'Secret',

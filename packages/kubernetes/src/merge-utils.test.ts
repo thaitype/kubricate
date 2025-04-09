@@ -7,6 +7,7 @@ describe('createKubernetesMergeHandler', () => {
   it('merges secrets with different keys into one Secret', () => {
     const effects = [
       {
+        providerName: 'provider1',
         type: 'kubectl' as const,
         value: {
           apiVersion: 'v1',
@@ -17,6 +18,7 @@ describe('createKubernetesMergeHandler', () => {
         },
       },
       {
+        providerName: 'provider2',
         type: 'kubectl' as const,
         value: {
           apiVersion: 'v1',
@@ -40,6 +42,7 @@ describe('createKubernetesMergeHandler', () => {
   it('throws on duplicate key within the same Secret', () => {
     const effects = [
       {
+        providerName: 'provider1',
         type: 'kubectl' as const,
         value: {
           apiVersion: 'v1',
@@ -50,6 +53,7 @@ describe('createKubernetesMergeHandler', () => {
         },
       },
       {
+        providerName: 'provider2',
         type: 'kubectl' as const,
         value: {
           apiVersion: 'v1',
@@ -69,6 +73,7 @@ describe('createKubernetesMergeHandler', () => {
   it('handles multiple namespaces separately', () => {
     const effects = [
       {
+        providerName: 'provider1',
         type: 'kubectl' as const,
         value: {
           apiVersion: 'v1',
@@ -79,6 +84,7 @@ describe('createKubernetesMergeHandler', () => {
         },
       },
       {
+        providerName: 'provider2',
         type: 'kubectl' as const,
         value: {
           apiVersion: 'v1',

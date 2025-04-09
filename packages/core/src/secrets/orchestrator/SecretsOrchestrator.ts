@@ -1,3 +1,4 @@
+import type { BaseLogger } from '../../types.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
@@ -8,14 +9,14 @@ export class SecretsOrchestrator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private providerCache = new Map<string, any>();
 
-  constructor(private engine: SecretManagerEngine) { }
+  constructor(private engine: SecretManagerEngine, private logger: BaseLogger) { }
 
   /**
    * Factory method to create a SecretsOrchestrator instance from options.
    */
   static create(options: SecretsOrchestratorOptions): SecretsOrchestrator {
     const engine = new SecretManagerEngine(options);
-    return new SecretsOrchestrator(engine);
+    return new SecretsOrchestrator(engine, options.logger);
   }
 
   /**
@@ -143,7 +144,10 @@ export class SecretsOrchestrator {
     const grouped = new Map<string, PreparedEffect[]>();
 
     for (const effect of effects) {
-      const providerName = effect.value?.metadata?.provider ?? 'default';
+      const providerName = effect.providerName;
+      if (!providerName) {
+        throw new Error(`[SecretsOrchestrator] Effect "${JSON.stringify(effect)}" has no provider name`);
+      }
       const group = grouped.get(providerName) ?? [];
       group.push(effect);
       grouped.set(providerName, group);
@@ -173,7 +177,9 @@ export class SecretsOrchestrator {
 
     for (const entry of Object.values(this.engine.collect())) {
       const secrets = entry.secretManager.getSecrets();
-      for (const { provider } of Object.values(secrets)) {
+      this.logger.debug(`[SecretsOrchestrator] Looking for provider "${providerName}" in "${entry.name}"`);
+      this.logger.debug(`[SecretsOrchestrator] Found secrets: ${JSON.stringify(secrets)}`);
+        for(const { provider } of Object.values(secrets)) {
         if (provider === providerName) {
           const instance = entry.secretManager.resolveProvider(provider);
           this.providerCache.set(providerName, instance);

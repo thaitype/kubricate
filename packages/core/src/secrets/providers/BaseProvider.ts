@@ -6,6 +6,11 @@ export interface BaseProvider<
   Config extends object = object,
   SupportedStrategies extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
 > {
+  /**
+   * The name of the provider.
+   * This is used to identify the provider in the config and logs.
+   */
+  name: string | undefined;
   config: Config;
 
   logger?: BaseLogger;
@@ -46,6 +51,7 @@ export type PreparedEffect = CustomEffect | KubectlEffect;
 export interface BaseEffect<Type extends string, T = unknown> {
   type: Type;
   value: T;
+  providerName: string | undefined;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CustomEffect extends BaseEffect<'custom'> { }

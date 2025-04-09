@@ -82,7 +82,7 @@ export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
   async load(names: string[]): Promise<void> {
     if (this.config.allowDotEnv ?? true) {
       loadDotenv({ path: this.getEnvFilePath() });
-      this.logger?.log(`Loaded .env file from\n   ${this.getEnvFilePath()}`);
+      this.logger?.debug(`Loaded .env file from\n   ${this.getEnvFilePath()}`);
     }
 
     for (const name of names) {

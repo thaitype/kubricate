@@ -36,7 +36,7 @@ export class ImagePullSecretProvider implements BaseProvider<
   ImagePullSecretProviderConfig,
   SupportedStrategies
 > {
-
+  name: string | undefined;
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
@@ -58,7 +58,7 @@ export class ImagePullSecretProvider implements BaseProvider<
   getInjectionPayload(): Array<{ name: string }> {
     return [{ name: this.config.name }];
   }
-  
+
   /**
    * Merge provider-level effects into final applyable resources.
    * Used to deduplicate (e.g. K8s secret name + ns).
@@ -83,6 +83,7 @@ export class ImagePullSecretProvider implements BaseProvider<
 
     return [
       {
+        providerName: this.name,
         type: 'kubectl',
         value: {
           apiVersion: 'v1',

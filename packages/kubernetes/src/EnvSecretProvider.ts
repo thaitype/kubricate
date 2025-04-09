@@ -76,6 +76,7 @@ type SupportedStrategies = 'env';
  */
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, SupportedStrategies> {
 
+  name: string | undefined;
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
@@ -126,6 +127,7 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     const encoded = Base64.encode(value);
     return [
       {
+        providerName: this.name,
         type: 'kubectl',
         value: {
           apiVersion: 'v1',

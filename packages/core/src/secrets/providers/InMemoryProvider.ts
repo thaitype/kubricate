@@ -10,6 +10,7 @@ export interface InMemoryProviderConfig {
 type SupportedStrategies = 'env';
 
 export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, SupportedStrategies> {
+  name: string | undefined;
   injectes: ProviderInjection[] = [];
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
   readonly targetKind = 'Deployment';
@@ -46,6 +47,7 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
   prepare(name: string, value: SecretValue): PreparedEffect[] {
     return [
       {
+        providerName: this.name,
         type: 'custom',
         value: {
           secretName: name,

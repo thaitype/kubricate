@@ -97,17 +97,19 @@ export class SecretManager<
    * Registers a new provider instance using a valid provider name
    *
    * @param provider - The unique name of the provider (e.g., 'Kubernetes.Secret').
-   * @param options - Configuration specific to the provider type.
+   * @param instance - Configuration specific to the provider type.
    * @returns A SecretManager instance with the provider added.
    */
   addProvider<NewProviderKey extends string, NewProvider extends BaseProvider>(
     provider: NewProviderKey,
-    options: NewProvider
+    instance: NewProvider
   ) {
     if (this._providers[provider]) {
       throw new Error(`Provider ${provider} already exists`);
     }
-    this._providers[provider] = options;
+    // Set the name of the provider instance
+    instance.name = provider;
+    this._providers[provider] = instance;
     return this as SecretManager<
       LoaderInstances,
       ProviderInstances & Record<NewProviderKey, NewProvider>,
@@ -211,7 +213,18 @@ export class SecretManager<
    */
 
   public getSecrets() {
-    return this._secrets;
+    const result = {
+      ...this._secrets,
+    }
+    for(const secret of Object.values(result)) {
+      if (!secret.provider) {
+        secret.provider = this._defaultProvider;
+      }
+      if (!secret.loader) {
+        secret.loader = this._defaultLoader; 
+      }
+    }
+    return result;
   }
 
   /**
