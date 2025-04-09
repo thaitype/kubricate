@@ -6,7 +6,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev --filter=!./tools/template --filter=!./examples/*",
     "all": "run-s build lint:all",
-    "lint:husky": "run-p lint:all format",
+    "lint:husky": "run-p lint:check format",
     "lint:all": "turbo lint:check check-types test",
     "lint:check": "turbo lint:check check-types",
     "lint:fix": "turbo lint:fix && npm run format:fix",

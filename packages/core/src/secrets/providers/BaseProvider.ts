@@ -44,6 +44,16 @@ export interface BaseProvider<
   readonly supportedStrategies: SupportedStrategies[];
 
   mergeSecrets?(effects: PreparedEffect[]): PreparedEffect[];
+
+  /**
+   * Each provider then defines how its own effects are uniquely identified (for conflict detection).
+   * 
+   * Optional method to uniquely identify effects emitted by this provider
+   * Used for detecting provider-level conflicts across providers.
+   * 
+   * If undefined, no cross-provider conflict check will be performed.
+   */
+  getEffectIdentifier?(effect: PreparedEffect): string;
 }
 
 export type PreparedEffect = CustomEffect | KubectlEffect;

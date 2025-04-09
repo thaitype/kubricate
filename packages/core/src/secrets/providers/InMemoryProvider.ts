@@ -45,6 +45,10 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
     }));
   }
 
+  getEffectIdentifier(effect: PreparedEffect): string {
+    return effect.value?.storeName;
+  }
+
 
   /**
     * Merge provider-level effects into final applyable resources.

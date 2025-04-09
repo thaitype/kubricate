@@ -92,6 +92,11 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
 
+  getEffectIdentifier(effect: PreparedEffect): string {
+    const meta = effect.value?.metadata ?? {};
+    return `${meta.namespace ?? 'default'}/${meta.name}`;
+  }
+
   getInjectionPayload(injectes: ProviderInjection[]): EnvVar[] {
     return injectes.map((inject) => {
       const name = inject.meta?.targetName ?? inject.meta?.secretName;

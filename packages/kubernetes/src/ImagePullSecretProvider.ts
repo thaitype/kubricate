@@ -59,6 +59,11 @@ export class ImagePullSecretProvider implements BaseProvider<
     return [{ name: this.config.name }];
   }
 
+  getEffectIdentifier(effect: PreparedEffect): string {
+    const meta = effect.value?.metadata ?? {};
+    return `${meta.namespace ?? 'default'}/${meta.name}`;
+  }
+
   /**
    * Merge provider-level effects into final applyable resources.
    * Used to deduplicate (e.g. K8s secret name + ns).
