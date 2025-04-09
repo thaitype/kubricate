@@ -1,7 +1,8 @@
-import type { BaseProvider, ProviderInjection  } from './BaseProvider.js';
+import type { BaseProvider, ProviderInjection } from './BaseProvider.js';
 import type { SecretInjectionStrategy } from '../../BaseStack.js'
 import type { SecretValue } from '../types.js';
 import type { CustomEffect, PreparedEffect } from './BaseProvider.js';
+import { createMergeHandler } from './merge-utils.js';
 
 export interface InMemoryProviderConfig {
   name?: string;
@@ -44,14 +45,29 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
     }));
   }
 
+
+  /**
+    * Merge provider-level effects into final applyable resources.
+    * Used to deduplicate (e.g. K8s secret name + ns).
+    */
+  mergeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const merge = createMergeHandler();
+    return merge(effects);
+  }
+  
+  /**
+   * Prepare the secret value for in-memory storage.
+   */
   prepare(name: string, value: SecretValue): PreparedEffect[] {
     return [
       {
         providerName: this.name,
         type: 'custom',
         value: {
-          secretName: name,
-          value,
+          storeName: this.config.name ?? 'in-memory',
+          rawData: {
+            [name]: value,
+          },
         },
       },
     ] satisfies CustomEffect[];

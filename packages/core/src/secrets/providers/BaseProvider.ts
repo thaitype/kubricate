@@ -53,8 +53,8 @@ export interface BaseEffect<Type extends string, T = unknown> {
   value: T;
   providerName: string | undefined;
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CustomEffect extends BaseEffect<'custom'> { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any
+export interface CustomEffect<T extends object = any> extends BaseEffect<'custom', T> { }
 
 /**
  * KubectlEffect is used to apply a value to a resource using kubectl.
