@@ -1,7 +1,7 @@
 import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
-import { createKubernetesMergeHandler } from './utilts.js';
+import { createKubernetesMergeHandler } from './merge-utils.js';
 
 export interface WithStackIdentifier {
   /**

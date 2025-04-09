@@ -8,7 +8,8 @@ import type {
 } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 import { z } from 'zod';
-import { createKubernetesMergeHandler, parseZodSchema } from './utilts.js';
+import { createKubernetesMergeHandler } from './merge-utils.js';
+import { parseZodSchema } from './utils.js';
 
 export const dockerRegistrySecretSchema = z.object({
   username: z.string(),
