@@ -179,7 +179,7 @@ export class SecretsOrchestrator {
       const secrets = entry.secretManager.getSecrets();
       this.logger.debug(`[SecretsOrchestrator] Looking for provider "${providerName}" in "${entry.name}"`);
       this.logger.debug(`[SecretsOrchestrator] Found secrets: ${JSON.stringify(secrets)}`);
-        for(const { provider } of Object.values(secrets)) {
+      for (const { provider } of Object.values(secrets)) {
         if (provider === providerName) {
           const instance = entry.secretManager.resolveProvider(provider);
           this.providerCache.set(providerName, instance);

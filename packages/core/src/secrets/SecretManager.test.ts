@@ -12,13 +12,13 @@ describe('SecretManager', () => {
   });
 
   it('throws if no loader or provider is registered', () => {
-    expect(() => manager.validateConfig()).toThrow('No loaders registered');
+    expect(() => manager.build()).toThrow('No loaders registered');
   });
 
   it('adds and retrieves a loader and provider', () => {
     manager = manager.addLoader('memory', new InMemoryLoader({})) as SecretManager;
     manager = manager.addProvider('kube', new InMemoryProvider({ name: 'my-secret' })) as SecretManager;
-    expect(() => manager.validateConfig()).toThrow('No secrets registered');
+    expect(() => manager.build()).toThrow('No secrets registered');
   });
 
   it('adds a secret with full options object', () => {
@@ -29,7 +29,7 @@ describe('SecretManager', () => {
       .setDefaultProvider('kube')
       .addSecret({ name: 'DB_PASS', loader: 'memory', provider: 'kube' }) as SecretManager;
 
-    expect(() => manager.validateConfig()).not.toThrow();
+    expect(() => manager.build()).not.toThrow();
   });
 
   it('adds a secret and prepares it', async () => {
@@ -81,7 +81,7 @@ describe('SecretManager', () => {
 
   it('throws when only secrets exist but no providers or loaders', () => {
     manager = manager.addSecret('MISSING_BACKENDS');
-    expect(() => manager.validateConfig()).toThrow('No loaders registered');
+    expect(() => manager.build()).toThrow('No loaders registered');
   });
 
   it('throws when multiple providers but no default set', () => {
@@ -91,7 +91,7 @@ describe('SecretManager', () => {
       .addProvider('kube2', new InMemoryProvider({ name: 's2' }))
       .addSecret('X') as SecretManager;
 
-    expect(() => manager.validateConfig()).toThrow('No default provider set, and multiple providers registered');
+    expect(() => manager.build()).toThrow('No default provider set, and multiple providers registered');
   });
 
   it('throws when multiple loaders but no default set', () => {
@@ -101,7 +101,7 @@ describe('SecretManager', () => {
       .addProvider('kube', new InMemoryProvider({ name: 's' }))
       .addSecret('Y') as SecretManager;
 
-    expect(() => manager.validateConfig()).toThrow('No default loader set, and multiple loaders registered');
+    expect(() => manager.build()).toThrow('No default loader set, and multiple loaders registered');
   });
 
   it('throws when adding duplicate secret via object form', () => {
@@ -123,6 +123,6 @@ describe('SecretManager', () => {
       .addLoader('memory', new InMemoryLoader({ MY_TOKEN: 'secure' }))
       .addSecret('MY_TOKEN') as SecretManager;
 
-    expect(() => manager.validateConfig()).toThrow('No providers registered');
+    expect(() => manager.build()).toThrow('No providers registered');
   });
 });

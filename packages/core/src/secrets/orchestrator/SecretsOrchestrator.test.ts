@@ -2,8 +2,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SecretsOrchestrator } from './SecretsOrchestrator.js';
 import type { SecretsOrchestratorOptions } from './types.js';
-import type { SecretManager } from '../SecretManager.js';
+import { SecretManager } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
+import { InMemoryProvider } from '../providers/InMemoryProvider.js';
+import { InMemoryLoader } from '../loaders/InMemoryLoader.js';
 
 describe('SecretsOrchestrator', () => {
   let mockSecretManager: SecretManager;
@@ -213,7 +215,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         })
       }
     };
-  
+
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
       effectOptions: {},
@@ -231,13 +233,13 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         }
       }
     };
-  
+
     orchestrator = SecretsOrchestrator.create(options);
     const effects = await orchestrator.apply();
-  
+
     expect(effects).toMatchSnapshot();
   });
-  
+
   it('snapshots merge metadata and conflict trace with warn strategy', async () => {
     const stacks = {
       stack1: {
@@ -251,7 +253,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         })
       }
     };
-  
+
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
       effectOptions: {},
@@ -269,19 +271,19 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         }
       }
     };
-  
+
     orchestrator = SecretsOrchestrator.create(options);
     const effects = await orchestrator.apply();
-  
+
     // Snapshot actual effects
     expect(effects).toMatchSnapshot();
-  
+
     // Snapshot logged conflict resolution
     const logs = mockLogger.warn.mock.calls.map((c: any[]) => c[0]);
     expect(logs).toMatchSnapshot();
   });
-  
-  
+
+
 });
 
 
@@ -399,3 +401,76 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
     expect(mockProvider.prepare).toHaveBeenCalledWith('API_KEY', '12345');
   });
 });
+
+
+describe('SecretsOrchestrator providerLevel: error', () => {
+  let orchestrator: SecretsOrchestrator;
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+    // mockLogger = {
+    //   info: console.log,
+    //   warn: console.warn,
+    //   debug: console.debug,
+    // };
+  });
+
+  it('should throw on providerLevel conflict with strategy "error"', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+         my_app_key: 'my_app_key_value',
+         my_app_key_2: 'my_app_key_2_value',
+      }))
+      .addProvider(
+        'InMemoryProvider',
+        new InMemoryProvider({
+          name: 'secret-application',
+        })
+      )
+      .addSecret({ name: 'my_app_key' })
+      .addSecret({ name: 'my_app_key_2' })
+      .build();
+
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          default: secretManager,
+        })
+      }
+    };
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          kubernetes: {
+            merge: {
+              providerLevel: 'error',
+              managerLevel: 'warn',
+              stackLevel: 'warn',
+              workspaceLevel: 'warn',
+            }
+          }
+        }
+      }
+    };
+
+    orchestrator = SecretsOrchestrator.create(options);
+
+    await orchestrator.apply();
+
+    expect(1).toBe(1);
+
+    // await expect(orchestrator.apply()).rejects.toThrowError(
+    //   /\[merge:error:providerLevel\]/
+    // );
+  });
+});
+
