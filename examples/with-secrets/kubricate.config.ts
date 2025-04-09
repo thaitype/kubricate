@@ -6,13 +6,11 @@ export default defineConfig({
     ...simpleAppStack,
   },
   secrets: {
-    kubernetes: {
-      merge: {
-        providerLevel: 'warn',
-        managerLevel: 'warn',
-        stackLevel: 'warn',
-        workspaceLevel: 'warn',
-      }
+    merge: {
+      providerLevel: 'autoMerge',
+      managerLevel: 'error',
+      stackLevel: 'error',
+      workspaceLevel: 'error',
     }
   }
 });

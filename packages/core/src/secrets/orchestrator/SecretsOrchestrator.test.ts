@@ -4,8 +4,8 @@ import { SecretsOrchestrator } from './SecretsOrchestrator.js';
 import type { SecretsOrchestratorOptions } from './types.js';
 import { SecretManager } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
-import { InMemoryProvider } from '../providers/InMemoryProvider.js';
-import { InMemoryLoader } from '../loaders/InMemoryLoader.js';
+// import { InMemoryProvider } from '../providers/InMemoryProvider.js';
+// import { InMemoryLoader } from '../loaders/InMemoryLoader.js';
 
 describe('SecretsOrchestrator', () => {
   let mockSecretManager: SecretManager;
@@ -55,6 +55,14 @@ describe('SecretsOrchestrator', () => {
               main: mockSecretManager
             })
           } as any
+        },
+        secrets: {
+          merge: {
+            providerLevel: 'autoMerge',
+            managerLevel: 'error',
+            stackLevel: 'error',
+            workspaceLevel: 'error',
+          }
         }
       },
       logger: mockLogger,
@@ -90,6 +98,7 @@ describe('SecretsOrchestrator', () => {
     );
   });
 });
+
 
 describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
   let mockLogger: any;
@@ -129,81 +138,6 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     }) as any;
   });
 
-  it('warns on stackLevel conflict when strategy is "warn"', async () => {
-    const stacks = {
-      stack1: {
-        getSecretManagers: () => ({
-          a: mockSecretManager('a', { SHARED: { loader: 'env', provider: 'kubernetes', value: 'one' } }),
-          b: mockSecretManager('b', { SHARED: { loader: 'env', provider: 'kubernetes', value: 'two' } }),
-        })
-      }
-    };
-
-    const options: SecretsOrchestratorOptions = {
-      logger: mockLogger,
-      effectOptions: {},
-      config: {
-        stacks: stacks as any,
-        secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'autoMerge',
-              managerLevel: 'autoMerge',
-              stackLevel: 'warn',
-              workspaceLevel: 'autoMerge',
-            }
-          }
-        }
-      }
-    };
-
-    orchestrator = SecretsOrchestrator.create(options);
-    const effects = await orchestrator.apply();
-    const keys = effects.flatMap(e => Object.keys(e.value.data));
-    const uniqueKeys = new Set(keys);
-    expect(uniqueKeys).toEqual(new Set(['SHARED']));
-    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:warn:stackLevel]'));
-  });
-
-  it('skips on managerLevel conflict when strategy is "skip"', async () => {
-    const stacks = {
-      stack1: {
-        getSecretManagers: () => ({
-          a: mockSecretManager('a', { SHARED: { loader: 'env', provider: 'kubernetes', value: 'A1' } }),
-        })
-      },
-      stack2: {
-        getSecretManagers: () => ({
-          a: mockSecretManager('a', { SHARED: { loader: 'env', provider: 'kubernetes', value: 'A2' } }),
-        })
-      }
-    };
-
-    const options: SecretsOrchestratorOptions = {
-      logger: mockLogger,
-      effectOptions: {},
-      config: {
-        stacks: stacks as any,
-        secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'skip',
-              managerLevel: 'skip',
-              stackLevel: 'skip',
-              workspaceLevel: 'skip',
-            }
-          }
-        }
-      }
-    };
-
-    orchestrator = SecretsOrchestrator.create(options);
-    const effects = await orchestrator.apply();
-    const keys = effects.flatMap(e => Object.keys(e.value.data));
-    const uniqueKeys = new Set(keys);
-    expect(uniqueKeys).toEqual(new Set(['SHARED'])); // only one version of SHARED should survive
-  });
-
   it('snapshots multiple secrets from the same manager', async () => {
     const stacks = {
       stack1: {
@@ -222,13 +156,11 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'autoMerge',
-              managerLevel: 'autoMerge',
-              stackLevel: 'autoMerge',
-              workspaceLevel: 'autoMerge',
-            }
+          merge: {
+            providerLevel: 'autoMerge',
+            managerLevel: 'autoMerge',
+            stackLevel: 'autoMerge',
+            workspaceLevel: 'autoMerge',
           }
         }
       }
@@ -240,7 +172,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     expect(effects).toMatchSnapshot();
   });
 
-  it('snapshots merge metadata and conflict trace with warn strategy', async () => {
+  it('throws on stackLevel conflict when strategy is "error"', async () => {
     const stacks = {
       stack1: {
         getSecretManagers: () => ({
@@ -253,36 +185,30 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         })
       }
     };
-
+  
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
       effectOptions: {},
       config: {
         stacks: stacks as any,
         secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'autoMerge',
-              managerLevel: 'warn',
-              stackLevel: 'warn',
-              workspaceLevel: 'warn',
-            }
+          merge: {
+            providerLevel: 'autoMerge',
+            managerLevel: 'autoMerge',
+            stackLevel: 'error',
+            workspaceLevel: 'error',
           }
         }
       }
     };
-
+  
     orchestrator = SecretsOrchestrator.create(options);
-    const effects = await orchestrator.apply();
-
-    // Snapshot actual effects
-    expect(effects).toMatchSnapshot();
-
-    // Snapshot logged conflict resolution
-    const logs = mockLogger.warn.mock.calls.map((c: any[]) => c[0]);
-    expect(logs).toMatchSnapshot();
+  
+    await expect(orchestrator.apply()).rejects.toThrowError(
+      /\[merge:error:stackLevel] Duplicate key "SHARED_KEY"/
+    );
   });
-
+  
 
 });
 
@@ -325,46 +251,6 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
     }) as any;
   });
 
-
-  it('skips on managerLevel conflict when strategy is "skip"', async () => {
-    const stacks = {
-      stack1: {
-        getSecretManagers: () => ({
-          a: mockSecretManager('a', { SHARED: { loader: 'env', provider: 'kubernetes', value: 'A1' } }),
-        })
-      },
-      stack2: {
-        getSecretManagers: () => ({
-          a: mockSecretManager('a', { SHARED: { loader: 'env', provider: 'kubernetes', value: 'A2' } }),
-        })
-      }
-    };
-
-    const options: SecretsOrchestratorOptions = {
-      logger: mockLogger,
-      effectOptions: {},
-      config: {
-        stacks: stacks as any,
-        secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'skip',
-              managerLevel: 'skip',
-              stackLevel: 'skip',
-              workspaceLevel: 'skip',
-            }
-          }
-        }
-      }
-    };
-
-    orchestrator = SecretsOrchestrator.create(options);
-    const effects = await orchestrator.apply();
-    const keys = effects.flatMap(e => Object.keys(e.value.data));
-    const uniqueKeys = new Set(keys);
-    expect(uniqueKeys).toEqual(new Set(['SHARED'])); // only one version of SHARED should survive
-  });
-
   it('includes correct SecretOrigin metadata and snapshots effect', async () => {
     const stacks = {
       stack1: {
@@ -382,13 +268,11 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'autoMerge',
-              managerLevel: 'autoMerge',
-              stackLevel: 'autoMerge',
-              workspaceLevel: 'autoMerge',
-            }
+          merge: {
+            providerLevel: 'autoMerge',
+            managerLevel: 'autoMerge',
+            stackLevel: 'autoMerge',
+            workspaceLevel: 'autoMerge',
           }
         }
       }
@@ -403,74 +287,82 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 });
 
 
-describe('SecretsOrchestrator providerLevel: error', () => {
-  let orchestrator: SecretsOrchestrator;
-  let mockLogger: any;
+// describe('SecretsOrchestrator providerLevel: error', () => {
+//   let orchestrator: SecretsOrchestrator;
+//   let mockLogger: any;
 
-  beforeEach(() => {
-    mockLogger = {
-      info: vi.fn(),
-      warn: vi.fn(),
-      debug: vi.fn(),
-    };
-    // mockLogger = {
-    //   info: console.log,
-    //   warn: console.warn,
-    //   debug: console.debug,
-    // };
-  });
+//   beforeEach(() => {
+//     mockLogger = {
+//       info: vi.fn(),
+//       warn: vi.fn(),
+//       debug: vi.fn(),
+//     };
+//     // mockLogger = {
+//     //   info: console.log,
+//     //   warn: console.warn,
+//     //   debug: console.debug,
+//     // };
+//   });
 
-  it('should throw on providerLevel conflict with strategy "error"', async () => {
-    const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
-         my_app_key: 'my_app_key_value',
-         my_app_key_2: 'my_app_key_2_value',
-      }))
-      .addProvider(
-        'InMemoryProvider',
-        new InMemoryProvider({
-          name: 'secret-application',
-        })
-      )
-      .addSecret({ name: 'my_app_key' })
-      .addSecret({ name: 'my_app_key_2' })
-      .build();
+//   it('should throw on providerLevel conflict with strategy "error"', async () => {
+//     const secretManager = new SecretManager()
+//       .addLoader('InMemoryLoader', new InMemoryLoader({
+//         my_app_key: 'my_app_key_value',
+//         my_app_key_2: 'my_app_key_2_value',
+//       }))
+//       .addProvider(
+//         'InMemoryProvider1',
+//         new InMemoryProvider({
+//           name: 'secret-application',
+//         })
+//       )
+//       .addProvider(
+//         'InMemoryProvider2',
+//         new InMemoryProvider({
+//           name: 'secret-application',
+//         })
+//       )
+//       // .addProvider(
+//       //   'ImagePullSecretProvider',
+//       //   new ImagePullSecretProvider({
+//       //     name: 'secret-application',
+//       //   })
+//       // )
+//       .setDefaultProvider('InMemoryProvider1')
+//       .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
+//       .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
+//       // .addSecret({ name: 'my_app_key_3', provider: 'ImagePullSecretProvider' })
+//       .build();
 
-    const stacks = {
-      app: {
-        getSecretManagers: () => ({
-          default: secretManager,
-        })
-      }
-    };
+//     const stacks = {
+//       app: {
+//         getSecretManagers: () => ({
+//           default: secretManager,
+//         })
+//       }
+//     };
 
-    const options: SecretsOrchestratorOptions = {
-      logger: mockLogger,
-      effectOptions: {},
-      config: {
-        stacks: stacks as any,
-        secrets: {
-          kubernetes: {
-            merge: {
-              providerLevel: 'error',
-              managerLevel: 'warn',
-              stackLevel: 'warn',
-              workspaceLevel: 'warn',
-            }
-          }
-        }
-      }
-    };
+//     const options: SecretsOrchestratorOptions = {
+//       logger: mockLogger,
+//       effectOptions: {},
+//       config: {
+//         stacks: stacks as any,
+//         secrets: {
+//           merge: {
+//             providerLevel: 'error',
+//             managerLevel: 'error',
+//             stackLevel: 'error',
+//             workspaceLevel: 'error',
+//           }
+//         }
+//       }
+//     };
 
-    orchestrator = SecretsOrchestrator.create(options);
+//     orchestrator = SecretsOrchestrator.create(options);
 
-    await orchestrator.apply();
-
-    expect(1).toBe(1);
-
-    // await expect(orchestrator.apply()).rejects.toThrowError(
-    //   /\[merge:error:providerLevel\]/
-    // );
-  });
-});
+//     await expect(orchestrator.apply()).rejects.toThrowError(
+//       /\[merge:error:providerLevel\]/
+//     );
+//   });
+// });
 

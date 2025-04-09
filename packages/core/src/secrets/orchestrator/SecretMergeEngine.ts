@@ -67,13 +67,6 @@ export class SecretMergeEngine {
     const prevVal = merged[key];
 
     switch (strategy) {
-      case 'skip':
-        this.logger.debug(`[merge:skip:${level}] Skipping ${key}`);
-        return;
-
-      case 'warn':
-        this.logger.warn(`[merge:warn:${level}] Duplicate key "${key}" detected. Keeping first.`);
-        return;
 
       case 'overwrite':
         this.logger.info(`[merge:overwrite:${level}] Overwriting key "${key}"`);
@@ -114,9 +107,13 @@ export class SecretMergeEngine {
   }
 
   private resolveStrategyForLevel(level: MergeLevel): MergeStrategy {
-    return (
-      this.context.config.secrets?.kubernetes?.merge?.[level] ??
-      'autoMerge'
-    );
+    const defaults: Record<MergeLevel, MergeStrategy> = {
+      providerLevel: 'autoMerge',   // allow merging within same provider
+      managerLevel: 'error',        // disallow cross-provider collision in same SecretManager
+      stackLevel: 'error',          // disallow between managers in same stack
+      workspaceLevel: 'error',      // disallow across stacks (hard boundary)
+    };
+
+    return this.context.config.secrets?.merge?.[level] ?? defaults[level];
   }
 }

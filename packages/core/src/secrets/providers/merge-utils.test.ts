@@ -22,8 +22,8 @@ describe('createMergeHandler', () => {
 
     const result = merge(effects);
     expect(result).toHaveLength(2);
-    expect(result[0].value.data).toEqual({ KEY1: 'VAL1' });
-    expect(result[1].value.data).toEqual({ KEY2: 'VAL2' });
+    expect(result[0].value.rawData).toEqual({ KEY1: 'VAL1' });
+    expect(result[1].value.rawData).toEqual({ KEY2: 'VAL2' });
   });
 
   it('should merge effects with same storeName and different keys', () => {
@@ -34,7 +34,7 @@ describe('createMergeHandler', () => {
 
     const result = merge(effects);
     expect(result).toHaveLength(1);
-    expect(result[0].value.data).toEqual({ FOO: 'BAR', BAZ: 'QUX' });
+    expect(result[0].value.rawData).toEqual({ FOO: 'BAR', BAZ: 'QUX' });
   });
 
   it('should throw on duplicate keys within same storeName', () => {
@@ -62,5 +62,6 @@ describe('createMergeHandler', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].value.storeName).toBe('valid');
+    expect(result[0].value.rawData).toEqual({ K: 'V' });
   });
 });

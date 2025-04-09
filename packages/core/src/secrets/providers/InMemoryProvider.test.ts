@@ -78,7 +78,7 @@ describe('InMemoryProvider', () => {
     expect(result).toEqual([
       {
         type: 'custom',
-        providerName: undefined, // this.name is not set unless constructor updated
+        providerName: undefined,
         value: {
           storeName: 'store-a',
           rawData: {
@@ -99,7 +99,7 @@ describe('InMemoryProvider', () => {
 
     const result = provider.mergeSecrets(effects);
     expect(result).toHaveLength(1);
-    expect(result[0].value.data).toEqual({
+    expect(result[0].value.rawData).toEqual({
       DB_USER: 'admin',
       DB_PASS: '1234',
     });

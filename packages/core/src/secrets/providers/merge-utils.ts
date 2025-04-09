@@ -20,7 +20,7 @@ export function createMergeHandler(): (effects: PreparedEffect[]) => PreparedEff
           ...effect,
           value: {
             ...effect.value,
-            data: { ...effect.value.rawData },
+            rawData: { ...effect.value.rawData },
           },
         };
         continue;
@@ -29,11 +29,11 @@ export function createMergeHandler(): (effects: PreparedEffect[]) => PreparedEff
       const existing = grouped[key];
 
       for (const [key, value] of Object.entries(effect.value.rawData ?? {})) {
-        if (existing.value.data?.[key]) {
+        if (existing.value.rawData?.[key]) {
           throw new Error(`[merge:in-memory] Conflict detected: key "${key}" already exists in Secret "${name}"`);
         }
       
-        existing.value.data[key] = value;
+        existing.value.rawData[key] = value;
       }
     }
     return Object.values(grouped);
