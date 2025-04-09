@@ -1,7 +1,6 @@
 import type {
   BaseLogger,
   BaseProvider,
-  MergeSecretsContext,
   PreparedEffect,
   ProviderInjection,
   SecretInjectionStrategy,
@@ -32,8 +31,11 @@ export interface ImagePullSecretProviderConfig {
 
 type SupportedStrategies = 'imagePullSecret';
 
-export class ImagePullSecretProvider
-  implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies> {
+export class ImagePullSecretProvider implements BaseProvider<
+  ImagePullSecretProviderConfig,
+  SupportedStrategies
+> {
+
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
@@ -55,10 +57,14 @@ export class ImagePullSecretProvider
   getInjectionPayload(): Array<{ name: string }> {
     return [{ name: this.config.name }];
   }
-
-  mergeSecrets(context: MergeSecretsContext): Record<string, SecretValue> {
-    const merged = createKubernetesMergeHandler({ logger: this.logger })(context);
-    return merged;
+  
+  /**
+   * Merge provider-level effects into final applyable resources.
+   * Used to deduplicate (e.g. K8s secret name + ns).
+   */
+  mergeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const merge = createKubernetesMergeHandler();
+    return merge(effects);
   }
 
   prepare(name: string, value: SecretValue): PreparedEffect[] {

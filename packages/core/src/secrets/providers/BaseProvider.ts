@@ -38,7 +38,7 @@ export interface BaseProvider<
 
   readonly supportedStrategies: SupportedStrategies[];
 
-  mergeSecrets?(context: MergeSecretsContext): Record<string, SecretValue>;
+  mergeSecrets?(effects: PreparedEffect[]): PreparedEffect[];
 }
 
 export type MergeLevel =
@@ -66,14 +66,14 @@ export interface MergeSecretsContext {
   candidates: MergeCandidate[];
 }
 
-export type PreparedEffect = ManualEffect | KubectlEffect;
+export type PreparedEffect = CustomEffect | KubectlEffect;
 
 export interface BaseEffect<Type extends string, T = unknown> {
   type: Type;
   value: T;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ManualEffect extends BaseEffect<'manual'> { }
+export interface CustomEffect extends BaseEffect<'custom'> { }
 
 /**
  * KubectlEffect is used to apply a value to a resource using kubectl.

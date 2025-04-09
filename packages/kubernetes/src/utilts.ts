@@ -1,4 +1,4 @@
-import type { BaseLogger, MergeCandidate, MergeSecretsContext, SecretValue } from "@kubricate/core";
+import type { PreparedEffect } from "@kubricate/core";
 import { ZodSchema } from "zod";
 import { ValidationError } from "zod-validation-error";
 
@@ -13,35 +13,45 @@ export function parseZodSchema<T>(schema: ZodSchema<T>, data: unknown): T {
   }
 }
 
-interface KubernetesMergeHandlerOptions {
-  logger?: BaseLogger;
-}
 
-export function createKubernetesMergeHandler(options: KubernetesMergeHandlerOptions): (context: MergeSecretsContext) => Record<string, SecretValue> {
-  return (context) => {
-    const { logger } = options;
-    const { level, configValue, candidates } = context;
+/**
+ * Creates a reusable handler to merge multiple Kubernetes Secret effects.
+ * Will group by Secret `metadata.name` + `namespace` and merge `.data`.
+ * Throws error if duplicate keys are found within the same Secret.
+ */
+export function createKubernetesMergeHandler(): (effects: PreparedEffect[]) => PreparedEffect[] {
+  return function mergeKubeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const grouped: Record<string, PreparedEffect> = {};
 
-    const grouped = new Map<string, MergeCandidate>();
+    for (const effect of effects) {
+      if (effect.type !== 'kubectl' || effect.value.kind !== 'Secret') continue;
 
-    for (const candidate of candidates) {
-      const prev = grouped.get(candidate.key);
-      if (prev && prev.value !== candidate.value) {
-        const msg = `[Kubernetes Merge] Conflict on key "${candidate.key}" at ${level}: ` +
-          `from stack ${prev.source.stackId} ≠ ${candidate.source.stackId}`;
+      const name = effect.value.metadata?.name;
+      const namespace = effect.value.metadata?.namespace ?? 'default';
+      const key = `${namespace}/${name}`;
 
-        if (configValue === 'error') throw new Error(msg);
-        if (configValue === 'warn') logger?.warn?.(msg);
+      if (!grouped[key]) {
+        grouped[key] = {
+          ...effect,
+          value: {
+            ...effect.value,
+            data: { ...effect.value.data },
+          },
+        };
+        continue;
       }
 
-      grouped.set(candidate.key, candidate);
+      const existing = grouped[key];
+
+      for (const [k, v] of Object.entries(effect.value.data ?? {})) {
+        if (existing.value.data?.[k]) {
+          throw new Error(`[merge:k8s] Conflict detected: key "${k}" already exists in Secret "${name}" in namespace "${namespace}"`);
+        }
+
+        existing.value.data[k] = v;
+      }
     }
 
-    const merged: Record<string, SecretValue> = {};
-    for (const [key, item] of grouped) {
-      merged[key] = item.value;
-    }
-
-    return merged;
+    return Object.values(grouped);
   };
 }

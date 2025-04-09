@@ -1,4 +1,4 @@
-import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection, MergeSecretsContext, SecretValue} from '@kubricate/core';
+import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 import { createKubernetesMergeHandler } from './utilts.js';
@@ -112,9 +112,14 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     });
   }
 
-  mergeSecrets(context: MergeSecretsContext): Record<string, SecretValue> {
-    const merged = createKubernetesMergeHandler({ logger: this.logger })(context);
-    return merged; // no internal state kept!
+
+  /**
+   * Merge provider-level effects into final applyable resources.
+   * Used to deduplicate (e.g. K8s secret name + ns).
+   */
+  mergeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const merge = createKubernetesMergeHandler();
+    return merge(effects);
   }
 
   prepare(name: string, value: string): PreparedEffect[] {

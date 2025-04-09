@@ -1,7 +1,7 @@
 import type { BaseProvider, ProviderInjection  } from './BaseProvider.js';
 import type { SecretInjectionStrategy } from '../../BaseStack.js'
 import type { SecretValue } from '../types.js';
-import type { ManualEffect, PreparedEffect } from './BaseProvider.js';
+import type { CustomEffect, PreparedEffect } from './BaseProvider.js';
 
 export interface InMemoryProviderConfig {
   name?: string;
@@ -46,12 +46,12 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
   prepare(name: string, value: SecretValue): PreparedEffect[] {
     return [
       {
-        type: 'manual',
+        type: 'custom',
         value: {
           secretName: name,
           value,
         },
       },
-    ] satisfies ManualEffect[];
+    ] satisfies CustomEffect[];
   }
 }
