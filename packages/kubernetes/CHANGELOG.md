@@ -1,5 +1,12 @@
 # @kubricate/kubernetes
 
+## 0.11.2
+
+### Patch Changes
+
+- 02da09c: fix: correct target path for imagePullSecret to imagePullSecrets
+  - @kubricate/core@0.11.2
+
 ## 0.10.2
 
 ### Patch Changes
