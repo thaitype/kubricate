@@ -1,11 +1,18 @@
 import type { PreparedEffect } from '../providers/BaseProvider.js';
-import { SecretManagerEngine } from './SecretManagerEngine.js';
+import type { SecretValue } from '../types.js';
+import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
+import { SecretsMergeEngine, type SecretOrigin } from './SecretMergeEngine.js';
 import type { SecretsOrchestratorOptions } from './types.js';
 
 export class SecretsOrchestrator {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private providerCache = new Map<string, any>();
 
-  constructor(private engine: SecretManagerEngine) {}
+  constructor(private engine: SecretManagerEngine) { }
 
+  /**
+   * Factory method to create a SecretsOrchestrator instance from options.
+   */
   static create(options: SecretsOrchestratorOptions): SecretsOrchestrator {
     const engine = new SecretManagerEngine(options);
     return new SecretsOrchestrator(engine);
@@ -13,6 +20,7 @@ export class SecretsOrchestrator {
 
   /**
    * Validates all secret managers by resolving and loading all declared secrets.
+   * Ensures secret loaders are configured correctly and values can be fetched.
    *
    * @remarks
    * Used by: `kubricate secret validate`
@@ -34,16 +42,16 @@ export class SecretsOrchestrator {
   }
 
   /**
-   * Prepares all resolved secret values as effects ready to be applied to Kubernetes.
+   * Generates a list of provider-ready effects by:
+   * - Loading all secrets
+   * - Merging them across levels (stack, manager, etc.)
+   * - Preparing Kubernetes-ready manifests
+   * - Merging manifests (e.g., same secret name)
    *
    * @remarks
    * Used by: `kubricate secret apply`
    *
    * @description
-   * This method:
-   * - Loads and deduplicates all secrets from configured loaders
-   * - Resolves appropriate provider for each secret
-   * - Generates `PreparedEffect[]` for application (e.g. kubectl manifest)
    *
    * @returns A list of prepared secret effects
    *
@@ -51,7 +59,114 @@ export class SecretsOrchestrator {
    */
   async apply(): Promise<PreparedEffect[]> {
     const managers = this.engine.collect();
-    return this.engine.prepareEffects(managers)
+
+    const mergedSecrets = await this.loadAndMergeSecrets(managers);
+    const rawEffects = this.prepareFromMergedSecrets(managers, mergedSecrets);
+    const finalEffects = this.mergeProviderEffects(rawEffects);
+
+    return finalEffects;
   }
 
+  /**
+   * Loads and merges secret values from all secret managers using SecretsMergeEngine.
+   */
+  private async loadAndMergeSecrets(managers: MergedSecretManager): Promise<Record<string, Record<string, SecretValue>>> {
+    const result: Record<string, Record<string, SecretValue>> = {};
+
+    for (const entry of Object.values(managers)) {
+      const secrets = entry.secretManager.getSecrets();
+      const raw = await this.engine.loadSecrets(entry.secretManager, secrets);
+
+      const origins: SecretOrigin[] = Object.entries(raw).map(([key, value]) => ({
+        key,
+        value,
+        source: 'loader',
+        providerName: entry.name,
+        managerName: entry.name,
+        stackName: entry.stackName,
+        originPath: [`stack:${entry.stackName}`, `manager:${entry.name}`],
+      }));
+
+      const mergeEngine = new SecretsMergeEngine(this.engine.options.logger, {
+        config: this.engine.options.config,
+        stackName: entry.stackName,
+        managerName: entry.name,
+      });
+
+      result[`${entry.stackName}.${entry.name}`] = mergeEngine.merge(origins);
+    }
+
+    return result;
+  }
+
+  /**
+   * Transforms merged secret values into provider-prepared effects.
+   */
+  private prepareFromMergedSecrets(
+    managers: MergedSecretManager,
+    merged: Record<string, Record<string, SecretValue>>
+  ): PreparedEffect[] {
+    const effects: PreparedEffect[] = [];
+
+    for (const entry of Object.values(managers)) {
+      const secrets = entry.secretManager.getSecrets();
+      const mergedSecrets = merged[`${entry.stackName}.${entry.name}`];
+
+      for (const key of Object.keys(mergedSecrets)) {
+        const provider = entry.secretManager.resolveProvider(secrets[key].provider);
+        effects.push(...provider.prepare(key, mergedSecrets[key]));
+      }
+    }
+
+    return effects;
+  }
+
+  /**
+   * Deduplicates and merges effects per provider by calling mergeSecrets().
+   */
+  private mergeProviderEffects(effects: PreparedEffect[]): PreparedEffect[] {
+    const grouped = new Map<string, PreparedEffect[]>();
+
+    for (const effect of effects) {
+      const providerName = effect.value?.metadata?.provider ?? 'default';
+      const group = grouped.get(providerName) ?? [];
+      group.push(effect);
+      grouped.set(providerName, group);
+    }
+
+    const merged: PreparedEffect[] = [];
+
+    for (const [providerName, group] of grouped.entries()) {
+      const provider = this.resolveProviderByName(providerName);
+      merged.push(...provider.mergeSecrets(group));
+    }
+
+    return merged;
+  }
+
+  /**
+   * Resolves a provider instance from its name by scanning all SecretManagers.
+   * Caches resolved providers for performance.
+   *
+   * @throws If the provider name is not found in any manager
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private resolveProviderByName(providerName: string): any {
+    if (this.providerCache.has(providerName)) {
+      return this.providerCache.get(providerName);
+    }
+
+    for (const entry of Object.values(this.engine.collect())) {
+      const secrets = entry.secretManager.getSecrets();
+      for (const { provider } of Object.values(secrets)) {
+        if (provider === providerName) {
+          const instance = entry.secretManager.resolveProvider(provider);
+          this.providerCache.set(providerName, instance);
+          return instance;
+        }
+      }
+    }
+
+    throw new Error(`[SecretsOrchestrator] Provider "${providerName}" not found in any registered SecretManager`);
+  }
 }

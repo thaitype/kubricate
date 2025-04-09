@@ -41,31 +41,6 @@ export interface BaseProvider<
   mergeSecrets?(effects: PreparedEffect[]): PreparedEffect[];
 }
 
-export type MergeLevel =
-  | 'providerLevel'
-  | 'managerLevel'
-  | 'stackLevel'
-  | 'workspaceLevel';
-
-export type MergeStrategy = 'autoMerge' | 'warn' | 'error' | 'skip';
-
-export interface MergeCandidate {
-  key: string;
-  value: SecretValue;
-  source: {
-    providerId: string;
-    secretManagerId: string;
-    stackId: string;
-  };
-}
-
-export interface MergeSecretsContext {
-  level: MergeLevel;
-  configValue: MergeStrategy;
-  key: string;
-  candidates: MergeCandidate[];
-}
-
 export type PreparedEffect = CustomEffect | KubectlEffect;
 
 export interface BaseEffect<Type extends string, T = unknown> {

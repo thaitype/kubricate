@@ -5,4 +5,11 @@ export default defineConfig({
   stacks: {
     ...simpleAppStack,
   },
+  secrets: {
+    kubernetes: {
+      merge: {
+        managerLevel: 'autoMerge',
+      }
+    }
+  }
 });

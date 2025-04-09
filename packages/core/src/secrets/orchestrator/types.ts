@@ -10,3 +10,16 @@ export interface SecretsOrchestratorOptions {
 export interface EffectsOptions {
   workingDir?: string;
 }
+
+export type MergeLevel =
+  | 'providerLevel'
+  | 'managerLevel'
+  | 'stackLevel'
+  | 'workspaceLevel';
+
+export type MergeStrategy =
+  | 'skip'
+  | 'warn'
+  | 'overwrite'
+  | 'error'
+  | 'autoMerge';

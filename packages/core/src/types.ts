@@ -1,6 +1,6 @@
 import type { BaseStack } from './BaseStack.js';
 import { ResourceComposer } from './ResourceComposer.js';
-import type { MergeLevel, MergeStrategy } from './secrets/index.js';
+import type { MergeLevel, MergeStrategy } from './secrets/orchestrator/types.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;

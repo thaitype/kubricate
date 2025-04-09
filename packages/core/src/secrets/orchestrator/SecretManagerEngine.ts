@@ -39,7 +39,7 @@ export interface EffectsOptions {
  * across all stacks defined in the Kubricate config.
  */
 export class SecretManagerEngine {
-  constructor(private options: SecretsOrchestratorOptions) { }
+  constructor(public readonly options: SecretsOrchestratorOptions) { }
 
   /**
    * Collect all SecretManager instances across stacks in workspace
@@ -108,7 +108,7 @@ export class SecretManagerEngine {
    * Load secrets from loaders, optionally returning the loaded values.
    * If `returnValues` is false, this acts as a validation-only step.
    */
-  private async loadSecrets(
+  public async loadSecrets(
     secretManager: SecretManager,
     secrets: Record<string, SecretOptions>
   ): Promise<Record<string, SecretValue>> {
