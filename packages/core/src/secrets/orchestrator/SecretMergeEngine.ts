@@ -14,7 +14,7 @@ export interface SecretOrigin {
 };
 
 
-export class SecretsMergeEngine {
+export class SecretMergeEngine {
   constructor(
     private readonly logger: BaseLogger,
     private readonly context: {

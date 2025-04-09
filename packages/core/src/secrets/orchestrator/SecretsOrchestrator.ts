@@ -2,7 +2,7 @@ import type { BaseLogger } from '../../types.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
-import { SecretsMergeEngine, type SecretOrigin } from './SecretMergeEngine.js';
+import { SecretMergeEngine, type SecretOrigin } from './SecretMergeEngine.js';
 import type { SecretsOrchestratorOptions } from './types.js';
 
 export class SecretsOrchestrator {
@@ -91,7 +91,7 @@ export class SecretsOrchestrator {
       allOrigins.push(...origins);
     }
 
-    const mergeEngine = new SecretsMergeEngine(this.engine.options.logger, {
+    const mergeEngine = new SecretMergeEngine(this.engine.options.logger, {
       config: this.engine.options.config,
       stackName: 'workspace',
       managerName: 'workspace',
