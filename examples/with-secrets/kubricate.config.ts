@@ -8,7 +8,10 @@ export default defineConfig({
   secrets: {
     kubernetes: {
       merge: {
-        managerLevel: 'autoMerge',
+        providerLevel: 'warn',
+        managerLevel: 'warn',
+        stackLevel: 'warn',
+        workspaceLevel: 'warn',
       }
     }
   }

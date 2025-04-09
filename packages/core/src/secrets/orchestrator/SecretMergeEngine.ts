@@ -116,7 +116,7 @@ export class SecretsMergeEngine {
   private resolveStrategyForLevel(level: MergeLevel): MergeStrategy {
     return (
       this.context.config.secrets?.kubernetes?.merge?.[level] ??
-      'overwrite'
+      'autoMerge'
     );
   }
 }
