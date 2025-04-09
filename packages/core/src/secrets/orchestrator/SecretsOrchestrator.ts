@@ -71,7 +71,7 @@ export class SecretsOrchestrator {
    * Loads and merges secret values from all secret managers using SecretsMergeEngine.
    */
   private async loadAndMergeSecrets(managers: MergedSecretManager): Promise<Record<string, Record<string, SecretValue>>> {
-    const result: Record<string, Record<string, SecretValue>> = {};
+    const allOrigins: SecretOrigin[] = [];
 
     for (const entry of Object.values(managers)) {
       const secrets = entry.secretManager.getSecrets();
@@ -87,13 +87,28 @@ export class SecretsOrchestrator {
         originPath: [`stack:${entry.stackName}`, `manager:${entry.name}`],
       }));
 
-      const mergeEngine = new SecretsMergeEngine(this.engine.options.logger, {
-        config: this.engine.options.config,
-        stackName: entry.stackName,
-        managerName: entry.name,
-      });
+      allOrigins.push(...origins);
+    }
 
-      result[`${entry.stackName}.${entry.name}`] = mergeEngine.merge(origins);
+    const mergeEngine = new SecretsMergeEngine(this.engine.options.logger, {
+      config: this.engine.options.config,
+      stackName: 'workspace',
+      managerName: 'workspace',
+    });
+
+    const merged = mergeEngine.merge(allOrigins);
+
+    // regroup merged into per-manager map
+    const result: Record<string, Record<string, SecretValue>> = {};
+    for (const entry of Object.values(managers)) {
+      const prefix = `${entry.stackName}.${entry.name}`;
+      const keys = Object.keys(entry.secretManager.getSecrets());
+      result[prefix] = {};
+      for (const key of keys) {
+        if (merged[key] !== undefined) {
+          result[prefix][key] = merged[key];
+        }
+      }
     }
 
     return result;
