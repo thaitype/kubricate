@@ -47,7 +47,7 @@ export class ImagePullSecretProvider
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'imagePullSecret') {
-      return `spec.template.spec.imagePullSecret`;
+      return `spec.template.spec.imagePullSecrets`;
     }
     throw new Error(`[ImagePullSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
