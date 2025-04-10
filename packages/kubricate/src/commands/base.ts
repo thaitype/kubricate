@@ -45,9 +45,11 @@ export class BaseCommand {
       logger.debug('Injected logger into stacks.');
       logger.debug('Creating secrets orchestrator...');
       const workingDir = this.options.root ? path.resolve(this.options.root) : undefined;
-      this.orchestrator = new SecretsOrchestrator(this.config, {
-        workingDir,
-      }, logger);
+      this.orchestrator = SecretsOrchestrator.create({
+        config: this.config,
+        logger,
+        effectOptions: { workingDir },
+      });
       logger.debug('Secrets orchestrator created.');
     }
     return {

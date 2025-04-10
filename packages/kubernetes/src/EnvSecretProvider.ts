@@ -1,6 +1,7 @@
 import type { AnyClass, BaseLogger, SecretInjectionStrategy, ProviderInjection } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
+import { createKubernetesMergeHandler } from './merge-utils.js';
 
 export interface WithStackIdentifier {
   /**
@@ -23,9 +24,6 @@ export interface EnvSecretProviderConfig {
    * @default 'default'
    */
   namespace?: string;
-
-  // TODO: add support for targetInjects
-  // targetInjects?: (ProviderSecretsInjection & WithStackIdentifier)[];
 }
 
 /**
@@ -78,6 +76,10 @@ type SupportedStrategies = 'env';
  */
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, SupportedStrategies> {
 
+  readonly allowMerge = true;
+  readonly secretType = 'Kubernetes.Secret.Env';
+
+  name: string | undefined;
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
@@ -91,6 +93,11 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     }
 
     throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
+  }
+
+  getEffectIdentifier(effect: PreparedEffect): string {
+    const meta = effect.value?.metadata ?? {};
+    return `${meta.namespace ?? 'default'}/${meta.name}`;
   }
 
   getInjectionPayload(injectes: ProviderInjection[]): EnvVar[] {
@@ -114,10 +121,22 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     });
   }
 
+
+  /**
+   * Merge provider-level effects into final applyable resources.
+   * Used to deduplicate (e.g. K8s secret name + ns).
+   */
+  mergeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const merge = createKubernetesMergeHandler();
+    return merge(effects);
+  }
+
   prepare(name: string, value: string): PreparedEffect[] {
     const encoded = Base64.encode(value);
     return [
       {
+        secretName: name,
+        providerName: this.name,
         type: 'kubectl',
         value: {
           apiVersion: 'v1',

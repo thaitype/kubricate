@@ -1,7 +1,8 @@
-import type { BaseProvider, ProviderInjection  } from './BaseProvider.js';
+import type { BaseProvider, ProviderInjection } from './BaseProvider.js';
 import type { SecretInjectionStrategy } from '../../BaseStack.js'
 import type { SecretValue } from '../types.js';
-import type { ManualEffect, PreparedEffect } from './BaseProvider.js';
+import type { CustomEffect, PreparedEffect } from './BaseProvider.js';
+import { createMergeHandler } from './merge-utils.js';
 
 export interface InMemoryProviderConfig {
   name?: string;
@@ -10,7 +11,12 @@ export interface InMemoryProviderConfig {
 type SupportedStrategies = 'env';
 
 export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, SupportedStrategies> {
+  name: string | undefined;
   injectes: ProviderInjection[] = [];
+
+  readonly allowMerge = true;
+  readonly secretType = 'Kubricate.InMemory';
+
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
   readonly targetKind = 'Deployment';
   public config: InMemoryProviderConfig;
@@ -43,15 +49,36 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
     }));
   }
 
+  getEffectIdentifier(effect: PreparedEffect): string {
+    return effect.value?.storeName;
+  }
+
+
+  /**
+    * Merge provider-level effects into final applyable resources.
+    * Used to deduplicate (e.g. K8s secret name + ns).
+    */
+  mergeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const merge = createMergeHandler();
+    return merge(effects);
+  }
+
+  /**
+   * Prepare the secret value for in-memory storage.
+   */
   prepare(name: string, value: SecretValue): PreparedEffect[] {
     return [
       {
-        type: 'manual',
+        secretName: name,
+        providerName: this.name,
+        type: 'custom',
         value: {
-          secretName: name,
-          value,
+          storeName: this.config.name ?? 'in-memory',
+          rawData: {
+            [name]: value,
+          },
         },
       },
-    ] satisfies ManualEffect[];
+    ] satisfies CustomEffect[];
   }
 }

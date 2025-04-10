@@ -6,21 +6,26 @@ export interface BaseProvider<
   Config extends object = object,
   SupportedStrategies extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
 > {
+  /**
+   * The name of the provider.
+   * This is used to identify the provider in the config and logs.
+   */
+  name: string | undefined;
   config: Config;
 
   logger?: BaseLogger;
 
   /**
-   * Prepares the secret for the given name and value.
-   * This method should return a resource object that can be applied to Kubernetes.
+   * prepare() is used to provision secret values into the cluster or remote backend.
+   * It is only called during `kubricate secret apply`.
+   *
+   * It should return the full secret resource (e.g., Kubernetes Secret, Vault payload).
    */
   prepare(name: string, value: SecretValue): PreparedEffect[];
 
   /**
-   * Returns the payload to be injected into the target resource.
-   *
-   * getInjectionPayload, will be called multiple times, sometime may no secrets set, this will be happen when read config from `kubricate.config` file
-   * However, when the `kubricate generate` command is executed, the secrets will be set.
+   * getInjectionPayload() is used to return runtime resource values (e.g., container.env).
+   * This is used during manifest generation (`kubricate generate`) and must be pure.
    */
   getInjectionPayload(injectes: ProviderInjection[]): unknown;
 
@@ -37,16 +42,42 @@ export interface BaseProvider<
   readonly targetKind: string;
 
   readonly supportedStrategies: SupportedStrategies[];
+
+  mergeSecrets?(effects: PreparedEffect[]): PreparedEffect[];
+
+  /**
+   * Each provider then defines how its own effects are uniquely identified (for conflict detection).
+   * 
+   * Optional method to uniquely identify effects emitted by this provider
+   * Used for detecting provider-level conflicts across providers.
+   * 
+   * If undefined, no cross-provider conflict check will be performed.
+   */
+  getEffectIdentifier?(effect: PreparedEffect): string;
+
+  /**
+   * Defines the target resource type (used for grouping/conflict)
+   */
+  readonly secretType?: string;
+
+  /**
+   * Whether this provider allows merging (default = false)
+   */
+  readonly allowMerge?: boolean;
 }
 
-export type PreparedEffect = ManualEffect | KubectlEffect;
+export type PreparedEffect = CustomEffect | KubectlEffect;
 
 export interface BaseEffect<Type extends string, T = unknown> {
   type: Type;
   value: T;
+  
+  // Metadata for the effect, refactor later
+  providerName: string | undefined;
+  secretName?: string; // Use for diagnostics
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ManualEffect extends BaseEffect<'manual'> { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any
+export interface CustomEffect<T extends object = any> extends BaseEffect<'custom', T> { }
 
 /**
  * KubectlEffect is used to apply a value to a resource using kubectl.

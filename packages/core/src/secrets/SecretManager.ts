@@ -97,17 +97,19 @@ export class SecretManager<
    * Registers a new provider instance using a valid provider name
    *
    * @param provider - The unique name of the provider (e.g., 'Kubernetes.Secret').
-   * @param options - Configuration specific to the provider type.
+   * @param instance - Configuration specific to the provider type.
    * @returns A SecretManager instance with the provider added.
    */
   addProvider<NewProviderKey extends string, NewProvider extends BaseProvider>(
     provider: NewProviderKey,
-    options: NewProvider
+    instance: NewProvider
   ) {
     if (this._providers[provider]) {
       throw new Error(`Provider ${provider} already exists`);
     }
-    this._providers[provider] = options;
+    // Set the name of the provider instance
+    instance.name = provider;
+    this._providers[provider] = instance;
     return this as SecretManager<
       LoaderInstances,
       ProviderInstances & Record<NewProviderKey, NewProvider>,
@@ -136,15 +138,15 @@ export class SecretManager<
    * Adds a new loader instance using a valid loader name
    *
    * @param loader - The unique name of the loader (e.g., 'EnvLoader').
-   * @param options - Configuration specific to the loader type.
+   * @param instance - Configuration specific to the loader type.
    * @returns A SecretManager instance with the loader added.
    */
 
-  addLoader<NewLoader extends string>(loader: NewLoader, options: BaseLoader) {
+  addLoader<NewLoader extends string>(loader: NewLoader, instance: BaseLoader) {
     if (this._loaders[loader]) {
       throw new Error(`Loader ${loader} already exists`);
     }
-    this._loaders[loader] = options;
+    this._loaders[loader] = instance;
     return this as SecretManager<
       LoaderInstances & Record<NewLoader, string>,
       ProviderInstances,
@@ -211,7 +213,27 @@ export class SecretManager<
    */
 
   public getSecrets() {
+    // Ensure that all secrets have a provider and loader set
+    // before returning the secrets.
+    this.build();
     return this._secrets;
+  }
+  /**
+   * @internal Internal method to prepare secrets for use.
+   * This is not intended for public use.
+   * 
+   * When a secret is added, it may not have a provider or loader set.
+   * This method ensures that all secrets have a provider and loader set.
+   */
+  private prepareSecrets() {
+    for (const secret of Object.values(this._secrets)) {
+      if (!secret.provider) {
+        secret.provider = this._defaultProvider;
+      }
+      if (!secret.loader) {
+        secret.loader = this._defaultLoader;
+      }
+    }
   }
 
   /**
@@ -247,7 +269,14 @@ export class SecretManager<
     return this._providers[key] as BaseProvider<Config>;
   }
 
-  validateConfig() {
+
+  /**
+   * @internal Internal method to build the SecretManager.
+   * This is not intended for public use.
+   * 
+   * Post processing step to ensure that all secrets is ready for use.
+   */
+  build() {
     if (Object.keys(this._loaders).length === 0) {
       throw new Error('No loaders registered');
     }
@@ -269,9 +298,12 @@ export class SecretManager<
     if (!this._defaultLoader) {
       this._defaultLoader = Object.keys(this._loaders)[0] as keyof LoaderInstances;
     }
-    console.log('SecretManager configuration is valid');
-    console.log('Default provider:', this._defaultProvider);
-    console.log('Default loader:', this._defaultLoader);
+    this.prepareSecrets();
+    this.logger?.debug('SecretManager[build] All secrets have a provider and loader set');
+    this.logger?.debug('SecretManager[build] All configurations are valid');
+    this.logger?.debug(`Default provider: ${String(this._defaultProvider)}`);
+    this.logger?.debug(`Default loader: ${String(this._defaultLoader)}`);
+    return this;
   }
 
   resolveProvider(provider?: AnyKey): BaseProvider {
@@ -309,7 +341,7 @@ export class SecretManager<
    * @throws Error if a loader or provider is not found for a secret.
    */
   async prepare(): Promise<SecretManagerEffect[]> {
-    this.validateConfig();
+    this.build();
     const secrets = this.getSecrets();
     const resolved: Record<string, SecretValue> = {};
     const loadedKeys = new Set<string>();
@@ -348,13 +380,14 @@ export class SecretManager<
     providerInstance: BaseProvider;
     providerId: string;
   } {
+    this.build();
     const secret = this._secrets[secretName];
     if (!secret) {
       throw new Error(`Secret "${secretName}" is not registered.`);
     }
     return {
       providerInstance: this.resolveProvider(secret.provider),
-      providerId: String(secret.provider ?? this._defaultProvider),
+      providerId: String(secret.provider),
     }
   }
 

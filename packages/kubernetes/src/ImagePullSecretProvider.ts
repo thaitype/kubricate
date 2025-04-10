@@ -8,7 +8,8 @@ import type {
 } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 import { z } from 'zod';
-import { parseZodSchema } from './utilts.js';
+import { createKubernetesMergeHandler } from './merge-utils.js';
+import { parseZodSchema } from './utils.js';
 
 export const dockerRegistrySecretSchema = z.object({
   username: z.string(),
@@ -31,15 +32,20 @@ export interface ImagePullSecretProviderConfig {
 
 type SupportedStrategies = 'imagePullSecret';
 
-export class ImagePullSecretProvider
-  implements BaseProvider<ImagePullSecretProviderConfig, SupportedStrategies>
-{
+export class ImagePullSecretProvider implements BaseProvider<
+  ImagePullSecretProviderConfig,
+  SupportedStrategies
+> {
+  name: string | undefined;
+
+  readonly secretType = 'Kubernetes.Secret.ImagePullSecret';
+
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['imagePullSecret'];
 
-  constructor(public config: ImagePullSecretProviderConfig) {}
+  constructor(public config: ImagePullSecretProviderConfig) { }
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;
@@ -54,6 +60,20 @@ export class ImagePullSecretProvider
 
   getInjectionPayload(): Array<{ name: string }> {
     return [{ name: this.config.name }];
+  }
+
+  getEffectIdentifier(effect: PreparedEffect): string {
+    const meta = effect.value?.metadata ?? {};
+    return `${meta.namespace ?? 'default'}/${meta.name}`;
+  }
+
+  /**
+   * Merge provider-level effects into final applyable resources.
+   * Used to deduplicate (e.g. K8s secret name + ns).
+   */
+  mergeSecrets(effects: PreparedEffect[]): PreparedEffect[] {
+    const merge = createKubernetesMergeHandler();
+    return merge(effects);
   }
 
   prepare(name: string, value: SecretValue): PreparedEffect[] {
@@ -71,6 +91,8 @@ export class ImagePullSecretProvider
 
     return [
       {
+        secretName: name,
+        providerName: this.name,
         type: 'kubectl',
         value: {
           apiVersion: 'v1',

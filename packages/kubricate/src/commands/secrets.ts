@@ -28,7 +28,7 @@ export class SecretsCommand extends BaseCommand {
     const { orchestrator } = await this.init();
     await orchestrator.validate();
 
-    const effects = await orchestrator.prepare();
+    const effects = await orchestrator.apply();
     if (effects.length === 0) {
       this.logger.warn(`No secrets to apply.`);
       return;
