@@ -411,6 +411,40 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
     );
   });
 
+  it('keeps last secret and logs dropped in overwrite strategy (intraProvider)', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+        SHARED_KEY: 'v1',
+        SHARED_KEY_DUPLICATE: 'v2',
+      }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'secret-app' }))
+      .addSecret({ name: 'SHARED_KEY', provider: 'InMemoryProvider' })
+      .addSecret({ name: 'SHARED_KEY_DUPLICATE', provider: 'InMemoryProvider' })
+      .build();
+  
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({ default: secretManager }),
+      }
+    };
+  
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: { merge: { intraProvider: 'overwrite' } }
+      }
+    };
+  
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+  
+    expect(effects).toHaveLength(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:intraProvider]'));
+  });
+  
+
 });
 
 
@@ -579,6 +613,42 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
   });
 
 
+  it('keeps last secret and logs dropped in overwrite strategy (crossProvider)', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+        SHARED_KEY: 'v1',
+        SHARED_KEY_DUPLICATE: 'v2',
+      }))
+      .addProvider('InMemoryProvider1', new InMemoryProvider({ name: 'secret-app' }))
+      .addProvider('InMemoryProvider2', new InMemoryProvider({ name: 'secret-app' }))
+      .setDefaultProvider('InMemoryProvider1')
+      .addSecret({ name: 'SHARED_KEY', provider: 'InMemoryProvider1' })
+      .addSecret({ name: 'SHARED_KEY_DUPLICATE', provider: 'InMemoryProvider2' })
+      .build();
+  
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({ default: secretManager }),
+      }
+    };
+  
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: { merge: { crossProvider: 'overwrite' } }
+      }
+    };
+  
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+  
+    expect(effects).toHaveLength(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:crossProvider]'));
+  });
+  
+
 });
 
 
@@ -699,6 +769,42 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       expect.stringContaining('[merge:overwrite:intraStack]')
     );
   });
+
+  it('keeps last secret and logs dropped in overwrite strategy (intraStack)', async () => {
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          svc1: new SecretManager()
+            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'one' }))
+            .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
+            .addSecret({ name: 'KEY' })
+            .build(),
+  
+          svc2: new SecretManager()
+            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'two' }))
+            .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
+            .addSecret({ name: 'KEY' })
+            .build()
+        })
+      }
+    };
+  
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: { merge: { intraStack: 'overwrite' } }
+      }
+    };
+  
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+  
+    expect(effects).toHaveLength(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:intraStack]'));
+  });
+  
 
 });
 
@@ -839,6 +945,45 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
       expect.stringContaining('[merge:overwrite:crossStack]')
     );
   });
+
+  it('keeps last secret and logs dropped in overwrite strategy (crossStack)', async () => {
+    const stacks = {
+      stack1: {
+        getSecretManagers: () => ({
+          main: new SecretManager()
+            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 's1' }))
+            .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
+            .addSecret({ name: 'KEY' })
+            .build()
+        }),
+      },
+      stack2: {
+        getSecretManagers: () => ({
+          main: new SecretManager()
+            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 's2' }))
+            .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
+            .addSecret({ name: 'KEY' })
+            .build()
+        }),
+      }
+    };
+  
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: { merge: { crossStack: 'overwrite' } }
+      }
+    };
+  
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+  
+    expect(effects).toHaveLength(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:crossStack]'));
+  });
+  
 
 });
 
