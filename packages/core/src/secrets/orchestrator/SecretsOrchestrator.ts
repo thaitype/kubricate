@@ -149,7 +149,15 @@ export class SecretsOrchestrator {
       const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secrets);
       const providerName = group[0].providerName;
       const provider = this.resolveProviderByName(providerName);
+
+      // 🔒 Enforce identifier sanity
+      if (!provider.getEffectIdentifier && group.length > 1) {
+        throw new Error(
+          `[merge:error] Provider "${providerName}" must implement getEffectIdentifier() to safely merge multiple effects (identifier: "${mergeKey}")`
+        );
+      }
   
+      // 🔒 Enforce provider.allowMerge and strategy
       if (group.length > 1) {
         if (!provider.allowMerge) {
           throw new Error(`[merge:error] Provider "${providerName}" does not allow merging for identifier "${mergeKey}"`);
