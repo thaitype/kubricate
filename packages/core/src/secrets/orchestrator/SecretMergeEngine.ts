@@ -1,7 +1,7 @@
 import type { SecretValue } from "../types.js";
 import type { KubricateConfig, BaseLogger } from '../../types.js';
 import { isObject } from "lodash-es";
-import type { MergeLevel, MergeStrategy } from "./types.js";
+import type { ConfigMergeOptions, MergeLevel, MergeStrategy } from "./types.js";
 
 export interface SecretOrigin {
   key: string;
@@ -45,7 +45,7 @@ export class SecretMergeEngine {
       }
 
       const level = this.resolveConflictLevel(prevEntries[0], current);
-      const strategy = this.resolveStrategyForLevel(level);
+      const strategy = SecretMergeEngine.resolveStrategyForLevel(level, this.context.config.secrets);
 
       this.applyMergeStrategy({ key, current, prevEntries, strategy, level, merged, history });
     }
@@ -106,7 +106,13 @@ export class SecretMergeEngine {
     return 'providerLevel';
   }
 
-  private resolveStrategyForLevel(level: MergeLevel): MergeStrategy {
+  /**
+   * Resolves the merge strategy for a given level using config or fallback defaults.
+   */
+  static resolveStrategyForLevel(
+    level: MergeLevel,
+    mergeOptions: ConfigMergeOptions | undefined
+  ): MergeStrategy {
     const defaults: Record<MergeLevel, MergeStrategy> = {
       providerLevel: 'autoMerge',   // allow merging within same provider
       managerLevel: 'error',        // disallow cross-provider collision in same SecretManager
@@ -114,6 +120,6 @@ export class SecretMergeEngine {
       workspaceLevel: 'error',      // disallow across stacks (hard boundary)
     };
 
-    return this.context.config.secrets?.merge?.[level] ?? defaults[level];
+    return mergeOptions?.merge?.[level] ?? defaults[level];
   }
 }

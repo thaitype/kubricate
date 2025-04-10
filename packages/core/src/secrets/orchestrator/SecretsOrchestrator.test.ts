@@ -287,7 +287,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 });
 
 
-// describe('SecretsOrchestrator providerLevel: error', () => {
+// describe('SecretsOrchestrator providerLevel', () => {
 //   let orchestrator: SecretsOrchestrator;
 //   let mockLogger: any;
 
@@ -322,16 +322,9 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 //           name: 'secret-application',
 //         })
 //       )
-//       // .addProvider(
-//       //   'ImagePullSecretProvider',
-//       //   new ImagePullSecretProvider({
-//       //     name: 'secret-application',
-//       //   })
-//       // )
 //       .setDefaultProvider('InMemoryProvider1')
 //       .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
 //       .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
-//       // .addSecret({ name: 'my_app_key_3', provider: 'ImagePullSecretProvider' })
 //       .build();
 
 //     const stacks = {
@@ -349,7 +342,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 //         stacks: stacks as any,
 //         secrets: {
 //           merge: {
-//             providerLevel: 'error',
+//             providerLevel: 'autoMerge',
 //             managerLevel: 'error',
 //             stackLevel: 'error',
 //             workspaceLevel: 'error',
@@ -364,5 +357,68 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 //       /\[merge:error:providerLevel\]/
 //     );
 //   });
+
+//   it('merges secrets across providers with same storeName when providerLevel is "autoMerge"', async () => {
+//     const secretManager = new SecretManager()
+//       .addLoader('InMemoryLoader', new InMemoryLoader({
+//         my_app_key: 'my_app_key_value',
+//         my_app_key_2: 'my_app_key_2_value',
+//       }))
+//       .addProvider(
+//         'InMemoryProvider1',
+//         new InMemoryProvider({
+//           name: 'secret-application',
+//         })
+//       )
+//       .addProvider(
+//         'InMemoryProvider2',
+//         new InMemoryProvider({
+//           name: 'secret-application',
+//         })
+//       )
+//       .setDefaultProvider('InMemoryProvider1')
+//       .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
+//       .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
+//       .build();
+  
+//     const stacks = {
+//       app: {
+//         getSecretManagers: () => ({
+//           default: secretManager,
+//         })
+//       }
+//     };
+  
+//     const options: SecretsOrchestratorOptions = {
+//       logger: mockLogger,
+//       effectOptions: {},
+//       config: {
+//         stacks: stacks as any,
+//         secrets: {
+//           merge: {
+//             providerLevel: 'autoMerge',
+//             managerLevel: 'error',
+//             stackLevel: 'error',
+//             workspaceLevel: 'error',
+//           }
+//         }
+//       }
+//     };
+  
+//     const orchestrator = SecretsOrchestrator.create(options);
+//     const effects = await orchestrator.apply();
+  
+//     expect(effects).toHaveLength(1); // ✅ only one merged result
+  
+//     const effect = effects[0];
+//     expect(effect.providerName).toBe('InMemoryProvider1'); // or InMemoryProvider2, doesn't matter
+//     expect(effect.value.storeName).toBe('secret-application');
+//     expect(effect.value.rawData).toEqual({
+//       my_app_key: 'my_app_key_value',
+//       my_app_key_2: 'my_app_key_2_value'
+//     });
+//   });
+
+  
 // });
 
