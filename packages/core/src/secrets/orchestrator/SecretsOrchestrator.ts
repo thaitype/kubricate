@@ -126,26 +126,28 @@ export class SecretsOrchestrator {
 
   private mergePreparedEffects(effects: PreparedEffectWithMeta[]): PreparedEffect[] {
     const grouped = new Map<string, PreparedEffectWithMeta[]>();
-  
+
     for (const effect of effects) {
+      // TODO: [merge:key] use canonical identifier to avoid cross-provider collision
+      // const key = `${effect.stackName}.${effect.managerName}.${effect.providerName}:${effect.secretType}:${effect.identifier}`;
       const key = `${effect.secretType}:${effect.identifier}`;
       if (!grouped.has(key)) grouped.set(key, []);
       grouped.get(key)!.push(effect);
     }
-  
+
     const merged: PreparedEffect[] = [];
-  
+
     for (const [mergeKey, group] of grouped.entries()) {
       const providerNames = new Set(group.map(e => e.providerName));
       const stackNames = new Set(group.map(e => e.stackName));
       const managerNames = new Set(group.map(e => e.managerName));
-  
+
       const level: MergeLevel =
         stackNames.size > 1 ? 'crossStack' :
-        managerNames.size > 1 ? 'intraStack' :
-        providerNames.size > 1 ? 'crossProvider' :
-        'intraProvider';
-  
+          managerNames.size > 1 ? 'intraStack' :
+            providerNames.size > 1 ? 'crossProvider' :
+              'intraProvider';
+
       const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secrets);
       const providerName = group[0].providerName;
       const provider = this.resolveProviderByName(providerName);
@@ -156,36 +158,45 @@ export class SecretsOrchestrator {
           `[merge:error] Provider "${providerName}" must implement getEffectIdentifier() to safely merge multiple effects (identifier: "${mergeKey}")`
         );
       }
-  
+
       // 🔒 Enforce provider.allowMerge and strategy
       if (group.length > 1) {
+        const sources = formatMergeSources(group);
+
         if (!provider.allowMerge) {
-          throw new Error(`[merge:error] Provider "${providerName}" does not allow merging for identifier "${mergeKey}"`);
+          throw new Error(
+            `[merge:error] Provider "${providerName}" does not allow merging for identifier "${mergeKey}". Found in:\n- ${sources.join('\n- ')}`
+          );
         }
-  
+
         if (strategy === 'error') {
-          throw new Error(`[merge:error:${level}] Duplicate resource identifier "${mergeKey}" from ${[...providerNames].join(' and ')}`);
+          throw new Error(
+            `[merge:error:${level}] Duplicate resource identifier "${mergeKey}" detected in:\n- ${sources.join('\n- ')}`
+          );
         }
-  
+
         if (strategy === 'overwrite') {
-          const dropped = group.slice(0, -1).map(g => `${g.stackName}/${g.managerName}#${g.providerName}`);
-          this.logger.warn(`[merge:overwrite:${level}] Overwriting "${mergeKey}" and dropping: ${dropped.join(', ')}`);
-          group.splice(0, group.length - 1); // Keep only last
+          const dropped = sources.slice(0, -1);
+          const kept = sources[sources.length - 1];
+          this.logger.warn(
+            `[merge:overwrite:${level}] Overwriting "${mergeKey}" — keeping ${kept}, dropped: ${dropped.join(', ')}`
+          );
+          group.splice(0, group.length - 1); // keep only the last
         }
-  
+
         // 'autoMerge' = no-op
       }
-  
+
       if (typeof provider.mergeSecrets !== 'function') {
         throw new Error(`[merge:error] Provider "${providerName}" does not implement mergeSecrets()`);
       }
-  
+
       merged.push(...provider.mergeSecrets(group));
     }
-  
+
     return merged;
   }
-  
+
 
 
   /**
@@ -234,4 +245,8 @@ export class SecretsOrchestrator {
     return mergeOptions?.merge?.[level] ?? defaults[level];
   }
 
+}
+
+function formatMergeSources(group: PreparedEffectWithMeta[]): string[] {
+  return group.map(g => `${g.stackName}/${g.managerName}#${g.providerName}`);
 }
