@@ -69,6 +69,7 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
   prepare(name: string, value: SecretValue): PreparedEffect[] {
     return [
       {
+        secretName: name,
         providerName: this.name,
         type: 'custom',
         value: {

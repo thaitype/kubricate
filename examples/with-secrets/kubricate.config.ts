@@ -7,10 +7,12 @@ export default defineConfig({
   },
   secrets: {
     merge: {
-      intraProvider: 'autoMerge',
-      crossProvider: 'error',
-      intraStack: 'error',
-      crossStack: 'error',
+      // Default merge strategies
+      
+      // intraProvider: 'autoMerge',
+      // crossProvider: 'error',
+      // intraStack: 'error',
+      // crossStack: 'error',
     }
   }
 });

@@ -91,6 +91,7 @@ export class ImagePullSecretProvider implements BaseProvider<
 
     return [
       {
+        secretName: name,
         providerName: this.name,
         type: 'kubectl',
         value: {

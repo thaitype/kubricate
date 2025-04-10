@@ -71,7 +71,10 @@ export type PreparedEffect = CustomEffect | KubectlEffect;
 export interface BaseEffect<Type extends string, T = unknown> {
   type: Type;
   value: T;
+  
+  // Metadata for the effect, refactor later
   providerName: string | undefined;
+  secretName?: string; // Use for diagnostics
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any
 export interface CustomEffect<T extends object = any> extends BaseEffect<'custom', T> { }

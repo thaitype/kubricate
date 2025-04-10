@@ -135,6 +135,7 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
     const encoded = Base64.encode(value);
     return [
       {
+        secretName: name,
         providerName: this.name,
         type: 'kubectl',
         value: {

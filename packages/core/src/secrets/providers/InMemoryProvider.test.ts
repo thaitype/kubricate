@@ -77,6 +77,7 @@ describe('InMemoryProvider', () => {
     const result = provider.prepare('TOKEN', 'abc123');
     expect(result).toEqual([
       {
+        secretName: "TOKEN",
         type: 'custom',
         providerName: undefined,
         value: {
