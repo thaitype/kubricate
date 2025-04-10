@@ -4,8 +4,8 @@ import { SecretsOrchestrator } from './SecretsOrchestrator.js';
 import type { SecretsOrchestratorOptions } from './types.js';
 import { SecretManager } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
-// import { InMemoryProvider } from '../providers/InMemoryProvider.js';
-// import { InMemoryLoader } from '../loaders/InMemoryLoader.js';
+import { InMemoryProvider } from '../providers/InMemoryProvider.js';
+import { InMemoryLoader } from '../loaders/InMemoryLoader.js';
 
 describe('SecretsOrchestrator', () => {
   let mockSecretManager: SecretManager;
@@ -22,6 +22,10 @@ describe('SecretsOrchestrator', () => {
     };
 
     mockProvider = {
+      name: 'kubernetes', // This is critical
+      secretType: 'Kubricate.InMemory', // Or your desired secretType
+      allowMerge: true,
+      getEffectIdentifier: (effect: PreparedEffect) => effect.value?.metadata?.name ?? 'no-id',
       prepare: vi.fn((name, value) => [{
         providerName: 'kubernetes',
         type: 'kubectl',
@@ -114,6 +118,10 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     };
 
     mockProvider = {
+      name: 'kubernetes', // This is critical
+      secretType: 'Kubricate.InMemory', // Or your desired secretType
+      allowMerge: true,
+      getEffectIdentifier: (effect: PreparedEffect) => effect.value?.metadata?.name ?? 'no-id',
       prepare: vi.fn((name, value) => [{
         providerName: 'kubernetes',
         type: 'kubectl',
@@ -172,7 +180,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     expect(effects).toMatchSnapshot();
   });
 
-  it('throws on stackLevel conflict when strategy is "error"', async () => {
+  it('throws on providerLevel conflict when strategy is "error"', async () => {
     const stacks = {
       stack1: {
         getSecretManagers: () => ({
@@ -185,7 +193,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         })
       }
     };
-  
+
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
       effectOptions: {},
@@ -193,22 +201,19 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            providerLevel: 'autoMerge',
-            managerLevel: 'autoMerge',
-            stackLevel: 'error',
-            workspaceLevel: 'error',
+            providerLevel: 'error',
           }
         }
       }
     };
-  
+
     orchestrator = SecretsOrchestrator.create(options);
-  
+
     await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:stackLevel] Duplicate key "SHARED_KEY"/
+      /\[merge:error:providerLevel\] Duplicate resource identifier "Kubricate.InMemory:merged-secret" from kubernetes/
     );
   });
-  
+
 
 });
 
@@ -227,6 +232,10 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
     };
 
     mockProvider = {
+      name: 'kubernetes', // This is critical
+      secretType: 'Kubricate.InMemory', // Or your desired secretType
+      allowMerge: true,
+      getEffectIdentifier: (effect: PreparedEffect) => effect.value?.metadata?.name ?? 'no-id',
       prepare: vi.fn((name, value) => [{
         providerName: 'kubernetes',
         type: 'kubectl',
@@ -270,9 +279,6 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
         secrets: {
           merge: {
             providerLevel: 'autoMerge',
-            managerLevel: 'autoMerge',
-            stackLevel: 'autoMerge',
-            workspaceLevel: 'autoMerge',
           }
         }
       }
@@ -287,138 +293,138 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 });
 
 
-// describe('SecretsOrchestrator providerLevel', () => {
-//   let orchestrator: SecretsOrchestrator;
-//   let mockLogger: any;
+describe('SecretsOrchestrator providerLevel', () => {
+  let orchestrator: SecretsOrchestrator;
+  let mockLogger: any;
 
-//   beforeEach(() => {
-//     mockLogger = {
-//       info: vi.fn(),
-//       warn: vi.fn(),
-//       debug: vi.fn(),
-//     };
-//     // mockLogger = {
-//     //   info: console.log,
-//     //   warn: console.warn,
-//     //   debug: console.debug,
-//     // };
-//   });
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+    // mockLogger = {
+    //   info: console.log,
+    //   warn: console.warn,
+    //   debug: console.debug,
+    // };
+  });
 
-//   it('should throw on providerLevel conflict with strategy "error"', async () => {
-//     const secretManager = new SecretManager()
-//       .addLoader('InMemoryLoader', new InMemoryLoader({
-//         my_app_key: 'my_app_key_value',
-//         my_app_key_2: 'my_app_key_2_value',
-//       }))
-//       .addProvider(
-//         'InMemoryProvider1',
-//         new InMemoryProvider({
-//           name: 'secret-application',
-//         })
-//       )
-//       .addProvider(
-//         'InMemoryProvider2',
-//         new InMemoryProvider({
-//           name: 'secret-application',
-//         })
-//       )
-//       .setDefaultProvider('InMemoryProvider1')
-//       .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
-//       .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
-//       .build();
+  it('should throw on providerLevel conflict with strategy "error"', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+        my_app_key: 'my_app_key_value',
+        my_app_key_2: 'my_app_key_2_value',
+      }))
+      .addProvider(
+        'InMemoryProvider1',
+        new InMemoryProvider({
+          name: 'secret-application',
+        })
+      )
+      .addProvider(
+        'InMemoryProvider2',
+        new InMemoryProvider({
+          name: 'secret-application',
+        })
+      )
+      .setDefaultProvider('InMemoryProvider1')
+      .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
+      .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
+      .build();
 
-//     const stacks = {
-//       app: {
-//         getSecretManagers: () => ({
-//           default: secretManager,
-//         })
-//       }
-//     };
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          default: secretManager,
+        })
+      }
+    };
 
-//     const options: SecretsOrchestratorOptions = {
-//       logger: mockLogger,
-//       effectOptions: {},
-//       config: {
-//         stacks: stacks as any,
-//         secrets: {
-//           merge: {
-//             providerLevel: 'autoMerge',
-//             managerLevel: 'error',
-//             stackLevel: 'error',
-//             workspaceLevel: 'error',
-//           }
-//         }
-//       }
-//     };
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          merge: {
+            providerLevel: 'error',
+            managerLevel: 'error',
+            stackLevel: 'error',
+            workspaceLevel: 'error',
+          }
+        }
+      }
+    };
 
-//     orchestrator = SecretsOrchestrator.create(options);
+    orchestrator = SecretsOrchestrator.create(options);
 
-//     await expect(orchestrator.apply()).rejects.toThrowError(
-//       /\[merge:error:providerLevel\]/
-//     );
-//   });
+    await expect(orchestrator.apply()).rejects.toThrowError(
+      /\[merge:error:providerLevel\]/
+    );
+  });
 
-//   it('merges secrets across providers with same storeName when providerLevel is "autoMerge"', async () => {
-//     const secretManager = new SecretManager()
-//       .addLoader('InMemoryLoader', new InMemoryLoader({
-//         my_app_key: 'my_app_key_value',
-//         my_app_key_2: 'my_app_key_2_value',
-//       }))
-//       .addProvider(
-//         'InMemoryProvider1',
-//         new InMemoryProvider({
-//           name: 'secret-application',
-//         })
-//       )
-//       .addProvider(
-//         'InMemoryProvider2',
-//         new InMemoryProvider({
-//           name: 'secret-application',
-//         })
-//       )
-//       .setDefaultProvider('InMemoryProvider1')
-//       .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
-//       .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
-//       .build();
-  
-//     const stacks = {
-//       app: {
-//         getSecretManagers: () => ({
-//           default: secretManager,
-//         })
-//       }
-//     };
-  
-//     const options: SecretsOrchestratorOptions = {
-//       logger: mockLogger,
-//       effectOptions: {},
-//       config: {
-//         stacks: stacks as any,
-//         secrets: {
-//           merge: {
-//             providerLevel: 'autoMerge',
-//             managerLevel: 'error',
-//             stackLevel: 'error',
-//             workspaceLevel: 'error',
-//           }
-//         }
-//       }
-//     };
-  
-//     const orchestrator = SecretsOrchestrator.create(options);
-//     const effects = await orchestrator.apply();
-  
-//     expect(effects).toHaveLength(1); // ✅ only one merged result
-  
-//     const effect = effects[0];
-//     expect(effect.providerName).toBe('InMemoryProvider1'); // or InMemoryProvider2, doesn't matter
-//     expect(effect.value.storeName).toBe('secret-application');
-//     expect(effect.value.rawData).toEqual({
-//       my_app_key: 'my_app_key_value',
-//       my_app_key_2: 'my_app_key_2_value'
-//     });
-//   });
+  it('merges secrets across providers with same storeName when providerLevel is "autoMerge"', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+        my_app_key: 'my_app_key_value',
+        my_app_key_2: 'my_app_key_2_value',
+      }))
+      .addProvider(
+        'InMemoryProvider1',
+        new InMemoryProvider({
+          name: 'secret-application',
+        })
+      )
+      .addProvider(
+        'InMemoryProvider2',
+        new InMemoryProvider({
+          name: 'secret-application',
+        })
+      )
+      .setDefaultProvider('InMemoryProvider1')
+      .addSecret({ name: 'my_app_key', provider: 'InMemoryProvider1' })
+      .addSecret({ name: 'my_app_key_2', provider: 'InMemoryProvider2' })
+      .build();
 
-  
-// });
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          default: secretManager,
+        })
+      }
+    };
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          merge: {
+            providerLevel: 'autoMerge',
+            managerLevel: 'error',
+            stackLevel: 'error',
+            workspaceLevel: 'error',
+          }
+        }
+      }
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1); // ✅ only one merged result
+
+    const effect = effects[0];
+    expect(effect.providerName).toBe('InMemoryProvider1'); // or InMemoryProvider2, doesn't matter
+    expect(effect.value.storeName).toBe('secret-application');
+    expect(effect.value.rawData).toEqual({
+      my_app_key: 'my_app_key_value',
+      my_app_key_2: 'my_app_key_2_value'
+    });
+  });
+
+
+});
 

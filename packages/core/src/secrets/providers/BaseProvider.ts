@@ -54,6 +54,16 @@ export interface BaseProvider<
    * If undefined, no cross-provider conflict check will be performed.
    */
   getEffectIdentifier?(effect: PreparedEffect): string;
+
+  /**
+   * Defines the target resource type (used for grouping/conflict)
+   */
+  readonly secretType?: string;
+
+  /**
+   * Whether this provider allows merging (default = false)
+   */
+  readonly allowMerge?: boolean;
 }
 
 export type PreparedEffect = CustomEffect | KubectlEffect;

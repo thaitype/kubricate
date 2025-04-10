@@ -13,6 +13,10 @@ type SupportedStrategies = 'env';
 export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, SupportedStrategies> {
   name: string | undefined;
   injectes: ProviderInjection[] = [];
+
+  readonly allowMerge = true;
+  readonly secretType = 'Kubricate.InMemory';
+
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
   readonly targetKind = 'Deployment';
   public config: InMemoryProviderConfig;
@@ -58,7 +62,7 @@ export class InMemoryProvider implements BaseProvider<InMemoryProviderConfig, Su
     const merge = createMergeHandler();
     return merge(effects);
   }
-  
+
   /**
    * Prepare the secret value for in-memory storage.
    */

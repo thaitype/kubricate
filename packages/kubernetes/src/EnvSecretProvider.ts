@@ -76,6 +76,9 @@ type SupportedStrategies = 'env';
  */
 export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, SupportedStrategies> {
 
+  readonly allowMerge = true;
+  readonly secretType = 'Kubernetes.Secret.Env';
+
   name: string | undefined;
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';

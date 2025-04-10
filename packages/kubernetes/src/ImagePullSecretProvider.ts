@@ -37,6 +37,9 @@ export class ImagePullSecretProvider implements BaseProvider<
   SupportedStrategies
 > {
   name: string | undefined;
+
+  readonly secretType = 'Kubernetes.Secret.ImagePullSecret';
+
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
