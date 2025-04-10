@@ -2,7 +2,7 @@ import type { BaseLogger } from '../../types.js';
 import type { BaseProvider, PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
-import { SecretMergeEngine, type SecretOrigin } from './SecretMergeEngine.js';
+import { SecretMergeEngine } from './SecretMergeEngine.js';
 import type { SecretsOrchestratorOptions } from './types.js';
 
 interface ResolvedSecret {
@@ -145,7 +145,7 @@ export class SecretsOrchestrator {
       }
 
 
-      const strategy = SecretMergeEngine.resolveStrategyForLevel('providerLevel', this.engine.options.config.secrets);
+      const strategy = SecretMergeEngine.resolveStrategyForLevel('intraProvider', this.engine.options.config.secrets);
 
       // detect conflict
       if (group.length > 1) {
@@ -154,11 +154,11 @@ export class SecretsOrchestrator {
         }
 
         if (strategy === 'error') {
-          throw new Error(`[merge:error:providerLevel] Duplicate resource identifier "${mergeKey}" from ${[...new Set(group.map(g => g.providerName))].join(' and ')}`);
+          throw new Error(`[merge:error:intraProvider] Duplicate resource identifier "${mergeKey}" from ${[...new Set(group.map(g => g.providerName))].join(' and ')}`);
         }
 
         if (strategy === 'overwrite') {
-          this.logger.warn(`[merge:overwrite:providerLevel] Overwriting "${mergeKey}" with latest value`);
+          this.logger.warn(`[merge:overwrite:intraProvider] Overwriting "${mergeKey}" with latest value`);
           // optionally reduce to one value
           group.splice(0, group.length - 1); // keep only last
         }

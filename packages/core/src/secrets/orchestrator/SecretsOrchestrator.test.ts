@@ -62,10 +62,10 @@ describe('SecretsOrchestrator', () => {
         },
         secrets: {
           merge: {
-            providerLevel: 'autoMerge',
-            managerLevel: 'error',
-            stackLevel: 'error',
-            workspaceLevel: 'error',
+            intraProvider: 'autoMerge',
+            crossProvider: 'error',
+            intraStack: 'error',
+            crossStack: 'error',
           }
         }
       },
@@ -165,10 +165,10 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            providerLevel: 'autoMerge',
-            managerLevel: 'autoMerge',
-            stackLevel: 'autoMerge',
-            workspaceLevel: 'autoMerge',
+            intraProvider: 'autoMerge',
+            crossProvider: 'autoMerge',
+            intraStack: 'autoMerge',
+            crossStack: 'autoMerge',
           }
         }
       }
@@ -180,7 +180,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     expect(effects).toMatchSnapshot();
   });
 
-  it('throws on providerLevel conflict when strategy is "error"', async () => {
+  it('throws on intraProvider conflict when strategy is "error"', async () => {
     const stacks = {
       stack1: {
         getSecretManagers: () => ({
@@ -201,7 +201,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            providerLevel: 'error',
+            intraProvider: 'error',
           }
         }
       }
@@ -210,7 +210,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     orchestrator = SecretsOrchestrator.create(options);
 
     await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:providerLevel\] Duplicate resource identifier "Kubricate.InMemory:merged-secret" from kubernetes/
+      /\[merge:error:intraProvider\] Duplicate resource identifier "Kubricate.InMemory:merged-secret" from kubernetes/
     );
   });
 
@@ -278,7 +278,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            providerLevel: 'autoMerge',
+            intraProvider: 'autoMerge',
           }
         }
       }
@@ -293,7 +293,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 });
 
 
-describe('SecretsOrchestrator providerLevel', () => {
+describe('SecretsOrchestrator intraProvider', () => {
   let orchestrator: SecretsOrchestrator;
   let mockLogger: any;
 
@@ -303,14 +303,9 @@ describe('SecretsOrchestrator providerLevel', () => {
       warn: vi.fn(),
       debug: vi.fn(),
     };
-    // mockLogger = {
-    //   info: console.log,
-    //   warn: console.warn,
-    //   debug: console.debug,
-    // };
   });
 
-  it('should throw on providerLevel conflict with strategy "error"', async () => {
+  it('should throw on intraProvider conflict with strategy "error"', async () => {
     const secretManager = new SecretManager()
       .addLoader('InMemoryLoader', new InMemoryLoader({
         my_app_key: 'my_app_key_value',
@@ -348,10 +343,7 @@ describe('SecretsOrchestrator providerLevel', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            providerLevel: 'error',
-            managerLevel: 'error',
-            stackLevel: 'error',
-            workspaceLevel: 'error',
+            intraProvider: 'error',
           }
         }
       }
@@ -360,11 +352,11 @@ describe('SecretsOrchestrator providerLevel', () => {
     orchestrator = SecretsOrchestrator.create(options);
 
     await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:providerLevel\]/
+      /\[merge:error:intraProvider\]/
     );
   });
 
-  it('merges secrets across providers with same storeName when providerLevel is "autoMerge"', async () => {
+  it('merges secrets across providers with same storeName when intraProvider is "autoMerge"', async () => {
     const secretManager = new SecretManager()
       .addLoader('InMemoryLoader', new InMemoryLoader({
         my_app_key: 'my_app_key_value',
@@ -402,10 +394,7 @@ describe('SecretsOrchestrator providerLevel', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            providerLevel: 'autoMerge',
-            managerLevel: 'error',
-            stackLevel: 'error',
-            workspaceLevel: 'error',
+            intraProvider: 'autoMerge',
           }
         }
       }
@@ -427,4 +416,3 @@ describe('SecretsOrchestrator providerLevel', () => {
 
 
 });
-

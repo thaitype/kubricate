@@ -100,10 +100,10 @@ export class SecretMergeEngine {
   }
 
   private resolveConflictLevel(a: SecretOrigin, b: SecretOrigin): MergeLevel {
-    if (a.stackName !== b.stackName) return 'workspaceLevel';
-    if (a.managerName !== b.managerName) return 'stackLevel';
-    if (a.providerName !== b.providerName) return 'managerLevel';
-    return 'providerLevel';
+    if (a.stackName !== b.stackName) return 'crossStack';
+    if (a.managerName !== b.managerName) return 'intraStack';
+    if (a.providerName !== b.providerName) return 'crossProvider';
+    return 'intraProvider';
   }
 
   /**
@@ -114,10 +114,10 @@ export class SecretMergeEngine {
     mergeOptions: ConfigMergeOptions | undefined
   ): MergeStrategy {
     const defaults: Record<MergeLevel, MergeStrategy> = {
-      providerLevel: 'autoMerge',   // allow merging within same provider
-      managerLevel: 'error',        // disallow cross-provider collision in same SecretManager
-      stackLevel: 'error',          // disallow between managers in same stack
-      workspaceLevel: 'error',      // disallow across stacks (hard boundary)
+      intraProvider: 'autoMerge',   // allow merging within same provider
+      crossProvider: 'error',        // disallow cross-provider collision in same SecretManager
+      intraStack: 'error',          // disallow between managers in same stack
+      crossStack: 'error',      // disallow across stacks (hard boundary)
     };
 
     return mergeOptions?.merge?.[level] ?? defaults[level];

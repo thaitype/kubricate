@@ -35,10 +35,10 @@ export interface ConfigMergeOptions {
    * Merge Configuration object for controlling secret merge behavior at each level.
    *
    * All levels are optional. If unspecified, the orchestrator will apply the default strategy:
-   * - providerLevel: 'autoMerge'
-   * - managerLevel: 'error'
-   * - stackLevel: 'error'
-   * - workspaceLevel: 'error'
+   * - intraProvider: 'autoMerge'
+   * - crossProvider: 'error'
+   * - intraStack: 'error'
+   * - crossStack: 'error'
    */
   merge?: {
     /**
@@ -47,21 +47,21 @@ export interface ConfigMergeOptions {
      * 
      * @default 'autoMerge'
      */
-    providerLevel?: MergeStrategy;
+    intraProvider?: MergeStrategy;
 
     /**
      * Merge strategy across multiple providers in the same SecretManager.
      * 
      * @default 'error'
      */
-    managerLevel?: MergeStrategy;
+    crossProvider?: MergeStrategy;
 
     /**
      * Merge strategy across SecretManagers within the same stack.
      * 
      * @default 'error'
      */
-    stackLevel?: MergeStrategy;
+    intraStack?: MergeStrategy;
 
     /**
      * Merge strategy across different stacks in the workspace/project.
@@ -69,6 +69,6 @@ export interface ConfigMergeOptions {
      * 
      * @default 'error'
      */
-    workspaceLevel?: MergeStrategy;
+    crossStack?: MergeStrategy;
   };
 }

@@ -7,10 +7,10 @@ export default defineConfig({
   },
   secrets: {
     merge: {
-      providerLevel: 'autoMerge',
-      managerLevel: 'error',
-      stackLevel: 'error',
-      workspaceLevel: 'error',
+      intraProvider: 'autoMerge',
+      crossProvider: 'error',
+      intraStack: 'error',
+      crossStack: 'error',
     }
   }
 });
