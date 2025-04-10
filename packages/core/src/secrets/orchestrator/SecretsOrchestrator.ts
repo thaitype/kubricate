@@ -3,7 +3,7 @@ import type { BaseProvider, PreparedEffect } from '../providers/BaseProvider.js'
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
 import { SecretMergeEngine } from './SecretMergeEngine.js';
-import type { SecretsOrchestratorOptions } from './types.js';
+import type { MergeLevel, SecretsOrchestratorOptions } from './types.js';
 
 interface ResolvedSecret {
   key: string;
@@ -15,6 +15,8 @@ interface ResolvedSecret {
 
 type PreparedEffectWithMeta = PreparedEffect & {
   providerName: string;
+  stackName: string;
+  managerName: string;
   secretType: string;
   identifier: string;
 }
@@ -114,6 +116,8 @@ export class SecretsOrchestrator {
 
       return effects.map(effect => ({
         ...effect,
+        stackName: secret.stackName,
+        managerName: secret.managerName,
         providerName: provider.name!,
         secretType: provider.secretType ?? provider.constructor.name,
         identifier: provider.getEffectIdentifier?.(effect) ?? 'no-id',
@@ -133,45 +137,49 @@ export class SecretsOrchestrator {
     const merged: PreparedEffect[] = [];
 
     for (const [mergeKey, group] of grouped.entries()) {
+      const providerNames = new Set(group.map(e => e.providerName));
+      const stackNames = new Set(group.map(e => e.stackName));
+      const managerNames = new Set(group.map(e => e.managerName));
+
+      const level: MergeLevel =
+        stackNames.size > 1 ? 'crossStack' :
+          managerNames.size > 1 ? 'intraStack' :
+            providerNames.size > 1 ? 'crossProvider' :
+              'intraProvider';
+
+      const strategy = SecretMergeEngine.resolveStrategyForLevel(level, this.engine.options.config.secrets);
+
       const providerName = group[0].providerName;
       const provider = this.resolveProviderByName(providerName);
 
-      if (group.length > 1 && !provider.allowMerge) {
-        throw new Error(`[merge:error] Provider "${providerName}" does not allow merging for identifier "${mergeKey}"`);
-      }
-      // TODO: Handle case where provider does not implement mergeSecrets()
-      if (typeof provider.mergeSecrets !== 'function') {
-        throw new Error(`[merge:error] Provider "${providerName}" does not implement mergeSecrets() for identifier "${mergeKey}"`);
-      }
-
-
-      const strategy = SecretMergeEngine.resolveStrategyForLevel('intraProvider', this.engine.options.config.secrets);
-
-      // detect conflict
       if (group.length > 1) {
         if (!provider.allowMerge) {
           throw new Error(`[merge:error] Provider "${providerName}" does not allow merging for identifier "${mergeKey}"`);
         }
 
         if (strategy === 'error') {
-          throw new Error(`[merge:error:intraProvider] Duplicate resource identifier "${mergeKey}" from ${[...new Set(group.map(g => g.providerName))].join(' and ')}`);
+          throw new Error(`[merge:error:${level}] Duplicate resource identifier "${mergeKey}" from ${[...providerNames].join(' and ')}`);
         }
 
         if (strategy === 'overwrite') {
-          this.logger.warn(`[merge:overwrite:intraProvider] Overwriting "${mergeKey}" with latest value`);
-          // optionally reduce to one value
-          group.splice(0, group.length - 1); // keep only last
+          this.logger.warn(`[merge:overwrite:${level}] Overwriting "${mergeKey}" with latest value`);
+          group.splice(0, group.length - 1);
         }
 
-        // autoMerge — do nothing
+        // autoMerge: no-op
       }
 
+      if (typeof provider.mergeSecrets !== 'function') {
+        throw new Error(`[merge:error] Provider "${providerName}" does not implement mergeSecrets()`);
+      }
 
       merged.push(...provider.mergeSecrets(group));
     }
 
     return merged;
   }
+
+
 
 
   /**

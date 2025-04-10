@@ -180,41 +180,6 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
     expect(effects).toMatchSnapshot();
   });
 
-  it('throws on intraProvider conflict when strategy is "error"', async () => {
-    const stacks = {
-      stack1: {
-        getSecretManagers: () => ({
-          svc1: mockSecretManager('svc1', {
-            SHARED_KEY: { loader: 'env', provider: 'kubernetes', value: 'one' },
-          }),
-          svc2: mockSecretManager('svc2', {
-            SHARED_KEY: { loader: 'env', provider: 'kubernetes', value: 'two' },
-          }),
-        })
-      }
-    };
-
-    const options: SecretsOrchestratorOptions = {
-      logger: mockLogger,
-      effectOptions: {},
-      config: {
-        stacks: stacks as any,
-        secrets: {
-          merge: {
-            intraProvider: 'error',
-          }
-        }
-      }
-    };
-
-    orchestrator = SecretsOrchestrator.create(options);
-
-    await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:intraProvider\] Duplicate resource identifier "Kubricate.InMemory:merged-secret" from kubernetes/
-    );
-  });
-
-
 });
 
 
@@ -293,7 +258,111 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 });
 
 
-describe('SecretsOrchestrator intraProvider', () => {
+
+
+describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
+  let orchestrator: SecretsOrchestrator;
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
+
+  it('should throw on intraProvider conflict with strategy "error"', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+        SHARED_KEY: 'value1',
+        SHARED_KEY_DUPLICATE: 'value2',
+      }))
+      .addProvider(
+        'InMemoryProvider',
+        new InMemoryProvider({ name: 'secret-application' })
+      )
+      .addSecret({ name: 'SHARED_KEY', provider: 'InMemoryProvider' })
+      .addSecret({ name: 'SHARED_KEY_DUPLICATE', provider: 'InMemoryProvider' })
+      .build();
+
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          default: secretManager,
+        })
+      }
+    };
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          merge: {
+            intraProvider: 'error', // This will trigger the error
+          }
+        }
+      }
+    };
+
+    orchestrator = SecretsOrchestrator.create(options);
+
+    await expect(orchestrator.apply()).rejects.toThrowError(
+      /\[merge:error:intraProvider\]/
+    );
+  });
+
+  it('merges secrets within same provider when intraProvider is "autoMerge"', async () => {
+    const secretManager = new SecretManager()
+      .addLoader('InMemoryLoader', new InMemoryLoader({
+        API_KEY: 'abc123',
+        API_SECRET: 'shhh',
+      }))
+      .addProvider(
+        'InMemoryProvider',
+        new InMemoryProvider({ name: 'secret-application' })
+      )
+      .addSecret({ name: 'API_KEY', provider: 'InMemoryProvider' })
+      .addSecret({ name: 'API_SECRET', provider: 'InMemoryProvider' })
+      .build();
+
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          default: secretManager,
+        })
+      }
+    };
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          merge: {
+            intraProvider: 'autoMerge',
+          }
+        }
+      }
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(effects[0].value.storeName).toBe('secret-application');
+    expect(effects[0].value.rawData).toEqual({
+      API_KEY: 'abc123',
+      API_SECRET: 'shhh',
+    });
+  });
+});
+
+
+describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
   let orchestrator: SecretsOrchestrator;
   let mockLogger: any;
 
@@ -343,7 +412,7 @@ describe('SecretsOrchestrator intraProvider', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            intraProvider: 'error',
+            crossProvider: 'error',
           }
         }
       }
@@ -352,11 +421,11 @@ describe('SecretsOrchestrator intraProvider', () => {
     orchestrator = SecretsOrchestrator.create(options);
 
     await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:intraProvider\]/
+      /\[merge:error:crossProvider\]/
     );
   });
 
-  it('merges secrets across providers with same storeName when intraProvider is "autoMerge"', async () => {
+  it('merges secrets across providers with same storeName when crossProvider is "autoMerge"', async () => {
     const secretManager = new SecretManager()
       .addLoader('InMemoryLoader', new InMemoryLoader({
         my_app_key: 'my_app_key_value',
@@ -394,7 +463,7 @@ describe('SecretsOrchestrator intraProvider', () => {
         stacks: stacks as any,
         secrets: {
           merge: {
-            intraProvider: 'autoMerge',
+            crossProvider: 'autoMerge',
           }
         }
       }
@@ -415,4 +484,181 @@ describe('SecretsOrchestrator intraProvider', () => {
   });
 
 
+});
+
+
+describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
+
+  it('should throw on intraStack conflict with strategy "error"', async () => {
+    const stack = {
+      getSecretManagers: () => ({
+        svc1: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'A' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
+          .build(),
+        svc2: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'B' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
+          .build(),
+      }),
+    };
+
+    const options = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: stack as any },
+        secrets: {
+          merge: { intraStack: 'error' as const },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    await expect(orchestrator.apply()).rejects.toThrowError(/\[merge:error:intraStack]/);
+  });
+
+  it('merges on intraStack conflict with strategy "autoMerge"', async () => {
+    const stack = {
+      getSecretManagers: () => ({
+        svc1: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY1: 'A' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'KEY1', provider: 'InMemoryProvider' })
+          .build(),
+        svc2: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY2: 'B' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'KEY2', provider: 'InMemoryProvider' })
+          .build(),
+      }),
+    };
+
+    const options = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: stack as any },
+        secrets: {
+          merge: { intraStack: 'autoMerge' as const },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(effects[0].value.rawData).toEqual({
+      KEY1: 'A',
+      KEY2: 'B',
+    });
+  });
+});
+
+describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
+
+  it('should throw on crossStack conflict with strategy "error"', async () => {
+    const stack1 = {
+      getSecretManagers: () => ({
+        svc: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ DUPLICATE: 'a' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'DUPLICATE', provider: 'InMemoryProvider' })
+          .build(),
+      }),
+    };
+
+    const stack2 = {
+      getSecretManagers: () => ({
+        svc: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ DUPLICATE: 'b' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'DUPLICATE', provider: 'InMemoryProvider' })
+          .build(),
+      }),
+    };
+
+    const options = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: {
+          s1: stack1 as any,
+          s2: stack2 as any,
+        },
+        secrets: {
+          merge: { crossStack: 'error' as const },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    await expect(orchestrator.apply()).rejects.toThrowError(/\[merge:error:crossStack]/);
+  });
+
+  it('merges on crossStack conflict with strategy "autoMerge"', async () => {
+    const stack1 = {
+      getSecretManagers: () => ({
+        svc: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY1: 'one' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'KEY1', provider: 'InMemoryProvider' })
+          .build(),
+      }),
+    };
+
+    const stack2 = {
+      getSecretManagers: () => ({
+        svc: new SecretManager()
+          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY2: 'two' }))
+          .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+          .addSecret({ name: 'KEY2', provider: 'InMemoryProvider' })
+          .build(),
+      }),
+    };
+
+    const options = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: {
+          stack1: stack1 as any,
+          stack2: stack2 as any,
+        },
+        secrets: {
+          merge: { crossStack: 'autoMerge' as const },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(effects[0].value.rawData).toEqual({
+      KEY1: 'one',
+      KEY2: 'two',
+    });
+  });
 });
