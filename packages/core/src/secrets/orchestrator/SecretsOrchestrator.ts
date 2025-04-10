@@ -2,8 +2,7 @@ import type { BaseLogger } from '../../types.js';
 import type { BaseProvider, PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
-import { SecretMergeEngine } from './SecretMergeEngine.js';
-import type { MergeLevel, SecretsOrchestratorOptions } from './types.js';
+import type { ConfigMergeOptions, MergeLevel, MergeStrategy, SecretsOrchestratorOptions } from './types.js';
 
 interface ResolvedSecret {
   key: string;
@@ -147,7 +146,7 @@ export class SecretsOrchestrator {
             providerNames.size > 1 ? 'crossProvider' :
               'intraProvider';
 
-      const strategy = SecretMergeEngine.resolveStrategyForLevel(level, this.engine.options.config.secrets);
+      const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secrets);
 
       const providerName = group[0].providerName;
       const provider = this.resolveProviderByName(providerName);
@@ -180,8 +179,6 @@ export class SecretsOrchestrator {
   }
 
 
-
-
   /**
    * Resolves a provider instance from its name by scanning all SecretManagers.
    * Caches resolved providers for performance.
@@ -210,99 +207,22 @@ export class SecretsOrchestrator {
   }
 
 
-  /**
-   * Loads and merges secret values from all secret managers using SecretsMergeEngine.
-   */
-  // private async loadAndMergeSecrets(managers: MergedSecretManager): Promise<Record<string, Record<string, SecretValue>>> {
-  //   const allOrigins: SecretOrigin[] = [];
-
-  //   for (const entry of Object.values(managers)) {
-  //     const secrets = entry.secretManager.getSecrets();
-  //     const raw = await this.engine.loadSecrets(entry.secretManager, secrets);
-
-  //     const origins: SecretOrigin[] = Object.entries(raw).map(([key, value]) => ({
-  //       key,
-  //       value,
-  //       source: 'loader',
-  //       providerName: entry.name,
-  //       managerName: entry.name,
-  //       stackName: entry.stackName,
-  //       originPath: [`stack:${entry.stackName}`, `manager:${entry.name}`],
-  //     }));
-
-  //     allOrigins.push(...origins);
-  //   }
-
-  //   const mergeEngine = new SecretMergeEngine(this.engine.options.logger, {
-  //     config: this.engine.options.config,
-  //     stackName: 'workspace',
-  //     managerName: 'workspace',
-  //   });
-
-  //   const merged = mergeEngine.merge(allOrigins);
-
-  //   // regroup merged into per-manager map
-  //   const result: Record<string, Record<string, SecretValue>> = {};
-  //   for (const entry of Object.values(managers)) {
-  //     const prefix = `${entry.stackName}.${entry.name}`;
-  //     const keys = Object.keys(entry.secretManager.getSecrets());
-  //     result[prefix] = {};
-  //     for (const key of keys) {
-  //       if (merged[key] !== undefined) {
-  //         result[prefix][key] = merged[key];
-  //       }
-  //     }
-  //   }
-
-  //   return result;
-  // }
-
-  // /**
-  //  * Transforms merged secret values into provider-prepared effects.
-  //  */
-  // private prepareFromMergedSecrets(
-  //   managers: MergedSecretManager,
-  //   merged: Record<string, Record<string, SecretValue>>
-  // ): PreparedEffect[] {
-  //   const effects: PreparedEffect[] = [];
-
-  //   for (const entry of Object.values(managers)) {
-  //     const secrets = entry.secretManager.getSecrets();
-  //     const mergedSecrets = merged[`${entry.stackName}.${entry.name}`];
-
-  //     for (const key of Object.keys(mergedSecrets)) {
-  //       const provider = entry.secretManager.resolveProvider(secrets[key].provider);
-  //       effects.push(...provider.prepare(key, mergedSecrets[key]));
-  //     }
-  //   }
-
-  //   return effects;
-  // }
 
   /**
-   * Deduplicates and merges effects per provider by calling mergeSecrets().
+   * Resolves the merge strategy for a given level using config or fallback defaults.
    */
-  // private mergeProviderEffects(effects: PreparedEffect[]): PreparedEffect[] {
-  //   const grouped = new Map<string, PreparedEffect[]>();
+  private resolveStrategyForLevel(
+    level: MergeLevel,
+    mergeOptions: ConfigMergeOptions | undefined
+  ): MergeStrategy {
+    const defaults: Record<MergeLevel, MergeStrategy> = {
+      intraProvider: 'autoMerge',   // allow merging within same provider
+      crossProvider: 'error',        // disallow cross-provider collision in same SecretManager
+      intraStack: 'error',          // disallow between managers in same stack
+      crossStack: 'error',      // disallow across stacks (hard boundary)
+    };
 
-  //   for (const effect of effects) {
-  //     const providerName = effect.providerName;
-  //     if (!providerName) {
-  //       throw new Error(`[SecretsOrchestrator] Effect "${JSON.stringify(effect)}" has no provider name`);
-  //     }
-  //     const group = grouped.get(providerName) ?? [];
-  //     group.push(effect);
-  //     grouped.set(providerName, group);
-  //   }
-
-  //   const merged: PreparedEffect[] = [];
-
-  //   for (const [providerName, group] of grouped.entries()) {
-  //     const provider = this.resolveProviderByName(providerName);
-  //     merged.push(...provider.mergeSecrets(group));
-  //   }
-
-  //   return merged;
-  // }
+    return mergeOptions?.merge?.[level] ?? defaults[level];
+  }
 
 }
