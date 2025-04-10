@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.12.0
+
+### Minor Changes
+
+- 4a11588: Secrets Merge: Multi-Level Strategy, Safer Defaults & Improved Traceability #60
+
 ## 0.11.2
 
 ## 0.11.1
