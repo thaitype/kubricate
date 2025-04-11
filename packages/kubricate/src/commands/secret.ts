@@ -6,9 +6,9 @@ import c from 'ansis';
 import { BaseCommand } from './base.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface SecretsCommandOptions extends GlobalConfigOptions { }
+export interface SecretCommandOptions extends GlobalConfigOptions { }
 
-export class SecretsCommand extends BaseCommand {
+export class SecretCommand extends BaseCommand {
   constructor(
     protected options: GlobalConfigOptions,
     protected logger: BaseLogger,
