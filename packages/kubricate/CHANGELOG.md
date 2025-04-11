@@ -1,5 +1,15 @@
 # kubricate
 
+## 0.13.0
+
+### Minor Changes
+
+- f63bbb6: Support global CLI entry points (`kbr` and `kubricate`) and rename `secrets` commands to `secret` for consistent and user-friendly CLI usage. (#76, #77)
+
+### Patch Changes
+
+- @kubricate/core@0.13.0
+
 ## 0.12.0
 
 ### Minor Changes
