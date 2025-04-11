@@ -360,7 +360,7 @@ export class SecretManager<
       const provider = this.resolveProvider(secret.provider);
       return {
         name: secret.name,
-        // TODO: Consider to remove the value from provider, due to only `secrets apply` is using it
+        // TODO: Consider to remove the value from provider, due to only `secret apply` is using it
         value: resolved[secret.name],
         effects: provider.prepare(secret.name, resolved[secret.name]),
       };
@@ -393,7 +393,7 @@ export class SecretManager<
 
   /**
    * Resolves the actual secret value and its associated provider for a given secret name.
-   * This method is used at runtime when the secret is being applied (e.g., `secrets apply`).
+   * This method is used at runtime when the secret is being applied (e.g., `secret apply`).
    * It loads the value from the appropriate loader and returns both the value and the provider.
    *
    * @param secretName - The name of the secret to resolve and load.

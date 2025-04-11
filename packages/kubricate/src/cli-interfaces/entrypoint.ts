@@ -2,7 +2,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { generateCommand } from './generate.js';
-import { secretsCommand } from './secrets/index.js';
+import { secretCommand } from './secret/index.js';
 import { ConsoleLogger } from '../internal/logger.js';
 import type { LogLevel } from '@kubricate/core';
 
@@ -49,7 +49,7 @@ export function cliEntryPoint(argv: string[], options: CliEntryPointOptions) {
 
     // Register commands
     .command(generateCommand)
-    .command(secretsCommand)
+    .command(secretCommand)
 
     .help()
     .alias('h', 'help')

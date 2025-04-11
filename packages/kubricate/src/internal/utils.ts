@@ -2,7 +2,7 @@ import type { GlobalConfigOptions } from './types.js';
 import type { BaseLogger, BaseStack, KubricateConfig, ResourceEntry } from '@kubricate/core';
 import { getMatchConfigFile } from './load-config.js';
 import type { GenerateCommandOptions } from '../commands/generate.js';
-import type { SecretsCommandOptions } from '../commands/secrets.js';
+import type { SecretCommandOptions } from '../commands/secret.js';
 
 export function getClassName(obj: unknown): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,8 +58,8 @@ export function extractStackInfoFromConfig(config: KubricateConfig): StackInfo[]
   return stacks;
 }
 
-export type AllCliConfigs = Partial<GenerateCommandOptions & SecretsCommandOptions & GlobalConfigOptions>;
-export type Subcommand = 'generate' | 'secrets validate' | 'secrets apply';
+export type AllCliConfigs = Partial<GenerateCommandOptions & SecretCommandOptions & GlobalConfigOptions>;
+export type Subcommand = 'generate' | 'secret validate' | 'secret apply';
 
 export function verboseCliConfig(options: AllCliConfigs, logger: BaseLogger, subcommand?: Subcommand): void {
   logger.debug(`Verbose for global config: `);
