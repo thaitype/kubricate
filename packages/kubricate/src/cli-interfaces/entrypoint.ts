@@ -8,11 +8,12 @@ import type { LogLevel } from '@kubricate/core';
 
 export interface CliEntryPointOptions {
   version: string;
+  scriptName: string;
 }
 
 export function cliEntryPoint(argv: string[], options: CliEntryPointOptions) {
   yargs(hideBin(argv))
-    .scriptName('kubricate')
+    .scriptName(options.scriptName)
     .usage('$0 <command>')
     .version(options.version)
     // .epilog(c.red('Kubricate CLI - A CLI for managing Kubernetes stacks'))
