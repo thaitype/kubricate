@@ -53,58 +53,50 @@ Define **hydration plans** to control where secrets come from and where they go 
 
 ## 🧭 Motivation
 
-### The Problem: Secret Management in Kubernetes Is a Mess
+### 💥 The Problem
 
-In modern Kubernetes setups, managing secrets across environments often leads to one of these:
+Secret management in Kubernetes is fragmented, repetitive, and error-prone. In production environments, teams often deal with:
 
-- Manually writing and syncing Kubernetes `Secret` YAML files
-- Relying on **External Secrets Operator (ESO)**, with scattered `ExternalSecret` and `SecretStore` CRDs
-- Using **Vault Agent Injector**, with complex `annotations`, Vault policies, and runtime dependencies
-- Injecting secrets via environment variables or hardcoded `.env` values
+- Manually duplicating `Secret` manifests across environments
+- Templating secret references with Helm or Kustomize
+- Managing complex `ExternalSecret` or `Vault` annotations spread across YAML files
+- Relying on runtime injectors or sidecars with unclear debugging paths
+- No clear way to track which secrets are used, where they come from, or who owns them
 
-These tools work — but introduce real pain:
+These patterns result in:
 
-- ❌ **Too much YAML** — repetitive, hard to validate, easy to break  
-- ❌ **Poor dev experience** — secrets feel disconnected from app config  
-- ❌ **Lack of type safety** — no validation until deploy time  
-- ❌ **Unclear ownership** — devs vs. ops vs. platform teams  
-- ❌ **Secret sprawl** — no single source of truth across environments
+- ❌ Too much untyped YAML
+- ❌ Difficult-to-test deployments
+- ❌ Poor visibility into secret flow
+- ❌ Secrets being treated as runtime config, not infrastructure
 
-### 🔍 Comparison: Existing Secret Solutions
+### 🔍 Existing Solutions (and Limitations)
 
-| Tool                  | Strengths                                | Weaknesses                                                   |
-|-----------------------|-------------------------------------------|---------------------------------------------------------------|
-| **ESO**               | Reconciles secrets from cloud backends     | CRD-driven, verbose YAML, hard to validate, poor dev UX       |
-| **Vault Agent Injector** | Dynamic runtime injection               | Requires sidecars, policies, annotations, tied to runtime     |
-| **Sealed Secrets / SOPS** | GitOps-friendly encryption             | Secret versioning, rotation, and source mapping is manual     |
-| **Helm `values.yaml`** | Simple templating                         | No validation, weak typing, still YAML                        |
-
-
-### 💡 How Kubricate Solves It
-
-Kubricate introduces a **framework-level secret model** — where secrets are declared, typed, validated, and hydrated using TypeScript, not YAML.
-
-#### What Kubricate does differently:
-
-- ✅ Secrets are **declared in code**: `addSecret({ name: 'API_KEY' })`
-- ✅ Secrets are **hydrated from source connectors** (e.g. `.env`, 1Password)
-- ✅ Secret values can be **written to other systems** like Azure Key Vault
-- ✅ You **generate ESO manifests**, Vault annotations, or K8s Secrets — with full control
-- ✅ Hydration is **declarative**, CLI-driven, and CI-friendly — no sidecars or CRDs
-
-#### No Operators. No Sidecars. No Runtime Magic.
-
-Kubricate puts you back in control:
-- You **own the secret plan** at build-time.
-- You **know exactly where secrets come from and where they go**.
-- You can **test, validate, and generate manifests** from a consistent API.
+| Tool                    | Strengths                                   | Weaknesses                                                     |
+|-------------------------|----------------------------------------------|----------------------------------------------------------------|
+| **External Secrets Operator (ESO)** | Reconciles secrets from cloud backends | Heavy YAML usage, CRDs, hard to reuse or test                 |
+| **Vault Agent Injector** | Dynamic injection at runtime                | Requires sidecars, annotations, Vault policy setup             |
+| **SOPS / Sealed Secrets** | GitOps-safe encryption                     | Complex rotation/versioning, no unified source of truth        |
+| **Helm values + `.env`** | Familiar templating                         | No type safety, validation, or traceability                    |
 
 
-### 🧩 Use It With:
-- **ESO**: Kubricate can generate `ExternalSecret` CRDs cleanly
-- **Vault Agent**: Generate annotations in a reusable, type-safe way
-- **ArgoCD / Flux**: Use `kubricate generate` to output manifests for GitOps
-- **No controller at all**: Just hydrate secrets from `.env` into YAML or Azure KV
+### 💡 Kubricate’s Approach
+
+Kubricate doesn't replace those tools — it replaces the **YAML, glue logic, and guesswork** needed to make them work.
+
+Instead of defining secrets across many `values.yaml`, CRDs, and annotations, Kubricate gives you:
+
+- ✅ Type-safe secret declarations in code: `addSecret({ name: 'API_KEY' })`
+- ✅ Secret hydration plans that describe where secrets come from and where they go
+- ✅ Plug-in **Connectors** to load secrets from `.env`, 1Password, Vault, or any backend
+- ✅ The ability to generate YAML, `ExternalSecret` CRDs, or annotations with confidence
+
+Kubricate focuses on **design-time control**, not runtime magic:
+- You define the truth in TypeScript
+- You hydrate secrets as part of your pipeline
+- You generate manifests, not YAML by hand
+
+Whether you're using ArgoCD, ESO, Vault, or no controller at all — Kubricate makes the configuration safe, testable, and understandable by everyone on your team.
 
 ---
 
