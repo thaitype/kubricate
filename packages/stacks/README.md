@@ -206,8 +206,8 @@ It gives you full control of infrastructure and secrets **before deployment**, w
 
    ```ts
    secretManager.addProvider(
-     'EnvSecretProvider',
-     new EnvSecretProvider({ name: 'secret-application' })
+     'OpaqueSecretProvider',
+     new OpaqueSecretProvider({ name: 'secret-application' })
    );
    ```
 
@@ -221,7 +221,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    > ℹ️ **If multiple providers are registered**, you must also set:
 
    ```ts
-   secretManager.setDefaultProvider('EnvSecretProvider');
+   secretManager.setDefaultProvider('OpaqueSecretProvider');
    ```
 
 4. ### **Declare Secrets**
