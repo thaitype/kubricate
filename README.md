@@ -121,7 +121,7 @@ npm install -D kubernetes-models
 
 Then, create your first Kubricate Stack. Kubricate Stacks help you define, reuse, and manage Kubernetes resources in a clean, declarative way.
 
-### 🧱 Example: Creating a Namespace Stack
+### 1. 🧱 Example: Creating a Namespace Stack
 
 ```ts
 // File: src/my-stack.ts
@@ -150,7 +150,7 @@ envexport const myStack = MyStack.from({
 });
 ```
 
-### ⚙️ Configure with `kubricate.config.ts`
+### 2. ⚙️ Configure with `kubricate.config.ts`
 
 Create a `kubricate.config.ts` file at the root of your project:
 
@@ -165,7 +165,7 @@ export default defineConfig({
 });
 ```
 
-### 🚀 Generate Kubernetes Resources
+### 3. 🚀 Generate Kubernetes Resources
 
 ```bash
 npx kubricate generate
@@ -189,8 +189,6 @@ Kubricate offers a type-safe developer experience for building Kubernetes manife
 Kubricate is a framework for **defining, composing, and generating Kubernetes manifests** in TypeScript — with optional **secret hydration and syncing** across environments.
 
 It gives you full control of infrastructure and secrets **before deployment**, with a type-safe, CLI-first developer experience.
-
----
 
 ### 🔁 Step-by-Step Workflow
 
@@ -302,11 +300,9 @@ It gives you full control of infrastructure and secrets **before deployment**, w
 
 ### 🗺️ Workflow Diagram
 
-Kubricate separates infrastructure and secret management into clear, declarative steps — from configuration to CLI execution.  
-This diagram shows the full lifecycle from connecting secret sources to generating Kubernetes YAML and applying secrets.
+Kubricate separates infrastructure and secret management into clear, declarative steps — from configuration to CLI execution. This diagram shows the full lifecycle from connecting secret sources to generating Kubernetes YAML and applying secrets.
 
 Required steps follow a linear flow. Optional steps (gray) are used when you hydrate or validate secrets.
-
 
 ```mermaid
 flowchart TD
