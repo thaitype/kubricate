@@ -6,7 +6,7 @@ ponents from a SecretManager instance.
  */
 export type ExtractSecretManager<Registry extends AnySecretManager> = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  loaderInstances: Registry extends SecretManager<infer LI, any, any> ? LI : never;
+  connectorInstances: Registry extends SecretManager<infer LI, any, any> ? LI : never;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   providerInstances: Registry extends SecretManager<any, infer PI, any> ? PI : never;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,7 +40,7 @@ export interface EnvOptions<EnvSecretRef extends AnyKey = string> {
 export type PrimitiveSecretValue = string | number | boolean | null | undefined;
 /**
  * /**
- * SecretValue represents the expected format for secret values loaded by a BaseLoader
+ * SecretValue represents the expected format for secret values loaded by a BaseConnector
  * and consumed by a BaseProvider.
  *
  * A SecretValue can be either:

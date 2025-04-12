@@ -3,7 +3,7 @@ import type { AnyKey, BaseLogger, FunctionLike, InferConfigureComposerFunc } fro
 import type { AnySecretManager, EnvOptions } from './secrets/types.js';
 import {
   SecretsInjectionContext,
-  type BaseLoader,
+  type BaseConnector,
   type BaseProvider,
   type ProviderInjection,
 } from './secrets/index.js';
@@ -203,7 +203,7 @@ export abstract class BaseStack<
    * This method is used to inject the logger into the stack.
    * It is called by the orchestrator to inject the logger into all components of the stack.
    *
-   * Inject a logger instance into all components of the stack e.g. secret managers, loader, providers, etc.
+   * Inject a logger instance into all components of the stack e.g. secret managers, connector, providers, etc.
    * This is useful for logging purposes and debugging.
    * @param logger The logger instance to be injected.
    */
@@ -217,9 +217,9 @@ export abstract class BaseStack<
         // Inject into SecretManager
         secretManager.logger = logger;
 
-        // Inject into each loader
-        for (const loader of Object.values(secretManager.getLoaders())) {
-          (loader as BaseLoader).logger = logger;
+        // Inject into each connector
+        for (const connector of Object.values(secretManager.getConnectors())) {
+          (connector as BaseConnector).logger = logger;
         }
 
         // Inject into each provider

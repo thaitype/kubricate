@@ -5,7 +5,7 @@ import type { SecretsOrchestratorOptions } from './types.js';
 import { SecretManager } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import { InMemoryProvider } from '../providers/InMemoryProvider.js';
-import { InMemoryLoader } from '../loaders/InMemoryLoader.js';
+import { InMemoryConnector } from '../connectors/InMemoryConnector.js';
 
 describe('SecretsOrchestrator', () => {
   let mockSecretManager: SecretManager;
@@ -40,9 +40,9 @@ describe('SecretsOrchestrator', () => {
 
     mockSecretManager = {
       getSecrets: vi.fn(() => ({
-        DB_PASS: { name: 'DB_PASS', loader: 'env', provider: 'kubernetes' }
+        DB_PASS: { name: 'DB_PASS', connector: 'env', provider: 'kubernetes' }
       })),
-      resolveLoader: vi.fn(() => ({
+      resolveConnector: vi.fn(() => ({
         getWorkingDir: () => undefined,
         setWorkingDir: vi.fn(),
         load: vi.fn(() => Promise.resolve()),
@@ -78,7 +78,7 @@ describe('SecretsOrchestrator', () => {
 
   it('should validate secrets without errors', async () => {
     await expect(orchestrator.validate()).resolves.not.toThrow();
-    expect(mockSecretManager.resolveLoader).toHaveBeenCalled();
+    expect(mockSecretManager.resolveConnector).toHaveBeenCalled();
   });
 
   it('should apply and return prepared effects', async () => {
@@ -136,7 +136,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
 
     mockSecretManager = (name: string, secrets: Record<string, any>): SecretManager => ({
       getSecrets: vi.fn(() => secrets),
-      resolveLoader: vi.fn(() => ({
+      resolveConnector: vi.fn(() => ({
         getWorkingDir: () => undefined,
         setWorkingDir: vi.fn(),
         load: vi.fn(() => Promise.resolve()),
@@ -151,8 +151,8 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
       stack1: {
         getSecretManagers: () => ({
           svc: mockSecretManager('svc', {
-            DB_USER: { loader: 'env', provider: 'kubernetes', value: 'admin' },
-            DB_PASS: { loader: 'env', provider: 'kubernetes', value: 's3cr3t' }
+            DB_USER: { connector: 'env', provider: 'kubernetes', value: 'admin' },
+            DB_PASS: { connector: 'env', provider: 'kubernetes', value: 's3cr3t' }
           }),
         })
       }
@@ -215,7 +215,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
 
     mockSecretManager = (name: string, secrets: Record<string, any>): SecretManager => ({
       getSecrets: vi.fn(() => secrets),
-      resolveLoader: vi.fn(() => ({
+      resolveConnector: vi.fn(() => ({
         getWorkingDir: () => undefined,
         setWorkingDir: vi.fn(),
         load: vi.fn(() => Promise.resolve()),
@@ -230,7 +230,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
       stack1: {
         getSecretManagers: () => ({
           svc: mockSecretManager('svc', {
-            API_KEY: { loader: 'env', provider: 'kubernetes', value: '12345' }
+            API_KEY: { connector: 'env', provider: 'kubernetes', value: '12345' }
           }),
         })
       }
@@ -274,7 +274,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
 
   it('should throw on intraProvider conflict with strategy "error"', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         SHARED_KEY: 'value1',
         SHARED_KEY_DUPLICATE: 'value2',
       }))
@@ -316,7 +316,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
 
   it('merges secrets within same provider when intraProvider is "autoMerge"', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         API_KEY: 'abc123',
         API_SECRET: 'shhh',
       }))
@@ -362,7 +362,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
 
   it('overwrites previous secret when intraProvider is "overwrite"', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         SHARED_KEY: 'value1',
         SHARED_KEY_DUPLICATE: 'value2',
       }))
@@ -413,7 +413,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
 
   it('keeps last secret and logs dropped in overwrite strategy (intraProvider)', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         SHARED_KEY: 'v1',
         SHARED_KEY_DUPLICATE: 'v2',
       }))
@@ -462,7 +462,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
 
   it('should throw on intraProvider conflict with strategy "error"', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         my_app_key: 'my_app_key_value',
         my_app_key_2: 'my_app_key_2_value',
       }))
@@ -513,7 +513,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
 
   it('merges secrets across providers with same storeName when crossProvider is "autoMerge"', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         my_app_key: 'my_app_key_value',
         my_app_key_2: 'my_app_key_2_value',
       }))
@@ -571,7 +571,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
 
   it('overwrites previous secret when crossProvider is "overwrite"', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         SHARED_KEY: 'one',
         SHARED_KEY_2: 'two',
       }))
@@ -615,7 +615,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
 
   it('keeps last secret and logs dropped in overwrite strategy (crossProvider)', async () => {
     const secretManager = new SecretManager()
-      .addLoader('InMemoryLoader', new InMemoryLoader({
+      .addConnector('InMemoryConnector', new InMemoryConnector({
         SHARED_KEY: 'v1',
         SHARED_KEY_DUPLICATE: 'v2',
       }))
@@ -667,12 +667,12 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     const stack = {
       getSecretManagers: () => ({
         svc1: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'A' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'A' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
           .build(),
         svc2: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'B' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'B' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
           .build(),
@@ -698,12 +698,12 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     const stack = {
       getSecretManagers: () => ({
         svc1: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY1: 'A' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ KEY1: 'A' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'KEY1', provider: 'InMemoryProvider' })
           .build(),
         svc2: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY2: 'B' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ KEY2: 'B' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'KEY2', provider: 'InMemoryProvider' })
           .build(),
@@ -736,12 +736,12 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       app: {
         getSecretManagers: () => ({
           a: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ SHARED_KEY: 'one' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'one' }))
             .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
             .addSecret({ name: 'SHARED_KEY', provider: 'P' })
             .build(),
           b: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ SHARED_KEY: 'two' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'two' }))
             .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
             .addSecret({ name: 'SHARED_KEY', provider: 'P' })
             .build(),
@@ -775,13 +775,13 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       app: {
         getSecretManagers: () => ({
           svc1: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'one' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'one' }))
             .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
             .addSecret({ name: 'KEY' })
             .build(),
   
           svc2: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 'two' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'two' }))
             .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
             .addSecret({ name: 'KEY' })
             .build()
@@ -823,7 +823,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
     const stack1 = {
       getSecretManagers: () => ({
         svc: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ DUPLICATE: 'a' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ DUPLICATE: 'a' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'DUPLICATE', provider: 'InMemoryProvider' })
           .build(),
@@ -833,7 +833,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
     const stack2 = {
       getSecretManagers: () => ({
         svc: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ DUPLICATE: 'b' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ DUPLICATE: 'b' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'DUPLICATE', provider: 'InMemoryProvider' })
           .build(),
@@ -862,7 +862,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
     const stack1 = {
       getSecretManagers: () => ({
         svc: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY1: 'one' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ KEY1: 'one' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'KEY1', provider: 'InMemoryProvider' })
           .build(),
@@ -872,7 +872,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
     const stack2 = {
       getSecretManagers: () => ({
         svc: new SecretManager()
-          .addLoader('InMemoryLoader', new InMemoryLoader({ KEY2: 'two' }))
+          .addConnector('InMemoryConnector', new InMemoryConnector({ KEY2: 'two' }))
           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
           .addSecret({ name: 'KEY2', provider: 'InMemoryProvider' })
           .build(),
@@ -908,7 +908,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
       stack1: {
         getSecretManagers: () => ({
           default: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ SHARED_KEY: 'one' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'one' }))
             .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
             .addSecret({ name: 'SHARED_KEY', provider: 'P' })
             .build(),
@@ -917,7 +917,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
       stack2: {
         getSecretManagers: () => ({
           default: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ SHARED_KEY: 'two' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'two' }))
             .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
             .addSecret({ name: 'SHARED_KEY', provider: 'P' })
             .build(),
@@ -951,7 +951,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
       stack1: {
         getSecretManagers: () => ({
           main: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 's1' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 's1' }))
             .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
             .addSecret({ name: 'KEY' })
             .build()
@@ -960,7 +960,7 @@ describe('SecretsOrchestrator crossStack (Integration Tests)', () => {
       stack2: {
         getSecretManagers: () => ({
           main: new SecretManager()
-            .addLoader('InMemoryLoader', new InMemoryLoader({ KEY: 's2' }))
+            .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 's2' }))
             .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
             .addSecret({ name: 'KEY' })
             .build()

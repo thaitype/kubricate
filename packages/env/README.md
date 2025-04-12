@@ -28,7 +28,7 @@
 
 - 📦 Type-safe Kubernetes manifest generation with TypeScript
 - ♻️ Reusable, composable stack system
-- 🔐 Secrets injection via `SecretManager` and loaders (e.g., `.env`, process.env)
+- 🔐 Secrets injection via `SecretManager` and connectors (e.g., `.env`, process.env)
 
 ## Getting Started
 
@@ -104,7 +104,7 @@ This will generate Kubernetes YAML files in the `.kubricate` folder:
 
 See the full working example: [`with-custom-stack`](https://github.com/thaitype/kubricate/tree/main/examples/with-custom-stack)
 
-Kubricate offers a type-safe developer experience for building Kubernetes manifests. It works with your existing resources, supports secret injection through loaders like `EnvLoader`, and prevents exposing secrets in YAML.
+Kubricate offers a type-safe developer experience for building Kubernetes manifests. It works with your existing resources, supports secret injection through connectors like `EnvConnector`, and prevents exposing secrets in YAML.
 
 ---
 
@@ -112,7 +112,7 @@ Kubricate offers a type-safe developer experience for building Kubernetes manife
 
 - `kubricate` – CLI for configuration and manifest generation
 - `@kubricate/core` – Core framework for creating and managing stacks
-- `@kubricate/env` – Secret loader for `.env` and environment variables
+- `@kubricate/env` – Secret connector for `.env` and environment variables
 - `@kubricate/stacks` – Official reusable stack definitions
 - `@kubricate/toolkit` – Utility functions for custom stack authors
 

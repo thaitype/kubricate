@@ -1,4 +1,4 @@
-import type { BaseLoader } from './loaders/BaseLoader.js';
+import type { BaseConnector } from './connectors/BaseConnector.js';
 import type { BaseProvider, PreparedEffect } from './providers/BaseProvider.js';
 import type { AnyKey, BaseLogger, FallbackIfNever } from '../types.js';
 import { validateString } from '../internal/utils.js';
@@ -17,12 +17,12 @@ type ExtractWithDefault<Input extends AnyKey, Default extends AnyKey> =
 // type A = ExtractWithDefault<'A' | 'B', 'C'>; // C
 /**
  * SecretOptions defines the structure of a secret entry in the SecretManager.
- * It includes the name of the secret, the loader to use for loading it,
+ * It includes the name of the secret, the connector to use for loading it,
  * and the provider to use for resolving it.
  */
 export interface SecretOptions<
   NewSecret extends string = string,
-  Loader extends AnyKey = AnyKey,
+  Connector extends AnyKey = AnyKey,
   Provider extends AnyKey = AnyKey,
 > {
   /**
@@ -31,10 +31,10 @@ export interface SecretOptions<
    */
   name: NewSecret;
   /**
-   * Loader instance to use for loading the secret.
-   * If not provided, the default loader will be used.
+   * Connector instance to use for loading the secret.
+   * If not provided, the default connector will be used.
    */
-  loader?: Loader;
+  connector?: Connector;
   /**
    * Key of a registered provider instance.
    * If not provided, the default provider will be used.
@@ -51,10 +51,10 @@ export interface SecretOptions<
  */
 export class SecretManager<
   /**
-   * Loader instances that have been registered.
+   * Connector instances that have been registered.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  LoaderInstances extends Record<string, string> = {},
+  ConnectorInstances extends Record<string, string> = {},
   /**
    * Instances of providers that have been registered.
    * Keys are provider names, values are typically unique string identifiers.
@@ -84,10 +84,10 @@ export class SecretManager<
    */
   private _secrets: Record<string, SecretOptions> = {};
   private _providers: Record<string, BaseProvider> = {};
-  private _loaders: Record<string, BaseLoader> = {};
+  private _connectors: Record<string, BaseConnector> = {};
 
   private _defaultProvider: keyof ProviderInstances | undefined;
-  private _defaultLoader: keyof LoaderInstances | undefined;
+  private _defaultConnector: keyof ConnectorInstances | undefined;
 
   logger?: BaseLogger;
 
@@ -111,7 +111,7 @@ export class SecretManager<
     instance.name = provider;
     this._providers[provider] = instance;
     return this as SecretManager<
-      LoaderInstances,
+      ConnectorInstances,
       ProviderInstances & Record<NewProviderKey, NewProvider>,
       SecretEntries,
       // If the default provider is never, use the new provider key
@@ -131,24 +131,24 @@ export class SecretManager<
    */
   setDefaultProvider<NewDefaultProvider extends keyof ProviderInstances>(provider: NewDefaultProvider) {
     this._defaultProvider = provider;
-    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries, NewDefaultProvider>;
+    return this as SecretManager<ConnectorInstances, ProviderInstances, SecretEntries, NewDefaultProvider>;
   }
 
   /**
-   * Adds a new loader instance using a valid loader name
+   * Adds a new connector instance using a valid connector name
    *
-   * @param loader - The unique name of the loader (e.g., 'EnvLoader').
-   * @param instance - Configuration specific to the loader type.
-   * @returns A SecretManager instance with the loader added.
+   * @param connector - The unique name of the connector (e.g., 'EnvConnector').
+   * @param instance - Configuration specific to the connector type.
+   * @returns A SecretManager instance with the connector added.
    */
 
-  addLoader<NewLoader extends string>(loader: NewLoader, instance: BaseLoader) {
-    if (this._loaders[loader]) {
-      throw new Error(`Loader ${loader} already exists`);
+  addConnector<NewConnector extends string>(connector: NewConnector, instance: BaseConnector) {
+    if (this._connectors[connector]) {
+      throw new Error(`Connector ${connector} already exists`);
     }
-    this._loaders[loader] = instance;
+    this._connectors[connector] = instance;
     return this as SecretManager<
-      LoaderInstances & Record<NewLoader, string>,
+      ConnectorInstances & Record<NewConnector, string>,
       ProviderInstances,
       SecretEntries,
       DefaultProvider
@@ -156,17 +156,17 @@ export class SecretManager<
   }
 
   /**
-   * Sets the default loader for the SecretManager.
-   * This loader will be used if no specific loader is specified when adding a secret.
+   * Sets the default connector for the SecretManager.
+   * This connector will be used if no specific connector is specified when adding a secret.
    *
-   * Loaders support multiple instances, so this is a way to set a default.
+   * Connectors support multiple instances, so this is a way to set a default.
    *
-   * @param loader - The unique name of the loader (e.g., 'EnvLoader').
-   * @returns A SecretManager instance with the loader added.
+   * @param connector - The unique name of the connector (e.g., 'EnvConnector').
+   * @returns A SecretManager instance with the connector added.
    */
-  setDefaultLoader(loader: keyof LoaderInstances) {
-    this._defaultLoader = loader;
-    return this as SecretManager<LoaderInstances, ProviderInstances, SecretEntries, DefaultProvider>;
+  setDefaultConnector(connector: keyof ConnectorInstances) {
+    this._defaultConnector = connector;
+    return this as SecretManager<ConnectorInstances, ProviderInstances, SecretEntries, DefaultProvider>;
   }
 
   /**
@@ -176,7 +176,7 @@ export class SecretManager<
    * @returns A new SecretManager instance with the secret added.
    */
   addSecret<NewSecret extends string, NewProvider extends keyof ProviderInstances = keyof ProviderInstances>(
-    optionsOrName: NewSecret | SecretOptions<NewSecret, keyof LoaderInstances, NewProvider>
+    optionsOrName: NewSecret | SecretOptions<NewSecret, keyof ConnectorInstances, NewProvider>
   ) {
     if (typeof optionsOrName === 'string') {
       if (this._secrets[optionsOrName]) {
@@ -192,7 +192,7 @@ export class SecretManager<
       this._secrets[optionsOrName.name] = optionsOrName;
     }
     return this as SecretManager<
-      LoaderInstances,
+      ConnectorInstances,
       ProviderInstances,
       SecretEntries &
       Record<
@@ -213,7 +213,7 @@ export class SecretManager<
    */
 
   public getSecrets() {
-    // Ensure that all secrets have a provider and loader set
+    // Ensure that all secrets have a provider and connector set
     // before returning the secrets.
     this.build();
     return this._secrets;
@@ -222,16 +222,16 @@ export class SecretManager<
    * @internal Internal method to prepare secrets for use.
    * This is not intended for public use.
    * 
-   * When a secret is added, it may not have a provider or loader set.
-   * This method ensures that all secrets have a provider and loader set.
+   * When a secret is added, it may not have a provider or connector set.
+   * This method ensures that all secrets have a provider and connector set.
    */
   private prepareSecrets() {
     for (const secret of Object.values(this._secrets)) {
       if (!secret.provider) {
         secret.provider = this._defaultProvider;
       }
-      if (!secret.loader) {
-        secret.loader = this._defaultLoader;
+      if (!secret.connector) {
+        secret.connector = this._defaultConnector;
       }
     }
   }
@@ -240,16 +240,16 @@ export class SecretManager<
    * @internal Internal method to get the current providers in the manager.
    * This is not intended for public use.
    *
-   * @param key - The unique name of the loader (e.g., 'EnvLoader').
-   * @returns The loader instance associated with the given key.
-   * @throws Error if the loader is not found.
+   * @param key - The unique name of the connector (e.g., 'EnvConnector').
+   * @returns The connector instance associated with the given key.
+   * @throws Error if the connector is not found.
    */
-  getLoader<Config extends object = object>(key?: AnyKey): BaseLoader<Config> {
+  getConnector<Config extends object = object>(key?: AnyKey): BaseConnector<Config> {
     validateString(key);
-    if (!this._loaders[key]) {
-      throw new Error(`Loader ${key} not found`);
+    if (!this._connectors[key]) {
+      throw new Error(`Connector ${key} not found`);
     }
-    return this._loaders[key] as BaseLoader<Config>;
+    return this._connectors[key] as BaseConnector<Config>;
   }
 
   /**
@@ -277,8 +277,8 @@ export class SecretManager<
    * Post processing step to ensure that all secrets is ready for use.
    */
   build() {
-    if (Object.keys(this._loaders).length === 0) {
-      throw new Error('No loaders registered');
+    if (Object.keys(this._connectors).length === 0) {
+      throw new Error('No connectors registered');
     }
     if (Object.keys(this._providers).length === 0) {
       throw new Error('No providers registered');
@@ -289,20 +289,20 @@ export class SecretManager<
     if (!this._defaultProvider && Object.keys(this._providers).length > 1) {
       throw new Error('No default provider set, and multiple providers registered');
     }
-    if (!this._defaultLoader && Object.keys(this._loaders).length > 1) {
-      throw new Error('No default loader set, and multiple loaders registered');
+    if (!this._defaultConnector && Object.keys(this._connectors).length > 1) {
+      throw new Error('No default connector set, and multiple connectors registered');
     }
     if (!this._defaultProvider) {
       this._defaultProvider = Object.keys(this._providers)[0] as keyof ProviderInstances;
     }
-    if (!this._defaultLoader) {
-      this._defaultLoader = Object.keys(this._loaders)[0] as keyof LoaderInstances;
+    if (!this._defaultConnector) {
+      this._defaultConnector = Object.keys(this._connectors)[0] as keyof ConnectorInstances;
     }
     this.prepareSecrets();
-    this.logger?.debug('SecretManager[build] All secrets have a provider and loader set');
+    this.logger?.debug('SecretManager[build] All secrets have a provider and connector set');
     this.logger?.debug('SecretManager[build] All configurations are valid');
     this.logger?.debug(`Default provider: ${String(this._defaultProvider)}`);
-    this.logger?.debug(`Default loader: ${String(this._defaultLoader)}`);
+    this.logger?.debug(`Default connector: ${String(this._defaultConnector)}`);
     return this;
   }
 
@@ -310,12 +310,12 @@ export class SecretManager<
     return provider ? this.getProvider(provider) : this.getProvider(this._defaultProvider);
   }
 
-  resolveLoader(loader?: AnyKey): BaseLoader {
-    return loader ? this.getLoader(loader) : this.getLoader(this._defaultLoader);
+  resolveConnector(connector?: AnyKey): BaseConnector {
+    return connector ? this.getConnector(connector) : this.getConnector(this._defaultConnector);
   }
 
-  getLoaders() {
-    return this._loaders;
+  getConnectors() {
+    return this._connectors;
   }
 
   getProviders() {
@@ -326,19 +326,19 @@ export class SecretManager<
     return this._defaultProvider;
   }
 
-  getDefaultLoader() {
-    return this._defaultLoader;
+  getDefaultConnector() {
+    return this._defaultConnector;
   }
 
   /**
    * @internal Internal method to get the current providers in the manager.
    * This is not intended for public use.
    *
-   * Prepares secrets using registered loaders and providers.
+   * Prepares secrets using registered connectors and providers.
    * This does not perform any side-effects like `kubectl`.
    *
    * @returns An array of SecretManagerEffect objects, each containing the name, value, and effects of the secret.
-   * @throws Error if a loader or provider is not found for a secret.
+   * @throws Error if a connector or provider is not found for a secret.
    */
   async prepare(): Promise<SecretManagerEffect[]> {
     this.build();
@@ -347,11 +347,11 @@ export class SecretManager<
     const loadedKeys = new Set<string>();
 
     for (const secret of Object.values(secrets)) {
-      const loader = this.resolveLoader(secret.loader);
+      const connector = this.resolveConnector(secret.connector);
 
       if (!loadedKeys.has(secret.name)) {
-        await loader.load([secret.name]);
-        resolved[secret.name] = loader.get(secret.name);
+        await connector.load([secret.name]);
+        resolved[secret.name] = connector.get(secret.name);
         loadedKeys.add(secret.name);
       }
     }
@@ -394,11 +394,11 @@ export class SecretManager<
   /**
    * Resolves the actual secret value and its associated provider for a given secret name.
    * This method is used at runtime when the secret is being applied (e.g., `secret apply`).
-   * It loads the value from the appropriate loader and returns both the value and the provider.
+   * It loads the value from the appropriate connector and returns both the value and the provider.
    *
    * @param secretName - The name of the secret to resolve and load.
    * @returns An object containing the resolved provider and loaded secret value.
-   * @throws If the secret is not registered or its loader/provider cannot be found.
+   * @throws If the secret is not registered or its connector/provider cannot be found.
    */
   async resolveSecretValueForApply(secretName: string): Promise<{
     provider: BaseProvider;
@@ -409,9 +409,9 @@ export class SecretManager<
       throw new Error(`Secret "${secretName}" is not registered.`);
     }
 
-    const loader = this.resolveLoader(secret.loader);
-    await loader.load([secret.name]);
-    const value = loader.get(secret.name);
+    const connector = this.resolveConnector(secret.connector);
+    await connector.load([secret.name]);
+    const value = connector.get(secret.name);
 
     const provider = this.resolveProvider(secret.provider);
     return { provider, value };

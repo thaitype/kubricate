@@ -1,10 +1,10 @@
-import type { BaseLoader } from './BaseLoader.js';
+import type { BaseConnector } from './BaseConnector.js';
 
 /**
- * InMemoryLoader is a simple in-memory loader for secrets.
+ * InMemoryConnector is a simple in-memory connector for secrets.
  * For testing purposes only.
  */
-export class InMemoryLoader implements BaseLoader {
+export class InMemoryConnector implements BaseConnector {
   private loaded: Set<string> = new Set();
 
   constructor(public config: Record<string, string>) {}

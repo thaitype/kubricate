@@ -5,14 +5,14 @@ import type { SecretManager } from '../SecretManager.js';
 
 describe('SecretManagerEngine', () => {
   let mockSecretManager: SecretManager;
-  let mockLoader: any;
+  let mockConnector: any;
   let mockProvider: any;
   let mockLogger: any;
   let effectsOptions: EffectsOptions;
   let config: any;
 
   beforeEach(() => {
-    mockLoader = {
+    mockConnector = {
       getWorkingDir: vi.fn(() => undefined),
       setWorkingDir: vi.fn(),
       load: vi.fn(() => Promise.resolve()),
@@ -24,8 +24,8 @@ describe('SecretManagerEngine', () => {
     };
 
     mockSecretManager = {
-      getSecrets: vi.fn(() => ({ DB_PASSWORD: { name: 'mock', loader: 'env', provider: 'k8s' } })),
-      resolveLoader: vi.fn(() => mockLoader),
+      getSecrets: vi.fn(() => ({ DB_PASSWORD: { name: 'mock', connector: 'env', provider: 'k8s' } })),
+      resolveConnector: vi.fn(() => mockConnector),
       resolveProvider: vi.fn(() => mockProvider),
     } as any;
 
@@ -57,8 +57,8 @@ describe('SecretManagerEngine', () => {
     const engine = new SecretManagerEngine({config, effectOptions: effectsOptions, logger: mockLogger});
     const managers = engine.collect();
     await engine.validate(managers);
-    expect(mockLoader.load).toHaveBeenCalledWith(['DB_PASSWORD']);
-    expect(mockLoader.get).toHaveBeenCalledWith('DB_PASSWORD');
+    expect(mockConnector.load).toHaveBeenCalledWith(['DB_PASSWORD']);
+    expect(mockConnector.get).toHaveBeenCalledWith('DB_PASSWORD');
   });
 
   it('should prepare effects correctly', async () => {

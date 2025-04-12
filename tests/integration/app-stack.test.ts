@@ -1,16 +1,16 @@
 import path from 'node:path';
 import { describe, expect, test } from 'vitest';
 
-import { EnvLoader } from '@kubricate/env';
+import { EnvConnector } from '@kubricate/env';
 import { EnvSecretProvider } from '@kubricate/kubernetes';
 import { SecretManager } from '@kubricate/core';
 import { SimpleAppStack, NamespaceStack } from '@kubricate/stacks';
 
 describe('SimpleAppStack with EnvSecretProvider', () => {
   test('injects APP_KEY from .env to container env', async () => {
-  //   // Setup loader from test fixture
-  //   const loader = new EnvLoader({ allowDotEnv: true });
-  //   loader.setWorkingDir(path.resolve(__dirname, '../fixtures/app-env'));
+  //   // Setup connector from test fixture
+  //   const connector = new EnvConnector({ allowDotEnv: true });
+  //   connector.setWorkingDir(path.resolve(__dirname, '../fixtures/app-env'));
 
   //   // Setup provider
   //   const provider = new EnvSecretProvider({
@@ -19,9 +19,9 @@ describe('SimpleAppStack with EnvSecretProvider', () => {
 
   //   // Setup secret manager
   //   const secretManager = new SecretManager()
-  //     .addLoader('env', loader)
+  //     .addConnector('env', connector)
   //     .addProvider('env', provider)
-  //     .setDefaultLoader('env')
+  //     .setDefaultConnector('env')
   //     .setDefaultProvider('env')
   //     .addSecret('APP_KEY');
 
