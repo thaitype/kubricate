@@ -35,20 +35,26 @@
 
 ## ✨ Features
 
-- **📦 Type-safe Kubernetes Manifest Generation**: Define Kubernetes resources using fully-typed TypeScript objects — with support for reuse, composition, and validation in your IDE.
+- **📦 Type-safe Kubernetes Manifest Generation**: 
+  - Define Kubernetes resources using fully-typed TypeScript objects — with support for reuse, composition, and validation in your IDE.
 
-- **🧱 Stack-Based Architecture**: Group related resources together into reusable **Stacks** — such as `Deployment + Service`, or `Namespace + RoleBinding`. Easily parameterize and extend them across environments.
+- **🧱 Stack-Based Architecture**: 
+  - Group related resources together into reusable **Stacks** — such as `Deployment + Service`, or `Namespace + RoleBinding`. Easily parameterize and extend them across environments.
 
-- **🔐 Declarative Secret Management**: Declare secrets with `addSecret({ name })`, and hydrate them from multiple backends like `.env`, Azure Key Vault, 1Password, or Vault — all within your CI/CD pipeline.
+- **🔐 Declarative Secret Management**: 
+  - Declare secrets with `addSecret({ name })`, and hydrate them from multiple backends like `.env`, Azure Key Vault, 1Password, or Vault — all within your CI/CD pipeline.
 
 <!-- ### 🔄 Secret Hydration Plans  
 Define **hydration plans** to control where secrets come from and where they go — perfect for syncing between `.env` → Azure KV or Vault → K8s Secrets. -->
 
-- **♻️ Connectors and Providers**: Use **Connectors** to read/write secrets from systems, and **Providers** to convert secrets into Kubernetes-native resources (like `Secret`, `ConfigMap`, or `ExternalSecret`).
+- **♻️ Connectors and Providers**: 
+  - Use **Connectors** to read/write secrets from systems, and **Providers** to convert secrets into Kubernetes-native resources (like `Secret`, `ConfigMap`, or `ExternalSecret`).
 
-- **🚀 CLI-Friendly & GitOps Ready**: Run `kubricate generate` <!--,  `kubricate secrets hydrate`, --> and `kubricate secrets plan` to validate, sync, and render your infrastructure as YAML — without running anything in your cluster.
+- **🚀 CLI-Friendly & GitOps Ready**: 
+  - Run `kubricate generate` <!--,  `kubricate secrets hydrate`, --> and `kubricate secrets plan` to validate, sync, and render your infrastructure as YAML — without running anything in your cluster.
 
-- **🧪 First-Class Dev Experience**: Enjoy full IDE autocomplete, refactor support, type checking, and linting across your entire platform configuration — all in TypeScript.
+- **🧪 First-Class Dev Experience**: 
+  - Enjoy full IDE autocomplete, refactor support, type checking, and linting across your entire platform configuration — all in TypeScript.
 
 
 ## 🧭 Motivation
