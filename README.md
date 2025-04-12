@@ -184,6 +184,193 @@ Kubricate offers a type-safe developer experience for building Kubernetes manife
 
 ---
 
+## 🧠 Architecture & Workflow
+
+Kubricate is a framework for **defining, composing, and generating Kubernetes manifests** in TypeScript — with optional **secret hydration and syncing** across environments.
+
+It gives you full control of infrastructure and secrets **before deployment**, with a type-safe, CLI-first developer experience.
+
+---
+
+### 🔁 Step-by-Step Workflow
+
+1. ### **Register Connectors**
+   Connect to external secret systems such as `.env`, Azure Key Vault, 1Password, or Vault.
+
+   ```ts
+   secretManager
+     .addConnector('Env', new EnvConnector())
+     .addConnector('AzureKV', new AzureKeyVaultConnector());
+   ```
+
+2. ### **Register at Least One Provider**
+   Providers define how secrets will be injected into Kubernetes (e.g., as `Secret`, `ConfigMap`, or annotations).
+
+   ```ts
+   secretManager.addProvider(
+     'EnvSecretProvider',
+     new EnvSecretProvider({ name: 'secret-application' })
+   );
+   ```
+
+3. ### **Set a Default Connector**
+   When multiple connectors are registered, you must set the default one to be used during hydration.
+
+   ```ts
+   secretManager.setDefaultConnector('AzureKV');
+   ```
+
+   > ℹ️ **If multiple providers are registered**, you must also set:
+
+   ```ts
+   secretManager.setDefaultProvider('EnvSecretProvider');
+   ```
+
+4. ### **Declare Secrets**
+   Centralize your secrets and optionally map them to a provider.
+
+   ```ts
+   secretManager.addSecret({ name: 'my_app_key' });
+   ```
+
+5. ### **Define a Hydration Plan (Optional)**
+   Describe how secrets should flow from one system to another (e.g. `.env` → Azure KV).
+
+   ```ts
+   secretManager.addHydrationPlan('EnvToKV', {
+     from: 'Env',
+     to: 'AzureKV',
+     options: { conflictStrategy: 'overwrite' },
+   });
+   ```
+
+   > ⚠️ **Note:** Hydration Plan support is in progress. See [Issue #75](https://github.com/thaitype/kubricate/issues/75)
+
+6. ### **Define Your Application Stack**
+   Use existing reusable stacks like `AppStack`, and inject secrets from providers.
+
+   ```ts
+   export const myApp = new AppStack()
+     .from({
+       imageName: 'nginx',
+       name: 'my-app',
+     })
+     .useSecrets(secretManager, (c) => {
+       c.secrets('my_app_key').forName('ENV_APP_KEY').inject();
+     });
+   ```
+
+7. ### **Configure the Project**
+   Wire everything together in `kubricate.config.ts`.
+
+   ```ts
+   import { defineConfig } from 'kubricate';
+   import { myApp } from './src/my-app'; // import your stack
+
+   export default defineConfig({
+     stacks: {
+       app: myApp,
+     },
+   });
+   ```
+
+8. ### **CLI: Generate YAML**
+   Render Kubernetes manifests from all defined stacks.
+
+   ```bash
+   kubricate generate
+   ```
+
+9. ### **CLI: Plan & Hydrate Secrets (Optional)**
+   Run secret hydration workflows to sync secrets between systems.
+
+   ```bash
+   kubricate secrets plan     # Preview hydration actions
+   kubricate secrets hydrate  # Execute hydration
+   ```
+
+   > ⚠️ **Note:** Hydration Plan support is in progress. See [Issue #75](https://github.com/thaitype/kubricate/issues/75)
+
+
+10. ### **CLI: Validate & Apply Secrets (Optional)**
+    Validate that all declared secrets exist and apply them to providers if needed.
+
+    ```bash
+    kubricate secrets validate     # Validate connector/provider state
+    kubricate secrets apply        # Apply secrets to target provider (e.g. Azure KV, Kubernetes)
+    ```
+
+### 🗺️ Workflow Diagram
+
+Kubricate separates infrastructure and secret management into clear, declarative steps — from configuration to CLI execution.  
+This diagram shows the full lifecycle from connecting secret sources to generating Kubernetes YAML and applying secrets.
+
+Required steps follow a linear flow. Optional steps (gray) are used when you hydrate or validate secrets.
+
+
+```mermaid
+flowchart TD
+    %% Required Steps
+    Step1["1 Register Connectors"]
+    Step2["2 Register at Least One Provider"]
+    Step3["3 Set a Default Connector"]
+    Step4["4 Declare Secrets"]
+    Step6["6 Define Your Application Stack"]
+    Step7["7 Configure the Project"]
+    Step8["8 CLI: Generate YAML"]
+
+    %% Optional Steps
+    Step5["5 Define a Hydration Plan (Optional)"]
+    Step9["9 CLI: Plan & Hydrate Secrets (Optional)"]
+    Step10["10 CLI: Validate & Apply Secrets (Optional)"]
+
+    %% Core flow
+    Step1 --> Step2
+    Step2 --> Step3
+    Step3 --> Step4
+    Step4 --> Step6
+    Step6 --> Step7
+    Step7 --> Step8
+
+    %% Optional/side flows
+    Step4 -.-> Step5
+    Step5 --> Step9
+    Step4 -.-> Step10
+    Step9 --> Step10
+
+    %% Visual styling (safe across Mermaid renderers)
+    classDef optional fill:#f3f4f6,stroke:#999,stroke-width:1px;
+    class Step5,Step9,Step10 optional
+```
+
+> 💡 **Legend:**
+> - Steps **1–8** are part of the core Kubricate workflow
+> - Steps **5, 9, 10** are **optional** — used for secret hydration, previewing, or applying secret changes via CLI
+> - This separation reflects Kubricate's design: *declarative configuration first, execution via CLI only when needed*
+
+---
+
+### 🖇️ CLI Alias: `kbr`
+
+Kubricate now supports a shorter CLI alias: `kbr`  
+This is functionally identical to `kubricate`, making it quicker to type in scripts and terminals.
+
+```bash
+kbr generate
+kbr secrets plan
+kbr secrets hydrate
+```
+
+> See [PR #77](https://github.com/thaitype/kubricate/pull/77) for details.
+
+--- 
+
+## Documentation & Examples
+
+Documentation is in progress, please explore the [`examples`](https://github.com/thaitype/kubricate/tree/main/examples) directory for real-world usage patterns and advanced features.
+
+---
+
 ## Packages
 
 - `kubricate` – CLI for configuration and manifest generation
@@ -202,10 +389,6 @@ Ensure the following packages are always on the same version when upgrading:
 - `@kubricate/env`
 - `@kubricate/kubernetes`
 - `@kubricate/stacks`
-
-## Documentation & Examples
-
-Explore the [`examples`](https://github.com/thaitype/kubricate/tree/main/examples) directory for real-world usage patterns and advanced features.
 
 ## Development
 
@@ -232,5 +415,3 @@ pnpm --filter=@examples/with-custom-stack kubricate generate
 3. GitHub Actions will open a release PR
 4. Review and approve the PR
 5. The packages will be published to NPM automatically
-
-
