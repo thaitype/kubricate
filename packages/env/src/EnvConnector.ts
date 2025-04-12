@@ -1,9 +1,9 @@
-import { type BaseLoader, type BaseLogger, type SecretValue } from '@kubricate/core';
+import { type BaseConnector, type BaseLogger, type SecretValue } from '@kubricate/core';
 import { config as loadDotenv } from 'dotenv';
 import path from 'node:path';
 import { maskingValue } from './utilts.js';
 
-export interface EnvLoaderConfig {
+export interface EnvConnectorConfig {
   /**
    * The prefix to use for environment variables.
    * @default `KUBRICATE_SECRET_`
@@ -18,7 +18,7 @@ export interface EnvLoaderConfig {
 
   /**
    * Whether to perform case-insensitive lookups for environment variables.
-   * If true, the loader will match environment variable names in a case-insensitive manner.
+   * If true, the connector will match environment variable names in a case-insensitive manner.
    * @default `false`
    */
   caseInsensitive?: boolean;
@@ -33,19 +33,19 @@ export interface EnvLoaderConfig {
 }
 
 /**
- * EnvLoader is a BaseLoader implementation that reads secrets
+ * EnvConnector is a BaseConnector implementation that reads secrets
  * from process.env, optionally loading from a .env file and supporting
  * configurable prefixes and case-insensitive lookups.
  */
-export class EnvLoader implements BaseLoader<EnvLoaderConfig> {
-  public config: EnvLoaderConfig;
+export class EnvConnector implements BaseConnector<EnvConnectorConfig> {
+  public config: EnvConnectorConfig;
   private prefix: string;
   private secrets = new Map<string, SecretValue>();
   private caseInsensitive: boolean;
   public logger?: BaseLogger;
   private workingDir?: string;
 
-  constructor(config?: EnvLoaderConfig) {
+  constructor(config?: EnvConnectorConfig) {
     this.config = config ?? {};
     this.prefix = config?.prefix ?? 'KUBRICATE_SECRET_';
     this.caseInsensitive = config?.caseInsensitive ?? false;

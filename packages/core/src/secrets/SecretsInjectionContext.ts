@@ -9,7 +9,7 @@ export type ExtractProviderKeyFromSecretManager<
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
 > = ExtractSecretManager<SM>['secretEntries'][Key] extends { provider: infer P } ? P : never;
 
-export type GetProviderKindFromLoader<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
+export type GetProviderKindFromConnector<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ExtractSecretManager<SM>['providerInstances'][ProviderKey] extends BaseProvider<any, infer Instance>
   ? Instance
@@ -19,7 +19,7 @@ export type GetProviderKindFromLoader<SM extends AnySecretManager, ProviderKey> 
 export type GetProviderKinds<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
-> = GetProviderKindFromLoader<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
+> = GetProviderKindFromConnector<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
 
 export class SecretsInjectionContext<
   SM extends SecretManager = AnySecretManager,

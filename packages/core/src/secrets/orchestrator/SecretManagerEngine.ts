@@ -71,7 +71,7 @@ export class SecretManagerEngine {
   }
 
   /**
-   * Validate all loaders by attempting to load secrets and resolve their values.
+   * Validate all connectors by attempting to load secrets and resolve their values.
    * Will throw if any secret can't be loaded.
    */
   async validate(managers: MergedSecretManager): Promise<void> {
@@ -105,7 +105,7 @@ export class SecretManagerEngine {
   }
 
   /**
-   * Load secrets from loaders, optionally returning the loaded values.
+   * Load secrets from connectors, optionally returning the loaded values.
    * If `returnValues` is false, this acts as a validation-only step.
    */
   public async loadSecrets(
@@ -120,19 +120,19 @@ export class SecretManagerEngine {
     for (const name of Object.keys(secrets)) {
       if (loaded.has(name)) continue;
 
-      const loader = secretManager.resolveLoader(secrets[name].loader);
+      const connector = secretManager.resolveConnector(secrets[name].connector);
 
-      // Set working directory into loader if not already set
-      if (loader.getWorkingDir?.() === undefined && loader.setWorkingDir) {
-        loader.setWorkingDir(effectOptions.workingDir);
+      // Set working directory into connector if not already set
+      if (connector.getWorkingDir?.() === undefined && connector.setWorkingDir) {
+        connector.setWorkingDir(effectOptions.workingDir);
       }
 
       // Load the secret
-      await loader.load([name]);
+      await connector.load([name]);
 
       // Get the secret value
       // Throws if the secret was not previously loaded via `load()`
-      resolved[name] = loader.get(name);
+      resolved[name] = connector.get(name);
 
       loaded.add(name);
     }

@@ -2,13 +2,13 @@ import type { BaseLogger } from '../../types.js';
 import type { SecretValue } from '../types.js';
 
 /**
- * BaseLoader is the interface for secret loaders,
+ * BaseConnector is the interface for secret connectors,
  * responsible for resolving secrets from sources such as
  * environment variables, cloud secret managers, etc.
  *
- * Loaders are read-only and should not persist data to any provider.
+ * Connectors are read-only and should not persist data to any provider.
  */
-export interface BaseLoader<Config extends object = object> {
+export interface BaseConnector<Config extends object = object> {
   /**
    * Optional configuration used during initialization.
    */
@@ -33,22 +33,22 @@ export interface BaseLoader<Config extends object = object> {
   get(name: string): SecretValue;
 
   /**
-   * Set the working directory for the loader.
-   * This is useful for loaders that need to read files from a specific directory.
+   * Set the working directory for the connector.
+   * This is useful for connectors that need to read files from a specific directory.
    *
-   * For example, the EnvLoader may need to read a .env file from a specific path.
-   * This method is optional and may not be implemented by all loaders.
+   * For example, the EnvConnector may need to read a .env file from a specific path.
+   * This method is optional and may not be implemented by all connectors.
    * If not implemented, it will be a no-op.
    * @param path The path to the working directory.
    */
   setWorkingDir?(path: string | undefined): void;
 
   /**
-   * Get the working directory for the loader.
-   * This is useful for loaders that need to read files from a specific directory.
+   * Get the working directory for the connector.
+   * This is useful for connectors that need to read files from a specific directory.
    *
-   * For example, the EnvLoader may need to read a .env file from a specific path.
-   * This method is optional and may not be implemented by all loaders.
+   * For example, the EnvConnector may need to read a .env file from a specific path.
+   * This method is optional and may not be implemented by all connectors.
    * If not implemented, it will return undefined.
    */
   getWorkingDir?(): string | undefined;

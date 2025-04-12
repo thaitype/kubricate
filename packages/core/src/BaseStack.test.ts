@@ -19,7 +19,7 @@ class FakeSecretManager extends SecretManager {
       provider2: new FakeProvider(),
     } as any;
   }
-  getLoaders() {
+  getConnectors() {
     return {};
   }
 }

@@ -15,7 +15,7 @@ It abstracts how secrets are:
 - 🔁 **Declarative** – Describe what to inject, not how
 - 🧩 **Composable** – Secrets can be reused across resources and stacks
 - ⚠️ **Safe by default** – Prevent conflicts unless explicitly configured
-- 🛠️ **Extensible** – Write your own loaders and providers
+- 🛠️ **Extensible** – Write your own connectors and providers
 
 
 ## 🧱 Core Concepts
@@ -23,23 +23,23 @@ It abstracts how secrets are:
 ### 1. **SecretManager**
 A central registry for managing secret lifecycle in a stack.
 
-- Load secrets from various sources via **Loaders**
+- Load secrets from various sources via **Connectors**
 - Deliver secrets to destinations via **Providers**
 - Can use mulitple SecretManagers per Stack
 - Can register multiple secrets and control provider per secret
 
 ```ts
 const secretManager = new SecretManager()
-  .addLoader('env', new EnvLoader())
+  .addConnector('env', new EnvConnector())
   .addProvider('kube', new EnvSecretProvider({ name: 'my-secret' }))
   .addSecret({ name: 'DB_PASSWORD', provider: 'kube' });
 ```
 
-### 2. **Loader**
+### 2. **Connector**
 Responsible for **loading secret values** from sources.
 
-Built-in loaders:
-- `.env` files (`EnvLoader`)
+Built-in connectors:
+- `.env` files (`EnvConnector`)
 - JSON files
 - Secrets from external systems (e.g., Vault, AWS, Azure — via plugins)
 
@@ -49,7 +49,7 @@ DB_PASSWORD=supersecret
 ```
 
 ```ts
-secretManager.addLoader('env', new EnvLoader());
+secretManager.addConnector('env', new EnvConnector());
 ```
 
 
@@ -129,7 +129,7 @@ You can build your own:
 
 | Extension Type | Example Use Case                      |
 | -------------- | ------------------------------------- |
-| `Loader`       | Load from Azure Key Vault or REST API |
+| `Connector`       | Load from Azure Key Vault or REST API |
 | `Provider`     | Inject HashiCorp Vault                |
 
 ```ts

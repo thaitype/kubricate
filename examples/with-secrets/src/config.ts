@@ -1,13 +1,13 @@
 import { SecretManager } from '@kubricate/core';
 import { EnvSecretProvider, ImagePullSecretProvider } from '@kubricate/kubernetes';
-import { EnvLoader } from '@kubricate/env';
+import { EnvConnector } from '@kubricate/env';
 
 export const config = {
   namespace: 'my-namespace',
 };
 
 export const secretManager = new SecretManager()
-  .addLoader('EnvLoader', new EnvLoader())
+  .addConnector('EnvConnector', new EnvConnector())
   .addProvider(
     'EnvSecretProvider',
     new EnvSecretProvider({
@@ -20,7 +20,7 @@ export const secretManager = new SecretManager()
       name: 'secret-application-provider',
     })
   )
-  .setDefaultLoader('EnvLoader')
+  .setDefaultConnector('EnvConnector')
   .setDefaultProvider('EnvSecretProvider')
   .addSecret({
     name: 'my_app_key',

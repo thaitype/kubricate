@@ -36,7 +36,7 @@ export class SecretsOrchestrator {
 
   /**
    * Validates all secret managers by resolving and loading all declared secrets.
-   * Ensures secret loaders are configured correctly and values can be fetched.
+   * Ensures secret connectors are configured correctly and values can be fetched.
    *
    * @remarks
    * Used by: `kubricate secret validate`
@@ -44,13 +44,13 @@ export class SecretsOrchestrator {
    * @description
    * Ensures each secret manager is correctly configured by:
    * - Collecting all managers from config
-   * - Resolving loaders
+   * - Resolving connectors
    * - Attempting to load each secret once
    * Logs debug information throughout for traceability.
    *
    * @returns Resolves when all managers validate without throwing.
    *
-   * @throws If a loader fails or a secret cannot be loaded.
+   * @throws If a connector fails or a secret cannot be loaded.
    */
   async validate(): Promise<void> {
     const managers = this.engine.collect();

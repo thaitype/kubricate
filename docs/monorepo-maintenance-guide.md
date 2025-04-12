@@ -17,20 +17,13 @@ This monorepo uses [Changesets](https://github.com/changesets/changesets) for **
 
 ## 🔄 Versioning Strategy
 
-We use **linked packages**, not fixed.
-
-### ✅ Linked
-We use linked versioning **only for packages that must stay in sync**, like:
+We use **fixed packages**, as you can see at `.changeset/config.json`:
 
 ```json
-"linked": [["@kubricate/stacks", "@kubricate/core"]]
+{
+  "fixed": [["kubricate", "@kubricate/core", "@kubricate/env", "@kubricate/stacks", "@kubricate/kubernetes"]],
+}
 ```
-
-When one changes, the other is bumped to the same version.
-
-## ❌ Not Fixed
-
-We avoid fixed packages. This keeps unrelated packages (e.g. CLI, toolkit, env) from being needlessly version bumped.
 
 ## 🛠 Making a Change
 1. Run pnpm changeset
