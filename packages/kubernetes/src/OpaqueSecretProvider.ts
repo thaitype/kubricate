@@ -3,7 +3,7 @@ import type { BaseProvider, PreparedEffect } from '@kubricate/core';
 import { Base64 } from 'js-base64';
 import { createKubernetesMergeHandler } from './merge-utils.js';
 
-export interface EnvSecretProviderConfig {
+export interface OpaqueSecretProviderConfig {
   /**
    * The name of the secret to use.
    */
@@ -22,7 +22,7 @@ export interface EnvSecretProviderConfig {
  * Ported from import { IEnvVar } from 'kubernetes-models/v1/EnvVar';
 import ProviderInjection from '@kubricate/core';
  */
-interface EnvVar {
+export interface EnvVar {
   /**
    * Name of the environment variable. Must be a C_IDENTIFIER.
    */
@@ -58,25 +58,23 @@ interface EnvVar {
 type SupportedStrategies = 'env';
 
 /**
- * EnvSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
+ * OpaqueSecretProvider is a provider that uses Kubernetes secrets to inject secrets into the application.
  * It uses the Kubernetes API to create a secret with the given name and value.
  * The secret is created in the specified namespace.
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
- * 
- * @deprecated Use `OpaqueSecretProvider` instead. see Issue #80
  */
-export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, SupportedStrategies> {
+export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderConfig, SupportedStrategies> {
 
   readonly allowMerge = true;
-  readonly secretType = 'Kubernetes.Secret.Env';
+  readonly secretType = 'Kubernetes.Secret.Opaque';
 
   name: string | undefined;
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
-  constructor(public config: EnvSecretProviderConfig) { }
+  constructor(public config: OpaqueSecretProviderConfig) { }
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'env') {
@@ -84,7 +82,7 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
       return `spec.template.spec.containers[${index}].env`;
     }
 
-    throw new Error(`[EnvSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
+    throw new Error(`[OpaqueSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
 
   getEffectIdentifier(effect: PreparedEffect): string {
@@ -98,7 +96,7 @@ export class EnvSecretProvider implements BaseProvider<EnvSecretProviderConfig, 
       const key = inject.meta?.secretName;
 
       if (!name || !key) {
-        throw new Error('[EnvSecretProvider] Invalid injection metadata: name or key is missing.');
+        throw new Error('[OpaqueSecretProvider] Invalid injection metadata: name or key is missing.');
       }
 
       return {
