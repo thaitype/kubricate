@@ -31,7 +31,7 @@ A central registry for managing secret lifecycle in a stack.
 ```ts
 const secretManager = new SecretManager()
   .addConnector('env', new EnvConnector())
-  .addProvider('kube', new EnvSecretProvider({ name: 'my-secret' }))
+  .addProvider('kube', new OpaqueSecretProvider({ name: 'my-secret' }))
   .addSecret({ name: 'DB_PASSWORD', provider: 'kube' });
 ```
 
@@ -58,8 +58,8 @@ secretManager.addConnector('env', new EnvConnector());
 Responsible for **how secrets are delivered to the cluster**.
 
 Examples:
-- `EnvSecretProvider` → inject into Kubernetes Secret for env vars
-- `ImagePullSecretProvider` → Docker registry credentials
+- `OpaqueSecretProvider` → inject into Kubernetes Secret for env vars
+- `DockerConfigSecretProvider` → Docker registry credentials
 - `VaultAnnotationProvider` (planned) → inject annotations for Vault agent injection
 - `HelmSecretProvider` (planned) → inject into Helm `values.yaml`
 

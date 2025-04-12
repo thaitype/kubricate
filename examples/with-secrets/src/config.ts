@@ -1,5 +1,5 @@
 import { SecretManager } from '@kubricate/core';
-import { EnvSecretProvider, ImagePullSecretProvider } from '@kubricate/kubernetes';
+import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/kubernetes';
 import { EnvConnector } from '@kubricate/env';
 
 export const config = {
@@ -9,19 +9,19 @@ export const config = {
 export const secretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())
   .addProvider(
-    'EnvSecretProvider',
-    new EnvSecretProvider({
+    'OpaqueSecretProvider',
+    new OpaqueSecretProvider({
       name: 'secret-application',
     })
   )
   .addProvider(
-    'ImagePullSecretProvider',
-    new ImagePullSecretProvider({
+    'DockerConfigSecretProvider',
+    new DockerConfigSecretProvider({
       name: 'secret-application-provider',
     })
   )
   .setDefaultConnector('EnvConnector')
-  .setDefaultProvider('EnvSecretProvider')
+  .setDefaultProvider('OpaqueSecretProvider')
   .addSecret({
     name: 'my_app_key',
   })
@@ -30,5 +30,5 @@ export const secretManager = new SecretManager()
   })
   .addSecret({
     name: 'DOCKER_SECRET',
-    provider: 'ImagePullSecretProvider',
+    provider: 'DockerConfigSecretProvider',
   })
