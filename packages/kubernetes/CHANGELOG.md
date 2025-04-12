@@ -1,5 +1,15 @@
 # @kubricate/kubernetes
 
+## 0.15.0
+
+### Minor Changes
+
+- 978f1b8: Rename EnvSecretProvider to OpaqueSecretProvider and ImagePullSecretProvider to DockerConfigSecretProvider
+
+### Patch Changes
+
+- @kubricate/core@0.15.0
+
 ## 0.14.0
 
 ### Minor Changes
