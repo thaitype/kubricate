@@ -1,5 +1,11 @@
 # @kubricate/toolkit
 
+## 0.6.1
+
+### Patch Changes
+
+- bcdc5b9: Refactor: Replace Loader with Connector for Bidirectional Secret Integration
+
 ## 0.6.0
 
 ### Minor Changes
