@@ -7,8 +7,10 @@
 <h2 align="center">Kubricate</h2>
 
 <p align="center">
-  A TypeScript framework for building, managing, and compiling Kubernetes resources with a structured, reusable, and Helm-compatible approach.
+  A TypeScript-powered framework to define and compose Kubernetes manifests with reusable Stacks and mergeable Secrets
 </p>
+
+<!-- Helm chart compatibility: Add later, see in https://github.com/thaitype/kubricate/issues?q=is%3Aissue%20state%3Aopen%20helm -->
 
 <p align="center">
   <a href="https://github.com/thaitype/kubricate/actions/workflows/test-and-build.yml">
@@ -25,13 +27,74 @@
   </a>
 </p>
 
-> ⚠️ Experimental: This project is still in early development and not ready for production use.
+> ⚠️ Evolving API: Kubricate has been tested in internal environments and many parts are stable with test coverage. However, the project is still evolving as we design use cases around real-world Kubernetes pain points.
+>
+> Kubricate is not here to replace the great tools in the Kubernetes ecosystem—but to improve the developer experience around YAML templating, type safety, and reuse.
+> 
+> Expect frequent API changes. Please follow [issues](https://github.com/thaitype/kubricate/issues) for proposed features and [pull requests](https://github.com/thaitype/kubricate/pulls) for updates on documentation and migration plans.
 
 ## Features
 
 - 📦 Type-safe Kubernetes manifest generation with TypeScript
 - ♻️ Reusable, composable stack system
 - 🔐 Secrets injection via `SecretManager` and connectors (e.g., `.env`, process.env)
+
+## 🧭 Motivation
+
+### The Problem: Secret Management in Kubernetes Is a Mess
+
+In modern Kubernetes setups, managing secrets across environments often leads to one of these:
+
+- Manually writing and syncing Kubernetes `Secret` YAML files
+- Relying on **External Secrets Operator (ESO)**, with scattered `ExternalSecret` and `SecretStore` CRDs
+- Using **Vault Agent Injector**, with complex `annotations`, Vault policies, and runtime dependencies
+- Injecting secrets via environment variables or hardcoded `.env` values
+
+These tools work — but introduce real pain:
+
+- ❌ **Too much YAML** — repetitive, hard to validate, easy to break  
+- ❌ **Poor dev experience** — secrets feel disconnected from app config  
+- ❌ **Lack of type safety** — no validation until deploy time  
+- ❌ **Unclear ownership** — devs vs. ops vs. platform teams  
+- ❌ **Secret sprawl** — no single source of truth across environments
+
+### 🔍 Comparison: Existing Secret Solutions
+
+| Tool                  | Strengths                                | Weaknesses                                                   |
+|-----------------------|-------------------------------------------|---------------------------------------------------------------|
+| **ESO**               | Reconciles secrets from cloud backends     | CRD-driven, verbose YAML, hard to validate, poor dev UX       |
+| **Vault Agent Injector** | Dynamic runtime injection               | Requires sidecars, policies, annotations, tied to runtime     |
+| **Sealed Secrets / SOPS** | GitOps-friendly encryption             | Secret versioning, rotation, and source mapping is manual     |
+| **Helm `values.yaml`** | Simple templating                         | No validation, weak typing, still YAML                        |
+
+
+### 💡 How Kubricate Solves It
+
+Kubricate introduces a **framework-level secret model** — where secrets are declared, typed, validated, and hydrated using TypeScript, not YAML.
+
+#### What Kubricate does differently:
+
+- ✅ Secrets are **declared in code**: `addSecret({ name: 'API_KEY' })`
+- ✅ Secrets are **hydrated from source connectors** (e.g. `.env`, 1Password)
+- ✅ Secret values can be **written to other systems** like Azure Key Vault
+- ✅ You **generate ESO manifests**, Vault annotations, or K8s Secrets — with full control
+- ✅ Hydration is **declarative**, CLI-driven, and CI-friendly — no sidecars or CRDs
+
+#### No Operators. No Sidecars. No Runtime Magic.
+
+Kubricate puts you back in control:
+- You **own the secret plan** at build-time.
+- You **know exactly where secrets come from and where they go**.
+- You can **test, validate, and generate manifests** from a consistent API.
+
+
+### 🧩 Use It With:
+- **ESO**: Kubricate can generate `ExternalSecret` CRDs cleanly
+- **Vault Agent**: Generate annotations in a reusable, type-safe way
+- **ArgoCD / Flux**: Use `kubricate generate` to output manifests for GitOps
+- **No controller at all**: Just hydrate secrets from `.env` into YAML or Azure KV
+
+---
 
 ## Getting Started
 
@@ -116,6 +179,7 @@ Kubricate offers a type-safe developer experience for building Kubernetes manife
 - `kubricate` – CLI for configuration and manifest generation
 - `@kubricate/core` – Core framework for creating and managing stacks
 - `@kubricate/env` – Secret connector for `.env` and environment variables
+- `@kubricate/kubernetes` – Kubernetes connectors
 - `@kubricate/stacks` – Official reusable stack definitions
 - `@kubricate/toolkit` – Utility functions for custom stack authors
 
@@ -126,6 +190,7 @@ Ensure the following packages are always on the same version when upgrading:
 - `kubricate`
 - `@kubricate/core`
 - `@kubricate/env`
+- `@kubricate/kubernetes`
 - `@kubricate/stacks`
 
 ## Documentation & Examples
@@ -157,5 +222,5 @@ pnpm --filter=@examples/with-custom-stack kubricate generate
 3. GitHub Actions will open a release PR
 4. Review and approve the PR
 5. The packages will be published to NPM automatically
-```
+
 
