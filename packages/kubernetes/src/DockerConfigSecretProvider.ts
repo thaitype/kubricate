@@ -11,13 +11,13 @@ import { z } from 'zod';
 import { createKubernetesMergeHandler } from './merge-utils.js';
 import { parseZodSchema } from './utils.js';
 
-const dockerRegistrySecretSchema = z.object({
+export const dockerRegistrySecretSchema = z.object({
   username: z.string(),
   password: z.string(),
   registry: z.string(),
 });
 
-export interface ImagePullSecretProviderConfig {
+export interface DockerConfigSecretProviderConfig {
   /**
    * Name of the Kubernetes Secret.
    */
@@ -33,24 +33,22 @@ export interface ImagePullSecretProviderConfig {
 type SupportedStrategies = 'imagePullSecret';
 
 /**
- * ImagePullSecretProvider is a provider for Kubernetes that creates a Docker config secret
- * 
- * @deprecated Use `DockerConfigSecretProvider` instead. see Issue #80
+ * DockerConfigSecretProvider is a provider for Kubernetes that creates a Docker config secret
  */
-export class ImagePullSecretProvider implements BaseProvider<
-  ImagePullSecretProviderConfig,
+export class DockerConfigSecretProvider implements BaseProvider<
+  DockerConfigSecretProviderConfig,
   SupportedStrategies
 > {
   name: string | undefined;
 
-  readonly secretType = 'Kubernetes.Secret.ImagePullSecret';
+  readonly secretType = 'Kubernetes.Secret.DockerConfigSecret';
 
   injectes: ProviderInjection[] = [];
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['imagePullSecret'];
 
-  constructor(public config: ImagePullSecretProviderConfig) { }
+  constructor(public config: DockerConfigSecretProviderConfig) { }
 
   setInjects(injectes: ProviderInjection[]): void {
     this.injectes = injectes;
@@ -60,7 +58,7 @@ export class ImagePullSecretProvider implements BaseProvider<
     if (strategy.kind === 'imagePullSecret') {
       return `spec.template.spec.imagePullSecrets`;
     }
-    throw new Error(`[ImagePullSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
+    throw new Error(`[DockerConfigSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
   }
 
   getInjectionPayload(): Array<{ name: string }> {
