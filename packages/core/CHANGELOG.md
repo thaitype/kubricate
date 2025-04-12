@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.14.0
+
+### Minor Changes
+
+- bcdc5b9: Refactor: Replace Loader with Connector for Bidirectional Secret Integration
+
 ## 0.13.0
 
 ## 0.12.0

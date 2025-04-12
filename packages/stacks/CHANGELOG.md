@@ -1,5 +1,16 @@
 # @kubricate/stacks
 
+## 0.14.0
+
+### Minor Changes
+
+- bcdc5b9: Refactor: Replace Loader with Connector for Bidirectional Secret Integration
+
+### Patch Changes
+
+- Updated dependencies [bcdc5b9]
+  - @kubricate/core@0.14.0
+
 ## 0.13.0
 
 ### Patch Changes
