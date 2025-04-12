@@ -39,5 +39,17 @@
     "@kubricate/config-vitest": "workspace:*",
     "@kubricate/mono": "workspace:*",
     "@types/node": "^22.13.9"
-  }
+  },
+  "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
+  "keywords": [
+    "kubernetes",
+    "kubricate",
+    "cli",
+    "typescript",
+    "framework",
+    "typesafe",
+    "secret-management",
+    "infrastructure-as-code"
+  ],
+  "license": "Apache-2.0"
 }

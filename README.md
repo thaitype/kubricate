@@ -7,7 +7,7 @@
 <h2 align="center">Kubricate</h2>
 
 <p align="center">
-  A TypeScript-powered framework to define and compose Kubernetes manifests with reusable Stacks and mergeable Secrets
+  A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.
 </p>
 
 <!-- Helm chart compatibility: Add later, see in https://github.com/thaitype/kubricate/issues?q=is%3Aissue%20state%3Aopen%20helm -->

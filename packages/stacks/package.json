@@ -47,5 +47,17 @@
     "@kubernetes-models/base": "^5.0.1",
     "kubernetes-models": "^4.4.2",
     "@kubricate/core": "workspace:*"
-  }
+  },
+  "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
+  "keywords": [
+    "kubernetes",
+    "kubricate",
+    "cli",
+    "typescript",
+    "framework",
+    "typesafe",
+    "secret-management",
+    "infrastructure-as-code"
+  ],
+  "license": "Apache-2.0"
 }

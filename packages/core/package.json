@@ -1,6 +1,5 @@
 {
   "name": "@kubricate/core",
-  "description": "A TypeScript framework for building, managing, and compiling Kubernetes resources with a structured, reusable, and Helm-compatible approach",
   "version": "0.13.0",
   "type": "module",
   "main": "./dist/cjs/index.js",
@@ -46,5 +45,17 @@
     "src",
     "package.json",
     "README.md"
-  ]
+  ],
+  "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
+  "keywords": [
+    "kubernetes",
+    "kubricate",
+    "cli",
+    "typescript",
+    "framework",
+    "typesafe",
+    "secret-management",
+    "infrastructure-as-code"
+  ],
+  "license": "Apache-2.0"
 }

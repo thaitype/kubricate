@@ -1,5 +1,6 @@
 {
   "name": "kubricate",
+  "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
   "version": "0.13.0",
   "type": "module",
   "main": "./dist/cjs/index.js",
@@ -54,5 +55,16 @@
     "unconfig": "^7.3.1",
     "yaml": "^2.7.0",
     "yargs": "^17.7.2"
-  }
+  },
+  "keywords": [
+    "kubernetes",
+    "kubricate",
+    "cli",
+    "typescript",
+    "framework",
+    "typesafe",
+    "secret-management",
+    "infrastructure-as-code"
+  ],
+  "license": "Apache-2.0"
 }
