@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.16.0
+
+### Minor Changes
+
+- 420f4dd: Feature: Add targetPath Support to SecretInjectionStrategy for Flexible Injection Paths
+
 ## 0.15.0
 
 ## 0.14.0
