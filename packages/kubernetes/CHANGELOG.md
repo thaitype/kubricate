@@ -1,5 +1,16 @@
 # @kubricate/kubernetes
 
+## 0.16.0
+
+### Minor Changes
+
+- 420f4dd: Feature: Add targetPath Support to SecretInjectionStrategy for Flexible Injection Paths
+
+### Patch Changes
+
+- Updated dependencies [420f4dd]
+  - @kubricate/core@0.16.0
+
 ## 0.15.0
 
 ### Minor Changes
