@@ -80,8 +80,9 @@ export class GenerateCommand extends BaseCommand {
 
     logger.log(c.green`${MARK_CHECK} All stacks generated successfully`);
 
-    const outputPath = path.join(this.options.root ?? process.cwd(), this.options.outDir, 'stacks.yml');
-    await fs.mkdir(this.options.outDir, { recursive: true });
+    const outoutDir = path.join(this.options.root ?? process.cwd(), this.options.outDir);
+    const outputPath = path.join(outoutDir, 'stacks.yml');
+    await fs.mkdir(outoutDir, { recursive: true });
     await fs.writeFile(outputPath, output);
 
     logger.log('');
