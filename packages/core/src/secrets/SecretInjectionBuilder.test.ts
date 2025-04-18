@@ -53,7 +53,7 @@ describe('SecretInjectionBuilder', () => {
       providerId: 'my-provider',
     });
 
-    builder.inject('env', { containerIndex: 1 }).resolveInjection();
+    builder.inject('env', { containerIndex: 1 } as any).resolveInjection();
 
     expect(stack.registerSecretInjection).toHaveBeenCalledWith(
       expect.objectContaining({

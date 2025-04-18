@@ -78,6 +78,9 @@ export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderCo
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'env') {
+      if (strategy.targetPath) {
+        return strategy.targetPath;
+      }
       const index = strategy.containerIndex ?? 0;
       return `spec.template.spec.containers[${index}].env`;
     }

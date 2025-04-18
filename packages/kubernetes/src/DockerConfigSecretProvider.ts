@@ -56,6 +56,9 @@ export class DockerConfigSecretProvider implements BaseProvider<
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'imagePullSecret') {
+      if (strategy.targetPath) {
+        return strategy.targetPath;
+      }
       return `spec.template.spec.imagePullSecrets`;
     }
     throw new Error(`[DockerConfigSecretProvider] Unsupported injection strategy: ${strategy.kind}`);
