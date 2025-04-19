@@ -19,7 +19,7 @@ export interface EffectsOptions {
  * - 'error'     — Immediately throw an error when a conflict is detected (safe default).
  * - 'autoMerge' — Shallow merge object structures if possible; otherwise, prefer the latest value.
  */
-export type MergeStrategy =
+export type ConflictStrategy =
   | 'overwrite'
   | 'error'
   | 'autoMerge';
@@ -29,12 +29,13 @@ export type MergeStrategy =
  * 
  * This corresponds directly to the keys in `ConfigConflictOptions['handleSecretConflict']`.
  */
-export type MergeLevel = keyof NonNullable<ConfigConflictOptions['handleSecretConflict']>;
+export type ConflictLevel = keyof NonNullable<ConfigConflictOptions['handleSecretConflict']>;
 
 /**
  * Configuration for how the orchestrator should handle **secret conflict resolution**.
  *
- * ❗ Important: Synthing and Kubricate do **not** "merge secrets" by default.
+ * Important: Synthing and Kubricate only auto-merge within the same provider (intraProvider) by default.
+ * Cross-provider and cross-manager conflicts will error by default, ensuring strong isolation unless explicitly overridden.
  *
  * Secrets are declared independently. However, multiple secret definitions may
  * target the same logical destination (e.g., Kubernetes Secret, Vault path, output file).
@@ -57,7 +58,7 @@ export interface ConfigConflictOptions {
      *
      * @default 'autoMerge'
      */
-    intraProvider?: MergeStrategy;
+    intraProvider?: ConflictStrategy;
 
     /**
      * Conflict resolution between different Providers under the same SecretManager.
@@ -66,7 +67,7 @@ export interface ConfigConflictOptions {
      *
      * @default 'error'
      */
-    crossProvider?: MergeStrategy;
+    crossProvider?: ConflictStrategy;
 
     /**
      * Conflict resolution between different SecretManagers within the same Stack.
@@ -77,6 +78,18 @@ export interface ConfigConflictOptions {
      *
      * @default 'error'
      */
-    intraStack?: MergeStrategy;
+    intraStack?: ConflictStrategy;
   };
+  /**
+   * Enforce **strict conflict validation**.
+   *
+   * When enabled:
+   * - All conflict levels are automatically treated as 'error'.
+   * - Any attempt to manually relax strategies (e.g., 'autoMerge') will throw a configuration error.
+   *
+   * Useful for production environments that require full conflict immutability and auditability.
+   *
+   * @default false
+   */
+  strictConflictMode?: boolean;
 }

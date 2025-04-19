@@ -1,8 +1,9 @@
-import type { BaseLogger } from '../../types.js';
+import type { BaseLogger, KubricateConfig } from '../../types.js';
 import type { BaseProvider, PreparedEffect } from '../providers/BaseProvider.js';
+import { SecretManager } from '../SecretManager.js';
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
-import type { ConfigConflictOptions, MergeLevel, MergeStrategy, SecretsOrchestratorOptions } from './types.js';
+import type { ConfigConflictOptions, ConflictLevel, ConflictStrategy, SecretsOrchestratorOptions } from './types.js';
 
 interface ResolvedSecret {
   key: string;
@@ -18,6 +19,33 @@ type PreparedEffectWithMeta = PreparedEffect & {
   identifier: string | undefined; // optional, depends on provider
 }
 
+/**
+ * SecretsOrchestrator
+ *
+ * @description
+ * Central orchestration engine responsible for:
+ * - Validating secret configuration and managers
+ * - Loading and resolving all declared secrets
+ * - Preparing provider-specific effects
+ * - Applying conflict resolution strategies (intraProvider, crossProvider, intraStack)
+ * - Producing a fully merged, finalized list of secret effects ready for output (e.g., YAML, JSON, etc.)
+ *
+ * @remarks
+ * - Acts as the internal core behind `kubricate secret apply`.
+ * - Ensures predictable, auditable, and conflict-safe secret generation.
+ * - Delegates provider-specific behavior to registered providers (e.g., mergeSecrets, prepare).
+ *
+ * @usage
+ * Typically called via:
+ * 
+ * ```ts
+ * const orchestrator = SecretsOrchestrator.create(options);
+ * const effects = await orchestrator.apply();
+ * ```
+ *
+ * @throws {Error}
+ * If configuration, validation, or merging fails at any stage.
+ */
 export class SecretsOrchestrator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private providerCache = new Map<string, any>();
@@ -33,46 +61,59 @@ export class SecretsOrchestrator {
   }
 
   /**
-   * Validates all secret managers by resolving and loading all declared secrets.
-   * Ensures secret connectors are configured correctly and values can be fetched.
+   * Validates the project configuration and all registered secret managers.
    *
    * @remarks
-   * Used by: `kubricate secret validate`
+   * This is automatically called by commands like `kubricate secret apply` and `kubricate secret validate`.
    *
    * @description
-   * Ensures each secret manager is correctly configured by:
-   * - Collecting all managers from config
-   * - Resolving connectors
-   * - Attempting to load each secret once
-   * Logs debug information throughout for traceability.
+   * Performs full validation across:
+   * - Configuration schema (e.g., strictConflictMode rules, secret manager presence)
+   * - SecretManager instances and their attached connectors
+   * - Ensures all declared secrets can be loaded without error
    *
-   * @returns Resolves when all managers validate without throwing.
+   * Logs important validation steps for traceability.
    *
-   * @throws If a connector fails or a secret cannot be loaded.
+   * @returns {Promise<MergedSecretManager>} A fully validated set of collected secret managers.
+   *
+   * @throws {Error} 
+   * - If a configuration violation is detected (e.g., invalid strictConflictMode usage).
+   * - If a SecretManager or connector fails to validate or load secrets.
    */
-  async validate(): Promise<void> {
+  async validate(): Promise<MergedSecretManager> {
+    // 1. Validate config options (e.g., strictConflictMode)
+    this.validateConfig(this.engine.options.config);
+
+    // 2. Validate secret managers and connectors
     const managers = this.engine.collect();
     await this.engine.validate(managers);
+    return managers;
   }
 
   /**
-   * Generates a list of provider-ready effects by:
-   * - Loading all secrets
-   * - Merging them across levels (stack, manager, etc.)
-   * - Preparing Kubernetes-ready manifests
-   * - Merging manifests (e.g., same secret name)
+   * Prepares a fully validated and merged set of provider-ready secret effects.
    *
    * @remarks
-   * Used by: `kubricate secret apply`
+   * This is the core orchestration method called by commands like `kubricate secret apply`.
    *
    * @description
+   * Executes the full secret orchestration lifecycle:
+   * - Validates project configuration and all secret managers
+   * - Loads and resolves all secrets across managers
+   * - Prepares raw provider effects for each secret
+   * - Merges effects according to conflict strategies (intraProvider, crossProvider, etc.)
    *
-   * @returns A list of prepared secret effects
+   * Logs context and important processing steps for debugging and traceability.
    *
-   * @throws If loading or provider preparation fails
+   * @returns {Promise<PreparedEffect[]>} A list of finalized secret effects ready for output (e.g., Kubernetes manifests).
+   *
+   * @throws {Error}
+   * - If configuration validation fails (e.g., strictConflictMode violations).
+   * - If loading or preparing secrets fails.
+   * - If conflict resolution encounters an unrecoverable error (based on config).
    */
   async apply(): Promise<PreparedEffect[]> {
-    const managers = this.engine.collect();
+    const managers = await this.validate();
 
     this.logOrchestratorContext(this.engine.options.config.secrets);
 
@@ -105,7 +146,7 @@ export class SecretsOrchestrator {
         resolved.push({
           key,
           value,
-          providerName: String(secretDef.provider),     
+          providerName: String(secretDef.provider),
           managerName: entry.name,
         });
       }
@@ -146,10 +187,10 @@ export class SecretsOrchestrator {
       const providerNames = new Set(group.map(e => e.providerName));
       const managerNames = new Set(group.map(e => e.managerName));
 
-      const level: MergeLevel =
-          managerNames.size > 1 ? 'intraStack' :
-            providerNames.size > 1 ? 'crossProvider' :
-              'intraProvider';
+      const level: ConflictLevel =
+        managerNames.size > 1 ? 'intraStack' :
+          providerNames.size > 1 ? 'crossProvider' :
+            'intraProvider';
 
       const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secrets);
       const providerName = group[0].providerName;
@@ -235,19 +276,70 @@ export class SecretsOrchestrator {
    * Resolves the merge strategy for a given level using config or fallback defaults.
    */
   private resolveStrategyForLevel(
-    level: MergeLevel,
-    mergeOptions: ConfigConflictOptions | undefined
-  ): MergeStrategy {
-    const defaults: Record<MergeLevel, MergeStrategy> = {
-      intraProvider: 'autoMerge',   // allow merging within same provider
-      crossProvider: 'error',        // disallow cross-provider collision in same SecretManager
-      intraStack: 'error',          // disallow between managers in same stack
-    };
+    level: ConflictLevel,
+    conflictOptions: ConfigConflictOptions | undefined
+  ): ConflictStrategy {
 
-    return mergeOptions?.handleSecretConflict?.[level] ?? defaults[level];
+    const strict = conflictOptions?.strictConflictMode ?? false;
+
+    const defaults: Record<ConflictLevel, ConflictStrategy> = strict
+      ? {
+        intraProvider: 'error',    // no merging at all
+        crossProvider: 'error',
+        intraStack: 'error',
+      }
+      : {
+        intraProvider: 'autoMerge', // default allows merging inside provider
+        crossProvider: 'error',
+        intraStack: 'error',
+      };
+
+    return conflictOptions?.handleSecretConflict?.[level] ?? defaults[level];
+  }
+
+  /**
+   * Validates core secrets-related configuration inside the project config.
+   *
+   * @param config - The Kubricate project configuration object.
+   *
+   * @throws {Error} If the secret manager is missing or invalid.
+   */
+  private validateConfig(config: KubricateConfig): void {
+    if (!config.secrets?.manager) {
+      throw new Error('[config] No secret manager found. Please define "secrets.manager" in kubricate.config.ts.');
+    }
+
+    if (!(config.secrets?.manager instanceof SecretManager)) {
+      throw new Error('[config] Invalid secret manager instance.');
+    }
+
+    this.validateConflictOptions(config.secrets);
+  }
+
+  /**
+   * Validates conflict resolution options, especially when `strictConflictMode` is enabled.
+   *
+   * - If `strictConflictMode` is true, all conflict strategies must be set to 'error'.
+   * - Throws early if an invalid combination is detected.
+   *
+   * @param conflictOptions - The secret conflict configuration object.
+   *
+   * @throws {Error} If strict mode is enabled but a non-'error' strategy is found.
+   */
+  private validateConflictOptions(conflictOptions: ConfigConflictOptions | undefined) {
+    if (!conflictOptions?.strictConflictMode) return;
+
+    for (const [level, strategy] of Object.entries(conflictOptions.handleSecretConflict ?? {})) {
+      if (strategy !== 'error') {
+        throw new Error(
+          `[config:strictConflictMode] Strategy for "${level}" must be "error" (found "${strategy}").`
+        );
+      }
+    }
   }
 
 }
+
 
 function formatMergeSources(group: PreparedEffectWithMeta[]): string[] {
   return group.map(g => {
