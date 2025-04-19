@@ -66,7 +66,7 @@ describe('createKubernetesMergeHandler', () => {
     ];
 
     expect(() => merge(effects)).toThrowError(
-      '[merge:k8s] Conflict detected: key "SHARED_KEY" already exists in Secret "dup-secret" in namespace "default"'
+      '[conflict:k8s] Conflict detected: key "SHARED_KEY" already exists in Secret "dup-secret" in namespace "default"'
     );
   });
 

@@ -8,13 +8,12 @@ export default defineConfig({
   },
   secrets: {
     manager: secretManager,
-    merge: {
+    handleSecretConflict: {
       // Default merge strategies
       
-      // intraProvider: 'autoMerge',
+      // intraProvider: 'error',
       // crossProvider: 'error',
       // intraStack: 'error',
-      // crossStack: 'error',
     }
   }
 });

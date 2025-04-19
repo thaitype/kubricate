@@ -61,7 +61,7 @@ describe('SecretsOrchestrator', () => {
           } as any
         },
         secrets: {
-          merge: {
+          handleSecretConflict: {
             intraProvider: 'autoMerge',
             crossProvider: 'error',
             intraStack: 'error',
@@ -163,7 +163,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             intraProvider: 'autoMerge',
             crossProvider: 'autoMerge',
             intraStack: 'autoMerge',
@@ -240,7 +240,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             intraProvider: 'autoMerge',
           }
         }
@@ -298,7 +298,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             intraProvider: 'error', // This will trigger the error
           }
         }
@@ -308,7 +308,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
     orchestrator = SecretsOrchestrator.create(options);
 
     await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:intraProvider\]/
+      /\[conflict:error:intraProvider\]/
     );
   });
 
@@ -340,7 +340,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             intraProvider: 'autoMerge',
           }
         }
@@ -386,7 +386,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             intraProvider: 'overwrite',
           }
         }
@@ -405,7 +405,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
     });
 
     expect(mockLogger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('[merge:overwrite:intraProvider]')
+      expect.stringContaining('[conflict:overwrite:intraProvider]')
     );
   });
 
@@ -431,7 +431,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       effectOptions: {},
       config: {
         stacks: stacks as any,
-        secrets: { merge: { intraProvider: 'overwrite' } }
+        secrets: { handleSecretConflict: { intraProvider: 'overwrite' } }
       }
     };
   
@@ -439,7 +439,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
     const effects = await orchestrator.apply();
   
     expect(effects).toHaveLength(1);
-    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:intraProvider]'));
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:intraProvider]'));
   });
   
 
@@ -495,7 +495,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             crossProvider: 'error',
           }
         }
@@ -505,7 +505,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
     orchestrator = SecretsOrchestrator.create(options);
 
     await expect(orchestrator.apply()).rejects.toThrowError(
-      /\[merge:error:crossProvider\]/
+      /\[conflict:error:crossProvider\]/
     );
   });
 
@@ -546,7 +546,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: {
+          handleSecretConflict: {
             crossProvider: 'autoMerge',
           }
         }
@@ -592,7 +592,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: { crossProvider: 'overwrite' },
+          handleSecretConflict: { crossProvider: 'overwrite' },
         },
       },
     };
@@ -606,7 +606,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
     });
 
     expect(mockLogger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('[merge:overwrite:crossProvider]')
+      expect.stringContaining('[conflict:overwrite:crossProvider]')
     );
   });
 
@@ -635,7 +635,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       effectOptions: {},
       config: {
         stacks: stacks as any,
-        secrets: { merge: { crossProvider: 'overwrite' } }
+        secrets: { handleSecretConflict: { crossProvider: 'overwrite' } }
       }
     };
   
@@ -643,7 +643,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
     const effects = await orchestrator.apply();
   
     expect(effects).toHaveLength(1);
-    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:crossProvider]'));
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:crossProvider]'));
   });
   
 
@@ -683,13 +683,13 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       config: {
         stacks: { app: stack as any },
         secrets: {
-          merge: { intraStack: 'error' as const },
+          handleSecretConflict: { intraStack: 'error' as const },
         },
       },
     };
 
     const orchestrator = SecretsOrchestrator.create(options);
-    await expect(orchestrator.apply()).rejects.toThrowError(/\[merge:error:intraStack]/);
+    await expect(orchestrator.apply()).rejects.toThrowError(/\[conflict:error:intraStack]/);
   });
 
   it('merges on intraStack conflict with strategy "autoMerge"', async () => {
@@ -714,7 +714,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       config: {
         stacks: { app: stack as any },
         secrets: {
-          merge: { intraStack: 'autoMerge' as const },
+          handleSecretConflict: { intraStack: 'autoMerge' as const },
         },
       },
     };
@@ -753,7 +753,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secrets: {
-          merge: { intraStack: 'overwrite' },
+          handleSecretConflict: { intraStack: 'overwrite' },
         },
       },
     };
@@ -764,7 +764,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     expect(effects).toHaveLength(1);
     expect(effects[0].value.rawData).toEqual({ SHARED_KEY: 'two' });
     expect(mockLogger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('[merge:overwrite:intraStack]')
+      expect.stringContaining('[conflict:overwrite:intraStack]')
     );
   });
 
@@ -792,7 +792,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       effectOptions: {},
       config: {
         stacks: stacks as any,
-        secrets: { merge: { intraStack: 'overwrite' } }
+        secrets: { handleSecretConflict: { intraStack: 'overwrite' } }
       }
     };
   
@@ -800,7 +800,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     const effects = await orchestrator.apply();
   
     expect(effects).toHaveLength(1);
-    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[merge:overwrite:intraStack]'));
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:intraStack]'));
   });
   
 
