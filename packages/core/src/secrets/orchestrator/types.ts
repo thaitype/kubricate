@@ -26,10 +26,8 @@ export type ConflictStrategy =
 
 /**
  * Levels where secret conflicts can occur during orchestration.
- * 
- * This corresponds directly to the keys in `ConfigConflictOptions['handleSecretConflict']`.
  */
-export type ConflictLevel = keyof NonNullable<ConfigConflictOptions['handleSecretConflict']>;
+export type ConflictLevel = keyof NonNullable<NonNullable<ConfigConflictOptions['conflict']>['strategies']>;
 
 /**
  * Configuration for how the orchestrator should handle **secret conflict resolution**.
@@ -50,46 +48,53 @@ export type ConflictLevel = keyof NonNullable<ConfigConflictOptions['handleSecre
  * - 'autoMerge' — Merge object values if supported; otherwise, prefer the latest.
  */
 export interface ConfigConflictOptions {
-  handleSecretConflict?: {
-    /**
-     * Conflict resolution for multiple secrets targeting the same Provider instance.
-     *
-     * Example: two keys injected into the same Kubernetes Secret manifest.
-     *
-     * @default 'autoMerge'
-     */
-    intraProvider?: ConflictStrategy;
-
-    /**
-     * Conflict resolution between different Providers under the same SecretManager.
-     *
-     * Example: collision between EnvSecretProvider and VaultSecretProvider within a single SecretManager.
-     *
-     * @default 'error'
-     */
-    crossProvider?: ConflictStrategy;
-
-    /**
-     * Conflict resolution between different SecretManagers within the same Stack.
-     *
-     * Example: two SecretManagers both generating a Kubernetes Secret named 'app-credentials' inside the same AppStack.
-     * 
-     * (Only relevant in frameworks like Kubricate; Synthing itself does not use stacks.)
-     *
-     * @default 'error'
-     */
-    intraStack?: ConflictStrategy;
-  };
   /**
-   * Enforce **strict conflict validation**.
-   *
-   * When enabled:
-   * - All conflict levels are automatically treated as 'error'.
-   * - Any attempt to manually relax strategies (e.g., 'autoMerge') will throw a configuration error.
-   *
-   * Useful for production environments that require full conflict immutability and auditability.
-   *
-   * @default false
-   */
-  strictConflictMode?: boolean;
+  * Fine-grained control over secret conflict handling.
+  *
+  * If omitted, default behaviors apply.
+  */
+  conflict?: {
+    strategies?: {
+      /**
+       * Conflict resolution for multiple secrets targeting the same Provider instance.
+       *
+       * Example: two keys injected into the same Kubernetes Secret manifest.
+       *
+       * @default 'autoMerge'
+       */
+      intraProvider?: ConflictStrategy;
+
+      /**
+       * Conflict resolution between different Providers under the same SecretManager.
+       *
+       * Example: collision between EnvSecretProvider and VaultSecretProvider within a single SecretManager.
+       *
+       * @default 'error'
+       */
+      crossProvider?: ConflictStrategy;
+
+      /**
+       * Conflict resolution between different SecretManagers within the same Stack.
+       *
+       * Example: two SecretManagers both generating a Kubernetes Secret named 'app-credentials' inside the same AppStack.
+       * 
+       * (Only relevant in frameworks like Kubricate; Synthing itself does not use stacks.)
+       *
+       * @default 'error'
+       */
+      intraStack?: ConflictStrategy;
+    };
+    /**
+     * Enforce **strict conflict validation**.
+     *
+     * When enabled:
+     * - All conflict levels are automatically treated as 'error'.
+     * - Any attempt to manually relax strategies (e.g., 'autoMerge') will throw a configuration error.
+     *
+     * Useful for production environments that require full conflict immutability and auditability.
+     *
+     * @default false
+     */
+    strict?: boolean;
+  }
 }

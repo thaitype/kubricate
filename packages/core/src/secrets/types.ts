@@ -1,4 +1,5 @@
 import type { AnyKey } from '../types.js';
+import type { ConfigConflictOptions } from './orchestrator/types.js';
 import type { SecretManager } from './SecretManager.js';
 
 /**
@@ -59,3 +60,5 @@ export interface SecretRegistryOptions {
    */
   manager?: AnySecretManager;
 }
+
+export type ProjectSecretOptions = SecretRegistryOptions & ConfigConflictOptions;

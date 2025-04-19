@@ -1,6 +1,5 @@
 import type { BaseLogger, KubricateConfig } from '../../types.js';
 import type { BaseProvider, PreparedEffect } from '../providers/BaseProvider.js';
-import { SecretManager } from '../SecretManager.js';
 import type { SecretValue } from '../types.js';
 import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
 import type { ConfigConflictOptions, ConflictLevel, ConflictStrategy, SecretsOrchestratorOptions } from './types.js';
@@ -280,7 +279,7 @@ export class SecretsOrchestrator {
     conflictOptions: ConfigConflictOptions | undefined
   ): ConflictStrategy {
 
-    const strict = conflictOptions?.strictConflictMode ?? false;
+    const strict = conflictOptions?.conflict?.strict ?? false;
 
     const defaults: Record<ConflictLevel, ConflictStrategy> = strict
       ? {
@@ -294,7 +293,7 @@ export class SecretsOrchestrator {
         intraStack: 'error',
       };
 
-    return conflictOptions?.handleSecretConflict?.[level] ?? defaults[level];
+    return conflictOptions?.conflict?.strategies?.[level] ?? defaults[level];
   }
 
   /**
@@ -307,10 +306,6 @@ export class SecretsOrchestrator {
   private validateConfig(config: KubricateConfig): void {
     if (!config.secrets?.manager) {
       throw new Error('[config] No secret manager found. Please define "secrets.manager" in kubricate.config.ts.');
-    }
-
-    if (!(config.secrets?.manager instanceof SecretManager)) {
-      throw new Error('[config] Invalid secret manager instance.');
     }
 
     this.validateConflictOptions(config.secrets);
@@ -327,9 +322,9 @@ export class SecretsOrchestrator {
    * @throws {Error} If strict mode is enabled but a non-'error' strategy is found.
    */
   private validateConflictOptions(conflictOptions: ConfigConflictOptions | undefined) {
-    if (!conflictOptions?.strictConflictMode) return;
+    if (!conflictOptions?.conflict?.strict) return;
 
-    for (const [level, strategy] of Object.entries(conflictOptions.handleSecretConflict ?? {})) {
+    for (const [level, strategy] of Object.entries(conflictOptions.conflict?.strategies ?? {})) {
       if (strategy !== 'error') {
         throw new Error(
           `[config:strictConflictMode] Strategy for "${level}" must be "error" (found "${strategy}").`

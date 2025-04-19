@@ -50,10 +50,6 @@ export class SecretManagerEngine {
       throw new Error('[SecretManagerEngine] No secret manager found. Please define "secrets.manager" in kubricate.config.ts.');
     }
 
-    if (!(config.secrets?.manager instanceof SecretManager)) {
-      throw new Error('[SecretManagerEngine] Invalid secret manager instance.');
-    }
-
     return {
       default: {
         name: 'default',
