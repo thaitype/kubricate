@@ -43,14 +43,17 @@ describe('SecretManagerEngine', () => {
           getSecretManagers: () => ({ main: mockSecretManager }),
         },
       },
+      secrets: {
+        manager: mockSecretManager
+      }
     };
   });
 
   it('should collect secret managers from config', () => {
     const engine = new SecretManagerEngine({config, effectOptions: effectsOptions, logger: mockLogger});
     const result = engine.collect();
-    expect(Object.keys(result)).toContain('auth.main');
-    expect(result['auth.main'].secretManager).toBe(mockSecretManager);
+    expect(Object.keys(result)).toContain('default');
+    expect(result['default'].secretManager).toBe(mockSecretManager);
   });
 
   it('should validate secret managers', async () => {

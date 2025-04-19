@@ -1,18 +1,19 @@
 import { defineConfig } from 'kubricate';
 import simpleAppStack from './src/stack-config';
+import { secretManager } from './src/config';
 
 export default defineConfig({
   stacks: {
     ...simpleAppStack,
   },
   secrets: {
-    merge: {
+    manager: secretManager,
+    handleSecretConflict: {
       // Default merge strategies
       
-      // intraProvider: 'autoMerge',
+      // intraProvider: 'error',
       // crossProvider: 'error',
       // intraStack: 'error',
-      // crossStack: 'error',
     }
   }
 });

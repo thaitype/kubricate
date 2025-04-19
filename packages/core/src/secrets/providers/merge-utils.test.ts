@@ -44,7 +44,7 @@ describe('createMergeHandler', () => {
     ];
 
     expect(() => merge(effects)).toThrowError(
-      '[merge:in-memory] Conflict detected: key "KEY" already exists in Secret "dup-secret"'
+      '[conflict:in-memory] Conflict detected: key "KEY" already exists in Secret "dup-secret"'
     );
   });
 

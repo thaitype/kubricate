@@ -30,7 +30,7 @@ export function createMergeHandler(): (effects: PreparedEffect[]) => PreparedEff
 
       for (const [key, value] of Object.entries(effect.value.rawData ?? {})) {
         if (existing.value.rawData?.[key]) {
-          throw new Error(`[merge:in-memory] Conflict detected: key "${key}" already exists in Secret "${name}"`);
+          throw new Error(`[conflict:in-memory] Conflict detected: key "${key}" already exists in Secret "${name}"`);
         }
       
         existing.value.rawData[key] = value;
