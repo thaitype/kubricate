@@ -39,23 +39,44 @@ export class SecretManagerEngine {
   constructor(public readonly options: SecretsOrchestratorOptions) { }
 
   /**
-   * Collect all SecretManager from kubricate configs
+   * Collect all SecretManager instances from the project config.
+   *
+   * @throws {Error} If both `manager` and `registry` are defined simultaneously.
+   * @returns {MergedSecretManager}
    */
   collect(): MergedSecretManager {
     const { config, logger } = this.options;
 
     logger.info('Collecting secret managers...');
 
-    if(!config.secrets?.manager) {
-      throw new Error('[SecretManagerEngine] No secret manager found. Please define "secrets.manager" in kubricate.config.ts.');
+    // 🚨 Enforce mutual exclusivity
+    if (config.secrets?.manager && config.secrets?.registry) {
+      throw new Error('[config] Cannot define both "secrets.manager" and "secrets.registry" — please choose one.');
     }
 
-    return {
-      default: {
+    const result: MergedSecretManager = {};
+
+    if (config.secrets?.registry) {
+      // 📦 Use SecretRegistry
+      for (const [name, manager] of Object.entries(config.secrets.registry.list())) {
+        result[name] = {
+          name,
+          secretManager: manager,
+        };
+      }
+    } else if (config.secrets?.manager) {
+      // 📦 Use Single Manager
+      result.default = {
         name: 'default',
         secretManager: config.secrets.manager,
-      }
-    } satisfies MergedSecretManager;
+      };
+    } else {
+      throw new Error('[config] No secret manager found. Please define either "secrets.manager" or "secrets.registry" in kubricate.config.ts.');
+    }
+
+    logger.debug(`Collected ${Object.keys(result).length} secret manager(s)`);
+
+    return result;
   }
 
   /**
@@ -101,7 +122,7 @@ export class SecretManagerEngine {
     secrets: Record<string, SecretOptions>
   ): Promise<Record<string, SecretValue>> {
     const { effectOptions } = this.options;
-    
+
     const resolved: Record<string, SecretValue> = {};
     const loaded = new Set<string>();
 

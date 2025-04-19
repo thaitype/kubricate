@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SecretManagerEngine, type EffectsOptions } from './SecretManagerEngine.js';
-import type { SecretManager } from '../SecretManager.js';
+import { SecretManager } from '../SecretManager.js';
+import { SecretRegistry } from '../SecretRegistry.js';
 
 describe('SecretManagerEngine', () => {
   let mockSecretManager: SecretManager;
@@ -71,5 +72,86 @@ describe('SecretManagerEngine', () => {
     expect(effects).toHaveLength(1);
     expect(effects[0].type).toBe('kubectl');
     expect(effects[0].value.value).toBe('secret-DB_PASSWORD');
+  });
+});
+
+
+describe('SecretManagerEngine.collect()', () => {
+  const mockLogger = {
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  };
+
+  it('collects a single manager (legacy mode)', () => {
+    const manager = new SecretManager();
+    const engine = new SecretManagerEngine({
+      logger: mockLogger as any,
+      effectOptions: {},
+      config: {
+        secrets: { manager },
+        stacks: {},
+      },
+    });
+
+    const result = engine.collect();
+
+    expect(result).toEqual({
+      default: { name: 'default', secretManager: manager },
+    });
+  });
+
+  it('collects multiple managers from registry', () => {
+    const registry = new SecretRegistry()
+      .register('svc1', new SecretManager())
+      .register('svc2', new SecretManager());
+
+    const engine = new SecretManagerEngine({
+      logger: mockLogger as any,
+      effectOptions: {},
+      config: {
+        secrets: { registry },
+        stacks: {},
+      },
+    });
+
+    const result = engine.collect();
+
+    expect(Object.keys(result)).toEqual(['svc1', 'svc2']);
+    expect(result.svc1.secretManager).toBeInstanceOf(SecretManager);
+    expect(result.svc2.secretManager).toBeInstanceOf(SecretManager);
+  });
+
+  it('throws if both manager and registry are defined', () => {
+    const manager = new SecretManager();
+    const registry = new SecretRegistry().register('svc1', new SecretManager());
+
+    const engine = new SecretManagerEngine({
+      logger: mockLogger as any,
+      effectOptions: {},
+      config: {
+        secrets: { manager, registry },
+        stacks: {},
+      },
+    });
+
+    expect(() => engine.collect()).toThrowError(
+      /Cannot define both "secrets\.manager" and "secrets\.registry"/
+    );
+  });
+
+  it('throws if neither manager nor registry are defined', () => {
+    const engine = new SecretManagerEngine({
+      logger: mockLogger as any,
+      effectOptions: {},
+      config: {
+        secrets: {},
+        stacks: {},
+      },
+    });
+
+    expect(() => engine.collect()).toThrowError(
+      /No secret manager found/
+    );
   });
 });

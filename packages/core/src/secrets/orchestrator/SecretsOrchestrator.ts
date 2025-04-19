@@ -304,10 +304,7 @@ export class SecretsOrchestrator {
    * @throws {Error} If the secret manager is missing or invalid.
    */
   private validateConfig(config: KubricateConfig): void {
-    if (!config.secrets?.manager) {
-      throw new Error('[config] No secret manager found. Please define "secrets.manager" in kubricate.config.ts.');
-    }
-
+    // Validate conflict options
     this.validateConflictOptions(config.secrets);
   }
 

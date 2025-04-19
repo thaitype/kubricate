@@ -6,6 +6,7 @@ import { SecretManager } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import { InMemoryProvider } from '../providers/InMemoryProvider.js';
 import { InMemoryConnector } from '../connectors/InMemoryConnector.js';
+import { SecretRegistry } from '../SecretRegistry.js';
 
 describe('SecretsOrchestrator', () => {
   let mockSecretManager: SecretManager;
@@ -685,167 +686,198 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
 });
 
 
-// describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
-//   let mockLogger: any;
+describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
+  let mockLogger: any;
 
-//   beforeEach(() => {
-//     mockLogger = {
-//       info: vi.fn(),
-//       warn: vi.fn(),
-//       debug: vi.fn(),
-//     };
-//   });
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
 
-//   it('should throw on intraStack conflict with strategy "error"', async () => {
-//     const stack = {
-//       getSecretManagers: () => ({
-//         svc1: new SecretManager()
-//           .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'A' }))
-//           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
-//           .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
-//           .build(),
-//         svc2: new SecretManager()
-//           .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'B' }))
-//           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
-//           .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
-//           .build(),
-//       }),
-//     };
+  it('should throw on intraStack conflict with strategy "error"', async () => {
 
-//     const options: SecretsOrchestratorOptions = {
-//       logger: mockLogger,
-//       effectOptions: {},
-//       config: {
-//         stacks: { app: stack as any },
-//         secrets: {
-//           conflict: {
-//             strategies: { intraStack: 'error' as const },
-//           }
-//         },
-//       },
-//     };
+    const svc1 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'A' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+      .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
+      .build();
 
-//     const orchestrator = SecretsOrchestrator.create(options);
-//     await expect(orchestrator.apply()).rejects.toThrowError(/\[conflict:error:intraStack]/);
-//   });
+    const svc2 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'B' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+      .addSecret({ name: 'KEY', provider: 'InMemoryProvider' })
+      .build();
 
-//   it('merges on intraStack conflict with strategy "autoMerge"', async () => {
-//     const stack = {
-//       getSecretManagers: () => ({
-//         svc1: new SecretManager()
-//           .addConnector('InMemoryConnector', new InMemoryConnector({ KEY1: 'A' }))
-//           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
-//           .addSecret({ name: 'KEY1', provider: 'InMemoryProvider' })
-//           .build(),
-//         svc2: new SecretManager()
-//           .addConnector('InMemoryConnector', new InMemoryConnector({ KEY2: 'B' }))
-//           .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
-//           .addSecret({ name: 'KEY2', provider: 'InMemoryProvider' })
-//           .build(),
-//       }),
-//     };
+    const stack = {
+      getSecretManagers: () => ({
+        svc1,
+        svc2,
+      }),
+    };
 
-//     const options: SecretsOrchestratorOptions = {
-//       logger: mockLogger,
-//       effectOptions: {},
-//       config: {
-//         stacks: { app: stack as any },
-//         secrets: {
-//           conflict: {
-//             strategies: { intraStack: 'autoMerge' as const },
-//           }
-//         },
-//       }
-//     };
+    const secretRegistry = new SecretRegistry().register('svc1', svc1).register('svc2', svc2);
 
-//     const orchestrator = SecretsOrchestrator.create(options);
-//     const effects = await orchestrator.apply();
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: stack as any },
+        secrets: {
+          registry: secretRegistry,
+          conflict: {
+            strategies: { intraStack: 'error' as const },
+          }
+        },
+      },
+    };
 
-//     expect(effects).toHaveLength(1);
-//     expect(effects[0].value.rawData).toEqual({
-//       KEY1: 'A',
-//       KEY2: 'B',
-//     });
-//   });
+    const orchestrator = SecretsOrchestrator.create(options);
+    await expect(orchestrator.apply()).rejects.toThrowError(/\[conflict:error:intraStack]/);
+  });
 
-//   it('overwrites previous secret when intraStack is "overwrite"', async () => {
-//     const stacks = {
-//       app: {
-//         getSecretManagers: () => ({
-//           a: new SecretManager()
-//             .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'one' }))
-//             .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
-//             .addSecret({ name: 'SHARED_KEY', provider: 'P' })
-//             .build(),
-//           b: new SecretManager()
-//             .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'two' }))
-//             .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
-//             .addSecret({ name: 'SHARED_KEY', provider: 'P' })
-//             .build(),
-//         }),
-//       },
-//     };
+  it('merges on intraStack conflict with strategy "autoMerge"', async () => {
+    const svc1 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY1: 'A' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+      .addSecret({ name: 'KEY1', provider: 'InMemoryProvider' })
+      .build();
 
-//     const options: SecretsOrchestratorOptions = {
-//       logger: mockLogger,
-//       effectOptions: {},
-//       config: {
-//         stacks: stacks as any,
-//         secrets: {
-//           conflict: {
-//             strategies: { intraStack: 'overwrite' },
-//           }
-//         },
-//       },
-//     };
+    const svc2 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY2: 'B' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
+      .addSecret({ name: 'KEY2', provider: 'InMemoryProvider' })
+      .build();
 
-//     const orchestrator = SecretsOrchestrator.create(options);
-//     const effects = await orchestrator.apply();
+    const stack = {
+      getSecretManagers: () => ({
+        svc1,
+        svc2,
+      }),
+    };
 
-//     expect(effects).toHaveLength(1);
-//     expect(effects[0].value.rawData).toEqual({ SHARED_KEY: 'two' });
-//     expect(mockLogger.warn).toHaveBeenCalledWith(
-//       expect.stringContaining('[conflict:overwrite:intraStack]')
-//     );
-//   });
+    const secretRegistry = new SecretRegistry().register('svc1', svc1).register('svc2', svc2);
 
-//   it('keeps last secret and logs dropped in overwrite strategy (intraStack)', async () => {
-//     const stacks = {
-//       app: {
-//         getSecretManagers: () => ({
-//           svc1: new SecretManager()
-//             .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'one' }))
-//             .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
-//             .addSecret({ name: 'KEY' })
-//             .build(),
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: stack as any },
+        secrets: {
+          registry: secretRegistry,
+          conflict: {
+            strategies: { intraStack: 'autoMerge' as const },
+          }
+        },
+      }
+    };
 
-//           svc2: new SecretManager()
-//             .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'two' }))
-//             .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
-//             .addSecret({ name: 'KEY' })
-//             .build()
-//         })
-//       }
-//     };
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
 
-//     const options: SecretsOrchestratorOptions = {
-//       logger: mockLogger,
-//       effectOptions: {},
-//       config: {
-//         stacks: stacks as any,
-//         secrets: { conflict: { strategies: { intraStack: 'overwrite' } } }
-//       }
-//     };
+    expect(effects).toHaveLength(1);
+    expect(effects[0].value.rawData).toEqual({
+      KEY1: 'A',
+      KEY2: 'B',
+    });
+  });
 
-//     const orchestrator = SecretsOrchestrator.create(options);
-//     const effects = await orchestrator.apply();
+  it('overwrites previous secret when intraStack is "overwrite"', async () => {
 
-//     expect(effects).toHaveLength(1);
-//     expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:intraStack]'));
-//   });
+    const a = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'one' }))
+      .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
+      .addSecret({ name: 'SHARED_KEY', provider: 'P' })
+      .build();
+    const b = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'two' }))
+      .addProvider('P', new InMemoryProvider({ name: 'stack-secret' }))
+      .addSecret({ name: 'SHARED_KEY', provider: 'P' })
+      .build();
+
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          a,
+          b,
+        }),
+      },
+    };
+
+    const secretRegistry = new SecretRegistry().register('a', a).register('b', b);
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          registry: secretRegistry,
+          conflict: {
+            strategies: { intraStack: 'overwrite' },
+          }
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(effects[0].value.rawData).toEqual({ SHARED_KEY: 'two' });
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('[conflict:overwrite:intraStack]')
+    );
+  });
+
+  it('keeps last secret and logs dropped in overwrite strategy (intraStack)', async () => {
+
+    const svc1 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'one' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+
+    const svc2 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'two' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-app' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          svc1,
+          svc2,
+        })
+      }
+    };
+
+    const secretRegistry = new SecretRegistry().register('svc1', svc1).register('svc2', svc2);
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          registry: secretRegistry,
+          conflict: { strategies: { intraStack: 'overwrite' } }
+        }
+      }
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:intraStack]'));
+  });
 
 
-// });
+});
 
 
 describe('SecretsOrchestrator cross-stack using single SecretManager (Integration)', () => {
