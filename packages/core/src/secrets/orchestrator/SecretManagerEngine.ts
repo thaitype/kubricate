@@ -1,4 +1,4 @@
-import type { SecretManager, SecretOptions } from '../SecretManager.js';
+import { SecretManager, type SecretOptions } from '../SecretManager.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
 import type { SecretsOrchestratorOptions } from './types.js';
@@ -6,22 +6,19 @@ import type { SecretsOrchestratorOptions } from './types.js';
 export type StackName = string;
 export type SecretManagerName = string;
 
+/**
+ * MergedSecretManager maps SecretManager instances at the project level.
+ * 
+ * For now, Kubricate supports only one SecretManager per project (via config.secrets.manager),
+ * so this structure holds exactly one manager under the 'default' key.
+ */
 export interface MergedSecretManager {
-  [stackAndName: string]: {
+  [secretManagerName: string]: {
     /**
      * The name of the secret manager.
-     * This is used to identify the secret manager in the stack.
-     *
-     * However, it can duplicate when multiple stacks are used.
+     * This is used to identify the secret manager in the project.
      */
     name: string;
-    /**
-     * Stack name where the secret manager is used.
-     * This is used to identify the stack in the kubricate config.
-     *
-     * This value should be unique across all stacks.
-     */
-    stackName: string;
     /**
      * The secret manager instance.
      */
@@ -42,32 +39,27 @@ export class SecretManagerEngine {
   constructor(public readonly options: SecretsOrchestratorOptions) { }
 
   /**
-   * Collect all SecretManager instances across stacks in workspace
+   * Collect all SecretManager from kubricate configs
    */
   collect(): MergedSecretManager {
     const { config, logger } = this.options;
 
     logger.info('Collecting secret managers...');
-    const result: MergedSecretManager = {};
 
-    for (const [stackName, stack] of Object.entries(config.stacks ?? {})) {
-      if (typeof stack.getSecretManagers !== 'function') {
-        logger.warn(`Stack ${stackName} does not have a getSecretManagers method`);
-        continue;
-      }
-
-      const managers = stack.getSecretManagers();
-      for (const [name, secretManager] of Object.entries(managers)) {
-        const id = `${stackName}.${name}`;
-        if (!result[id]) {
-          result[id] = { name, stackName, secretManager };
-        }
-      }
+    if(!config.secrets?.manager) {
+      throw new Error('[SecretManagerEngine] No secret manager found. Please define "secrets.manager" in kubricate.config.ts.');
     }
 
-    logger.debug(`Found ${Object.keys(result).length} secret managers`);
+    if (!(config.secrets?.manager instanceof SecretManager)) {
+      throw new Error('[SecretManagerEngine] Invalid secret manager instance.');
+    }
 
-    return result;
+    return {
+      default: {
+        name: 'default',
+        secretManager: config.secrets.manager,
+      }
+    } satisfies MergedSecretManager;
   }
 
   /**

@@ -51,3 +51,11 @@ export type PrimitiveSecretValue = string | number | boolean | null | undefined;
  * Nested objects, arrays, or non-serializable types are not supported.
  */
 export type SecretValue = PrimitiveSecretValue | Record<string, PrimitiveSecretValue>;
+
+
+export interface SecretRegistryOptions {
+  /**
+   * Using default secret manager for the SecretRegistry
+   */
+  manager?: AnySecretManager;
+}

@@ -8,13 +8,11 @@ interface ResolvedSecret {
   key: string;
   value: SecretValue;
   providerName: string;
-  stackName: string;
   managerName: string;
 }
 
 type PreparedEffectWithMeta = PreparedEffect & {
   providerName: string;
-  stackName: string;
   managerName: string;
   secretType: string;
   identifier: string | undefined; // optional, depends on provider
@@ -93,7 +91,6 @@ export class SecretsOrchestrator {
     this.logger.info(`  - intraProvider: ${this.resolveStrategyForLevel('intraProvider', mergeOptions)}`);
     this.logger.info(`  - intraStack: ${this.resolveStrategyForLevel('intraStack', mergeOptions)}`);
     this.logger.info(`  - crossProvider: ${this.resolveStrategyForLevel('crossProvider', mergeOptions)}`);
-    this.logger.info(`  - crossStack: ${this.resolveStrategyForLevel('crossStack', mergeOptions)}`);
   }
 
   private async loadSecretsFromManagers(managers: MergedSecretManager): Promise<ResolvedSecret[]> {
@@ -108,8 +105,7 @@ export class SecretsOrchestrator {
         resolved.push({
           key,
           value,
-          providerName: String(secretDef.provider),
-          stackName: entry.stackName,
+          providerName: String(secretDef.provider),     
           managerName: entry.name,
         });
       }
@@ -125,7 +121,6 @@ export class SecretsOrchestrator {
 
       return effects.map(effect => ({
         ...effect,
-        stackName: secret.stackName,
         managerName: secret.managerName,
         providerName: provider.name!,
         secretType: provider.secretType ?? provider.constructor.name,
@@ -149,11 +144,10 @@ export class SecretsOrchestrator {
 
     for (const [mergeKey, group] of grouped.entries()) {
       const providerNames = new Set(group.map(e => e.providerName));
-      const stackNames = new Set(group.map(e => e.stackName));
       const managerNames = new Set(group.map(e => e.managerName));
 
       const level: MergeLevel =
-        stackNames.size > 1 ? 'crossStack' :
+        // stackNames.size > 1 ? 'crossStack' :
           managerNames.size > 1 ? 'intraStack' :
             providerNames.size > 1 ? 'crossProvider' :
               'intraProvider';
@@ -249,7 +243,6 @@ export class SecretsOrchestrator {
       intraProvider: 'autoMerge',   // allow merging within same provider
       crossProvider: 'error',        // disallow cross-provider collision in same SecretManager
       intraStack: 'error',          // disallow between managers in same stack
-      crossStack: 'error',      // disallow across stacks (hard boundary)
     };
 
     return mergeOptions?.merge?.[level] ?? defaults[level];
@@ -260,6 +253,6 @@ export class SecretsOrchestrator {
 function formatMergeSources(group: PreparedEffectWithMeta[]): string[] {
   return group.map(g => {
     const keys = g.secretName ?? 'unknown';
-    return `Stack: ${g.stackName}, SecretManager: ${g.managerName}, Provider: ${g.providerName}, Keys: [${keys}]`;
+    return `SecretManager: ${g.managerName}, Provider: ${g.providerName}, Keys: [${keys}]`;
   });
 }

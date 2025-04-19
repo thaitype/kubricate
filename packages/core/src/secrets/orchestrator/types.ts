@@ -38,7 +38,6 @@ export interface ConfigMergeOptions {
    * - intraProvider: 'autoMerge'
    * - crossProvider: 'error'
    * - intraStack: 'error'
-   * - crossStack: 'error'
    */
   merge?: {
     /**
@@ -62,13 +61,5 @@ export interface ConfigMergeOptions {
      * @default 'error'
      */
     intraStack?: MergeStrategy;
-
-    /**
-     * Merge strategy across different stacks in the workspace/project.
-     * This is the strictest boundary and should default to 'error'.
-     * 
-     * @default 'error'
-     */
-    crossStack?: MergeStrategy;
   };
 }
