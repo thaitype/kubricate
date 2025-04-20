@@ -156,7 +156,7 @@ export class SecretsOrchestrator {
 
   private prepareEffects(resolvedSecrets: ResolvedSecret[]): PreparedEffectWithMeta[] {
     return resolvedSecrets.flatMap(secret => {
-      const provider = this.resolveProviderByName(secret.providerName);
+      const provider = this.resolveProviderByName(secret.providerName, secret.managerName);
       const effects = provider.prepare(secret.key, secret.value);
 
       return effects.map(effect => ({
@@ -217,6 +217,7 @@ export class SecretsOrchestrator {
 
     for (const effect of effects) {
       const conflictKey = this.resolveConflictKey(effect);
+      this.logger.debug(`[conflict:group] Grouping "${conflictKey}" from "${effect.managerName}" (${effect.providerName})`);
       if (!grouped.has(conflictKey)) grouped.set(conflictKey, []);
       grouped.get(conflictKey)!.push(effect);
     }
@@ -234,7 +235,7 @@ export class SecretsOrchestrator {
 
       const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secrets);
       const providerName = group[0].providerName;
-      const provider = this.resolveProviderByName(providerName);
+      const provider = this.resolveProviderByName(providerName, group[0].managerName);
 
       // 🔒 Enforce identifier sanity
       if (!provider.getEffectIdentifier && group.length > 1) {
@@ -288,27 +289,33 @@ export class SecretsOrchestrator {
    *
    * @throws If the provider name is not found in any manager
    */
-  private resolveProviderByName(providerName: string): BaseProvider {
-    if (this.providerCache.has(providerName)) {
-      return this.providerCache.get(providerName);
+  private resolveProviderByName(providerName: string, expectedManagerName?: string): BaseProvider {
+    const cacheKey = expectedManagerName ? `${expectedManagerName}:${providerName}` : providerName;
+    
+    if (this.providerCache.has(cacheKey)) {
+      return this.providerCache.get(cacheKey);
     }
-
+  
     for (const entry of Object.values(this.engine.collect())) {
       const secrets = entry.secretManager.getSecrets();
-      this.logger.debug(`[SecretsOrchestrator] Looking for provider "${providerName}" in "${entry.name}"`);
+      const managerName = entry.name;
+  
+      this.logger.debug(`[SecretsOrchestrator] Looking for provider "${providerName}" in "${managerName}"`);
       this.logger.debug(`[SecretsOrchestrator] Found secrets: ${JSON.stringify(secrets)}`);
+  
       for (const { provider } of Object.values(secrets)) {
         if (provider === providerName) {
-          const instance = entry.secretManager.resolveProvider(provider);
-          this.providerCache.set(providerName, instance);
-          return instance;
+          if (!expectedManagerName || managerName === expectedManagerName) {
+            const instance = entry.secretManager.resolveProvider(provider);
+            this.providerCache.set(cacheKey, instance);
+            return instance;
+          }
         }
       }
     }
-
-    throw new Error(`[SecretsOrchestrator] Provider "${providerName}" not found in any registered SecretManager`);
+  
+    throw new Error(`[SecretsOrchestrator] Provider "${providerName}" not found in any registered SecretManager${expectedManagerName ? ` "${expectedManagerName}"` : ''}`);
   }
-
 
 
   /**

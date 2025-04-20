@@ -825,7 +825,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
     const orchestrator = SecretsOrchestrator.create(options);
     const effects = await orchestrator.apply();
 
-    expect(effects).toHaveLength(1);  
+    expect(effects).toHaveLength(1);
   });
 
   it('merges same identifier across different SecretManagers with strategy "overwrite"', async () => {
@@ -1131,13 +1131,13 @@ describe('SecretsOrchestrator Cross-Manager Conflict Detection', () => {
       .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
       .addSecret({ name: 'KEY' })
       .build();
-  
+
     const svc2 = new SecretManager()
       .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'two' }))
       .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
       .addSecret({ name: 'KEY' })
       .build();
-  
+
     const stacks = {
       app: {
         getSecretManagers: () => ({
@@ -1146,11 +1146,11 @@ describe('SecretsOrchestrator Cross-Manager Conflict Detection', () => {
         }),
       },
     };
-  
+
     const secretRegistry = new SecretRegistry()
       .add('svc1', svc1)
       .add('svc2', svc2);
-  
+
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger as any,
       effectOptions: {},
@@ -1166,12 +1166,88 @@ describe('SecretsOrchestrator Cross-Manager Conflict Detection', () => {
         },
       },
     };
-  
+
     const orchestrator = SecretsOrchestrator.create(options);
-  
+
     await expect(orchestrator.apply()).rejects.toThrowError(
       /\[conflict:error:crossManager] Duplicate resource identifier/
     );
   });
 
+});
+
+describe('SecretsOrchestrator - Multiple SecretManagers with Same Provider Name', () => {
+
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
+
+  it('should apply secrets correctly without conflict', async () => {
+    // Arrange - Setup SecretManagers and Registry manually
+    const frontendSecretManager = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ frontend_app_key: 'value1' }))
+      .addProvider(
+        'OpaqueSecretProvider',
+        new InMemoryProvider({ name: 'secret-frontend' })
+      )
+      .addSecret({
+        name: 'frontend_app_key',
+      });
+
+    const backendSecretManager = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ backend_app_key: 'value2' }))
+      .addProvider(
+        'OpaqueSecretProvider',
+        new InMemoryProvider({ name: 'secret-backend' })
+      )
+      .addSecret({
+        name: 'backend_app_key',
+      });
+
+    const secretRegistry = new SecretRegistry()
+      .add('frontend', frontendSecretManager)
+      .add('backend', backendSecretManager);
+
+    const orchestrator = SecretsOrchestrator.create({
+      effectOptions: {},
+      config: {
+        secrets: {
+          registry: secretRegistry,
+        },
+        stacks: {},
+      },
+      logger: mockLogger as any, // or mock logger if you want
+    });
+
+    // Act
+    const effects = await orchestrator.apply();
+
+    // Assert
+    expect(effects).toHaveLength(2);
+
+    const metadata = effects.map(effect => {
+      return effect.value;
+    });
+
+    expect(metadata).toStrictEqual([
+      {
+        "rawData": {
+          "frontend_app_key": "value1",
+        },
+        "storeName": "secret-frontend",
+      },
+      {
+        "rawData": {
+          "backend_app_key": "value2",
+        },
+        "storeName": "secret-backend",
+      }
+    ]);
+  });
 });
