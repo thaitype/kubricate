@@ -1,5 +1,7 @@
 import type { AnyKey } from '../types.js';
+import type { ConfigConflictOptions } from './orchestrator/types.js';
 import type { SecretManager } from './SecretManager.js';
+import type { SecretRegistry } from './SecretRegistry.js';
 
 /**
 ponents from a SecretManager instance.
@@ -51,3 +53,18 @@ export type PrimitiveSecretValue = string | number | boolean | null | undefined;
  * Nested objects, arrays, or non-serializable types are not supported.
  */
 export type SecretValue = PrimitiveSecretValue | Record<string, PrimitiveSecretValue>;
+
+
+export interface SecretManagerRegistrationOptions {
+  /**
+   * Using default secret manager for the SecretRegistry
+   */
+  manager?: AnySecretManager;
+
+  /**
+   * Register a secret manager from a secret registry.
+   */
+  registry?: SecretRegistry;
+}
+
+export type ProjectSecretOptions = SecretManagerRegistrationOptions & ConfigConflictOptions;

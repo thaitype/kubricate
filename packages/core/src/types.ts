@@ -1,6 +1,6 @@
 import type { BaseStack } from './BaseStack.js';
 import { ResourceComposer } from './ResourceComposer.js';
-import type { ConfigMergeOptions } from './secrets/orchestrator/types.js';
+import type { ProjectSecretOptions } from './secrets/types.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;
@@ -34,7 +34,7 @@ export type AnyString = string & {};
 
 export interface KubricateConfig {
   stacks?: Record<string, BaseStack>;
-  secrets?: ConfigMergeOptions;
+  secrets?: ProjectSecretOptions;
 }
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';

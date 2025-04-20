@@ -31,7 +31,7 @@ export function createKubernetesMergeHandler(): (effects: PreparedEffect[]) => P
 
       for (const [k, v] of Object.entries(effect.value.data ?? {})) {
         if (existing.value.data?.[k]) {
-          throw new Error(`[merge:k8s] Conflict detected: key "${k}" already exists in Secret "${name}" in namespace "${namespace}"`);
+          throw new Error(`[conflict:k8s] Conflict detected: key "${k}" already exists in Secret "${name}" in namespace "${namespace}"`);
         }
 
         existing.value.data[k] = v;
