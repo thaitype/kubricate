@@ -1,7 +1,7 @@
 {
   "name": "kubricate",
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
