@@ -103,8 +103,8 @@ describe('SecretManagerEngine.collect()', () => {
 
   it('collects multiple managers from registry', () => {
     const registry = new SecretRegistry()
-      .register('svc1', new SecretManager())
-      .register('svc2', new SecretManager());
+      .add('svc1', new SecretManager())
+      .add('svc2', new SecretManager());
 
     const engine = new SecretManagerEngine({
       logger: mockLogger as any,
@@ -124,7 +124,7 @@ describe('SecretManagerEngine.collect()', () => {
 
   it('throws if both manager and registry are defined', () => {
     const manager = new SecretManager();
-    const registry = new SecretRegistry().register('svc1', new SecretManager());
+    const registry = new SecretRegistry().add('svc1', new SecretManager());
 
     const engine = new SecretManagerEngine({
       logger: mockLogger as any,

@@ -26,7 +26,7 @@ type PreparedEffectWithMeta = PreparedEffect & {
  * - Validating secret configuration and managers
  * - Loading and resolving all declared secrets
  * - Preparing provider-specific effects
- * - Applying conflict resolution strategies (intraProvider, crossProvider, intraStack)
+ * - Applying conflict resolution strategies (intraProvider, crossProvider, crossManager)
  * - Producing a fully merged, finalized list of secret effects ready for output (e.g., YAML, JSON, etc.)
  *
  * @remarks
@@ -129,7 +129,7 @@ export class SecretsOrchestrator {
   private logOrchestratorContext(mergeOptions: ConfigConflictOptions | undefined): void {
     this.logger.info(`Using merge strategies:`);
     this.logger.info(`  - intraProvider: ${this.resolveStrategyForLevel('intraProvider', mergeOptions)}`);
-    this.logger.info(`  - intraStack: ${this.resolveStrategyForLevel('intraStack', mergeOptions)}`);
+    this.logger.info(`  - crossManager: ${this.resolveStrategyForLevel('crossManager', mergeOptions)}`);
     this.logger.info(`  - crossProvider: ${this.resolveStrategyForLevel('crossProvider', mergeOptions)}`);
   }
 
@@ -169,15 +169,56 @@ export class SecretsOrchestrator {
     });
   }
 
+  /**
+   * Resolves the canonical conflict key for a given prepared secret effect.
+   *
+   * @description
+   * This key is used to group and detect conflicts between secrets during the orchestration phase.
+   *
+   * Normally, the conflict key includes:
+   * - `managerName`
+   * - `providerClassName` (inferred from secretType)
+   * - `identifier` (logical resource name)
+   *
+   * This ensures strict isolation between different SecretManagers or stacks.
+   *
+   * However, if the `crossManager` conflict strategy is explicitly configured as `'autoMerge'`,
+   * the orchestrator intentionally ignores the `managerName` prefix — allowing secrets from
+   * multiple managers to merge into the same logical resource (e.g., Kubernetes Secret, Vault path).
+   *
+   * ---
+   *
+   * Example behavior:
+   *
+   * Default (strict isolation):
+   * ```text
+   * frontend:Kubricate.OpaqueSecretProvider:app-secret
+   * backend:Kubricate.OpaqueSecretProvider:app-secret
+   * ```
+   * ➔ Different managers, different keys ➔ Conflict detected.
+   *
+   * CrossManager autoMerge mode:
+   * ```text
+   * Kubricate.OpaqueSecretProvider:app-secret
+   * ```
+   * ➔ Same key ➔ Secrets will be merged.
+   *
+   * ---
+   *
+   * @param effect - The prepared effect to calculate the conflict key for.
+   * @returns The canonical string key used for grouping and conflict resolution.
+   */
+  private resolveConflictKey(effect: PreparedEffectWithMeta): string {
+    return `${effect.secretType}:${effect.identifier}`
+  }
+
   private mergePreparedEffects(effects: PreparedEffectWithMeta[]): PreparedEffect[] {
     const grouped = new Map<string, PreparedEffectWithMeta[]>();
 
     for (const effect of effects) {
-      // TODO: [conflict:key] use canonical identifier to avoid cross-provider collision
-      // const key = `${effect.stackName}.${effect.managerName}.${effect.providerName}:${effect.secretType}:${effect.identifier}`;
-      const key = `${effect.secretType}:${effect.identifier}`;
-      if (!grouped.has(key)) grouped.set(key, []);
-      grouped.get(key)!.push(effect);
+      const conflictKey = this.resolveConflictKey(effect);
+      if (!grouped.has(conflictKey)) grouped.set(conflictKey, []);
+      grouped.get(conflictKey)!.push(effect);
     }
 
     const merged: PreparedEffect[] = [];
@@ -187,7 +228,7 @@ export class SecretsOrchestrator {
       const managerNames = new Set(group.map(e => e.managerName));
 
       const level: ConflictLevel =
-        managerNames.size > 1 ? 'intraStack' :
+        managerNames.size > 1 ? 'crossManager' :
           providerNames.size > 1 ? 'crossProvider' :
             'intraProvider';
 
@@ -241,7 +282,6 @@ export class SecretsOrchestrator {
   }
 
 
-
   /**
    * Resolves a provider instance from its name by scanning all SecretManagers.
    * Caches resolved providers for performance.
@@ -285,12 +325,12 @@ export class SecretsOrchestrator {
       ? {
         intraProvider: 'error',    // no merging at all
         crossProvider: 'error',
-        intraStack: 'error',
+        crossManager: 'error',
       }
       : {
         intraProvider: 'autoMerge', // default allows merging inside provider
         crossProvider: 'error',
-        intraStack: 'error',
+        crossManager: 'error',
       };
 
     return conflictOptions?.conflict?.strategies?.[level] ?? defaults[level];

@@ -57,6 +57,8 @@ export interface BaseProvider<
 
   /**
    * Defines the target resource type (used for grouping/conflict)
+   * 
+   * @deprecated the framework will use Provider Class name instead
    */
   readonly secretType?: string;
 

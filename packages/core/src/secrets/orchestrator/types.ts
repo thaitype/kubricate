@@ -12,12 +12,20 @@ export interface EffectsOptions {
 }
 
 /**
- * Defines how to resolve conflicts between secret values at different levels of the system.
+ * Defines how secret conflict resolution is handled at different orchestration levels.
  *
- * Available strategies:
- * - 'overwrite' — Always prefer the latest value (without warnings unless explicitly logged).
- * - 'error'     — Immediately throw an error when a conflict is detected (safe default).
- * - 'autoMerge' — Shallow merge object structures if possible; otherwise, prefer the latest value.
+ * ⚡ Key Concept:
+ * Synthing and Kubricate only detect conflicts at the **logical object graph** level — not runtime cluster conflicts.
+ * 
+ * Conflict resolution occurs **before** output is materialized (e.g., Kubernetes manifests, GitHub matrices).
+ *
+ * ---
+ *
+ * 🎯 Available conflict strategies:
+ * - `'overwrite'` — Always prefer the latest value (no error; optionally logs dropped values).
+ * - `'error'` — Immediately throw an error on conflict (safe default for production).
+ * - `'autoMerge'` — Shallow merge object structures if supported (fallback to latest value otherwise).
+ *
  */
 export type ConflictStrategy =
   | 'overwrite'
@@ -25,76 +33,71 @@ export type ConflictStrategy =
   | 'autoMerge';
 
 /**
- * Levels where secret conflicts can occur during orchestration.
+ * Defines the levels where secret conflicts can occur during orchestration.
+ * 
+ * These keys correspond to fine-grained areas inside the secret graph.
  */
 export type ConflictLevel = keyof NonNullable<NonNullable<ConfigConflictOptions['conflict']>['strategies']>;
 
 /**
- * Configuration for how the orchestrator should handle **secret conflict resolution**.
- *
- * Important: Synthing and Kubricate only auto-merge within the same provider (intraProvider) by default.
- * Cross-provider and cross-manager conflicts will error by default, ensuring strong isolation unless explicitly overridden.
- *
- * Secrets are declared independently. However, multiple secret definitions may
- * target the same logical destination (e.g., Kubernetes Secret, Vault path, output file).
- *
- * In such cases, a conflict must be handled according to the strategy defined here.
+ * Full configuration for controlling **secret conflict handling** behavior.
  *
  * ---
  *
- * Available conflict strategies:
- * - 'overwrite' — Last write wins (no error, may optionally log).
- * - 'error'     — Abort immediately with an error (safe for production).
- * - 'autoMerge' — Merge object values if supported; otherwise, prefer the latest.
+ * Important Behavior:
+ * - **intraProvider** (default: `'autoMerge'`) allows shallow merging within the same provider resource.
+ * - **crossProvider** (default: `'error'`) forbids silent collisions between different providers.
+ * - **crossManager** (default: `'error'`) forbids collisions across different SecretManagers.
+ *
+ * Note:
+ * - If stricter behavior is needed, `strict: true` will enforce all levels to `'error'` mode.
+ * - Manifest-level validation (e.g., Kubernetes metadata.name conflicts) is handled separately after orchestration.
+ *
  */
 export interface ConfigConflictOptions {
-  /**
-  * Fine-grained control over secret conflict handling.
-  *
-  * If omitted, default behaviors apply.
-  */
   conflict?: {
     strategies?: {
       /**
-       * Conflict resolution for multiple secrets targeting the same Provider instance.
+       * Conflict resolution for multiple secrets targeting the **same provider instance**.
        *
-       * Example: two keys injected into the same Kubernetes Secret manifest.
+       * Example: two environment variables injected into the same Kubernetes Secret.
        *
        * @default 'autoMerge'
        */
       intraProvider?: ConflictStrategy;
 
       /**
-       * Conflict resolution between different Providers under the same SecretManager.
+       * Conflict resolution across **different providers inside the same SecretManager**.
        *
-       * Example: collision between EnvSecretProvider and VaultSecretProvider within a single SecretManager.
+       * Example: collision between an EnvSecretProvider and VaultSecretProvider both trying to generate the same logical resource.
        *
        * @default 'error'
        */
       crossProvider?: ConflictStrategy;
 
       /**
-       * Conflict resolution between different SecretManagers within the same Stack.
+       * Conflict resolution across **different SecretManagers** inside the system.
        *
-       * Example: two SecretManagers both generating a Kubernetes Secret named 'app-credentials' inside the same AppStack.
+       * Example: frontendManager and backendManager both creating a Kubernetes Secret named 'app-credentials'.
        * 
-       * (Only relevant in frameworks like Kubricate; Synthing itself does not use stacks.)
+       * (This is mainly relevant for Kubricate where stacks manage multiple managers; Synthing stays framework-agnostic.)
        *
        * @default 'error'
        */
-      intraStack?: ConflictStrategy;
+      crossManager?: ConflictStrategy;
     };
+
     /**
-     * Enforce **strict conflict validation**.
+     * Enforces **strict conflict validation** globally across all levels.
      *
      * When enabled:
-     * - All conflict levels are automatically treated as 'error'.
-     * - Any attempt to manually relax strategies (e.g., 'autoMerge') will throw a configuration error.
+     * - All conflict levels (`intraProvider`, `crossProvider`, `crossManager`) are forcibly treated as `'error'`.
+     * - Any attempt to relax conflict (e.g., `'autoMerge'`) will cause a configuration validation error.
      *
-     * Useful for production environments that require full conflict immutability and auditability.
+     * Recommended for production environments requiring strict secret isolation and no ambiguity in deployment artifacts.
      *
      * @default false
      */
     strict?: boolean;
-  }
+  };
 }

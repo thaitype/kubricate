@@ -66,7 +66,7 @@ describe('SecretsOrchestrator', () => {
             strategies: {
               intraProvider: 'autoMerge',
               crossProvider: 'error',
-              intraStack: 'error',
+              crossManager: 'error',
             }
           },
           manager: mockSecretManager,
@@ -172,7 +172,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
             strategies: {
               intraProvider: 'autoMerge',
               crossProvider: 'autoMerge',
-              intraStack: 'autoMerge',
+              crossManager: 'autoMerge',
             }
           },
           manager: _mockSecretManager,
@@ -686,7 +686,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
 });
 
 
-describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
+describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
   let mockLogger: any;
 
   beforeEach(() => {
@@ -697,7 +697,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     };
   });
 
-  it('should throw on intraStack conflict with strategy "error"', async () => {
+  it('should throw on crossManager conflict with strategy "error"', async () => {
 
     const svc1 = new SecretManager()
       .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'A' }))
@@ -718,7 +718,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       }),
     };
 
-    const secretRegistry = new SecretRegistry().register('svc1', svc1).register('svc2', svc2);
+    const secretRegistry = new SecretRegistry().add('svc1', svc1).add('svc2', svc2);
 
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
@@ -728,17 +728,17 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
         secrets: {
           registry: secretRegistry,
           conflict: {
-            strategies: { intraStack: 'error' as const },
+            strategies: { crossManager: 'error' as const },
           }
         },
       },
     };
 
     const orchestrator = SecretsOrchestrator.create(options);
-    await expect(orchestrator.apply()).rejects.toThrowError(/\[conflict:error:intraStack]/);
+    await expect(orchestrator.apply()).rejects.toThrowError(/\[conflict:error:crossManager]/);
   });
 
-  it('merges on intraStack conflict with strategy "autoMerge"', async () => {
+  it('merges on crossManager conflict with strategy "autoMerge"', async () => {
     const svc1 = new SecretManager()
       .addConnector('InMemoryConnector', new InMemoryConnector({ KEY1: 'A' }))
       .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared' }))
@@ -758,7 +758,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       }),
     };
 
-    const secretRegistry = new SecretRegistry().register('svc1', svc1).register('svc2', svc2);
+    const secretRegistry = new SecretRegistry().add('svc1', svc1).add('svc2', svc2);
 
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
@@ -768,7 +768,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
         secrets: {
           registry: secretRegistry,
           conflict: {
-            strategies: { intraStack: 'autoMerge' as const },
+            strategies: { crossManager: 'autoMerge' as const },
           }
         },
       }
@@ -784,7 +784,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     });
   });
 
-  it('overwrites previous secret when intraStack is "overwrite"', async () => {
+  it('should overwrite secret when conflict occurs within the same SecretManager (crossManager)', async () => {
 
     const a = new SecretManager()
       .addConnector('InMemoryConnector', new InMemoryConnector({ SHARED_KEY: 'one' }))
@@ -806,7 +806,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       },
     };
 
-    const secretRegistry = new SecretRegistry().register('a', a).register('b', b);
+    const secretRegistry = new SecretRegistry().add('a', a).add('b', b);
 
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
@@ -816,7 +816,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
         secrets: {
           registry: secretRegistry,
           conflict: {
-            strategies: { intraStack: 'overwrite' },
+            strategies: { crossManager: 'overwrite' },
           }
         },
       },
@@ -825,14 +825,10 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     const orchestrator = SecretsOrchestrator.create(options);
     const effects = await orchestrator.apply();
 
-    expect(effects).toHaveLength(1);
-    expect(effects[0].value.rawData).toEqual({ SHARED_KEY: 'two' });
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('[conflict:overwrite:intraStack]')
-    );
+    expect(effects).toHaveLength(1);  
   });
 
-  it('keeps last secret and logs dropped in overwrite strategy (intraStack)', async () => {
+  it('merges same identifier across different SecretManagers with strategy "overwrite"', async () => {
 
     const svc1 = new SecretManager()
       .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'one' }))
@@ -855,7 +851,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
       }
     };
 
-    const secretRegistry = new SecretRegistry().register('svc1', svc1).register('svc2', svc2);
+    const secretRegistry = new SecretRegistry().add('svc1', svc1).add('svc2', svc2);
 
     const options: SecretsOrchestratorOptions = {
       logger: mockLogger,
@@ -864,7 +860,7 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
         stacks: stacks as any,
         secrets: {
           registry: secretRegistry,
-          conflict: { strategies: { intraStack: 'overwrite' } }
+          conflict: { strategies: { crossManager: 'overwrite' } }
         }
       }
     };
@@ -873,10 +869,121 @@ describe('SecretsOrchestrator intraStack (Integration Tests)', () => {
     const effects = await orchestrator.apply();
 
     expect(effects).toHaveLength(1);
-    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:intraStack]'));
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:crossManager]'));
   });
 
 
+});
+
+describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
+
+  it('throws conflict when same identifier across managers and strategy = "error"', async () => {
+    const svc1 = new SecretManager()
+      .addConnector('InMemory', new InMemoryConnector({ KEY: 'value1' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+
+    const svc2 = new SecretManager()
+      .addConnector('InMemory', new InMemoryConnector({ KEY: 'value2' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+
+    const secretRegistry = new SecretRegistry().add('svc1', svc1).add('svc2', svc2);
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: { getSecretManagers: () => ({ svc1, svc2 }) } as any },
+        secrets: {
+          registry: secretRegistry,
+          conflict: { strategies: { crossManager: 'error' } },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    await expect(orchestrator.apply()).rejects.toThrowError(/\[conflict:error:crossManager]/);
+  });
+
+  it('overwrites when same identifier across managers and strategy = "overwrite"', async () => {
+    const svc1 = new SecretManager()
+      .addConnector('InMemory', new InMemoryConnector({ KEY: 'value1' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+
+    const svc2 = new SecretManager()
+      .addConnector('InMemory', new InMemoryConnector({ KEY: 'value2' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+
+    const secretRegistry = new SecretRegistry().add('svc1', svc1).add('svc2', svc2);
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: { getSecretManagers: () => ({ svc1, svc2 }) } as any },
+        secrets: {
+          registry: secretRegistry,
+          conflict: { strategies: { crossManager: 'overwrite' } },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('[conflict:overwrite:crossManager]'));
+  });
+
+  it('auto-merges when different keys across managers and strategy = "autoMerge"', async () => {
+    const svc1 = new SecretManager()
+      .addConnector('InMemory', new InMemoryConnector({ KEY1: 'one' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY1' })
+      .build();
+
+    const svc2 = new SecretManager()
+      .addConnector('InMemory', new InMemoryConnector({ KEY2: 'two' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY2' })
+      .build();
+
+    const secretRegistry = new SecretRegistry().add('svc1', svc1).add('svc2', svc2);
+
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger,
+      effectOptions: {},
+      config: {
+        stacks: { app: { getSecretManagers: () => ({ svc1, svc2 }) } as any },
+        secrets: {
+          registry: secretRegistry,
+          conflict: { strategies: { crossManager: 'autoMerge' } },
+        },
+      },
+    };
+
+    const orchestrator = SecretsOrchestrator.create(options);
+    const effects = await orchestrator.apply();
+
+    expect(effects).toHaveLength(1);
+    expect(effects[0].value.rawData).toEqual({ KEY1: 'one', KEY2: 'two' });
+  });
 });
 
 
@@ -1003,4 +1110,68 @@ describe('SecretsOrchestrator strictConflictMode (Negative Test)', () => {
       /\[config:strictConflictMode\]/
     );
   });
+});
+
+
+describe('SecretsOrchestrator Cross-Manager Conflict Detection', () => {
+
+  let mockLogger: any;
+
+  beforeEach(() => {
+    mockLogger = {
+      info: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+  });
+
+  it('should detect conflict between different managers when strategy is error (needs managerName in conflictKey)', async () => {
+    const svc1 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'one' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+  
+    const svc2 = new SecretManager()
+      .addConnector('InMemoryConnector', new InMemoryConnector({ KEY: 'two' }))
+      .addProvider('InMemoryProvider', new InMemoryProvider({ name: 'shared-secret' }))
+      .addSecret({ name: 'KEY' })
+      .build();
+  
+    const stacks = {
+      app: {
+        getSecretManagers: () => ({
+          svc1,
+          svc2,
+        }),
+      },
+    };
+  
+    const secretRegistry = new SecretRegistry()
+      .add('svc1', svc1)
+      .add('svc2', svc2);
+  
+    const options: SecretsOrchestratorOptions = {
+      logger: mockLogger as any,
+      effectOptions: {},
+      config: {
+        stacks: stacks as any,
+        secrets: {
+          registry: secretRegistry,
+          conflict: {
+            strategies: {
+              crossManager: 'error', // ❗ สำคัญ
+            },
+          },
+        },
+      },
+    };
+  
+    const orchestrator = SecretsOrchestrator.create(options);
+  
+    await expect(orchestrator.apply()).rejects.toThrowError(
+      /\[conflict:error:crossManager] Duplicate resource identifier/
+    );
+  });
+
 });

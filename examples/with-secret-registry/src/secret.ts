@@ -27,5 +27,5 @@ const backendSecretManager = new SecretManager()
   })
 
 export const secretRegistry = new SecretRegistry()
-  .register('frontend', frontendSecretManager)
-  .register('backend', backendSecretManager);
+  .add('frontend', frontendSecretManager)
+  .add('backend', backendSecretManager);

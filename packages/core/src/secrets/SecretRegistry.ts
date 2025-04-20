@@ -1,6 +1,37 @@
 import { validateString } from '../internal/utils.js';
 import type { AnySecretManager } from './types.js';
 
+
+/**
+ * SecretRegistry
+ *
+ * @description
+ * Central registry to globally manage all declared SecretManager instances within a project.
+ * 
+ * - Provides a single authoritative map of all available SecretManagers.
+ * - Allows consistent conflict resolution across the entire project (not per-stack).
+ * - Decouples SecretManager lifecycle from consumer frameworks (e.g., Stacks in Kubricate).
+ * - Enables flexible, multi-environment setups (e.g., staging, production, DR plans).
+ *
+ * @remarks
+ * - **Conflict detection** during secret orchestration (apply/plan) operates *only* at the registry level.
+ * - **Stacks** or **consumers** simply reference SecretManagers; they are not responsible for conflict handling.
+ * - Synthing and Kubricate treat the registry as the **single source of truth** for all secret orchestration workflows.
+ *
+ * ---
+ * 
+ * # Example
+ *
+ * ```ts
+ * const registry = new SecretRegistry()
+ *   .register('frontend', frontendManager)
+ *   .register('backend', backendManager);
+ *
+ * const manager = registry.get('frontend');
+ * ```
+ *
+ * 
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export class SecretRegistry<SecretManagerStore extends Record<string, AnySecretManager> = {}> {
   private registry = new Map<string, AnySecretManager>();
@@ -14,7 +45,7 @@ export class SecretRegistry<SecretManagerStore extends Record<string, AnySecretM
    *
    * @throws {Error} if a duplicate name is registered
    */
-  register<Name extends string,NewSecretManager extends AnySecretManager>(name: Name, manager: NewSecretManager) {
+  add<Name extends string,NewSecretManager extends AnySecretManager>(name: Name, manager: NewSecretManager) {
     if (this.registry.has(name)) {
       throw new Error(`[SecretRegistry] Duplicate secret manager name: "${name}"`);
     }

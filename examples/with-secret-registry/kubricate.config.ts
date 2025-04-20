@@ -14,7 +14,7 @@ export default defineConfig({
 
         // intraProvider: 'error',
         // crossProvider: 'error',
-        // intraStack: 'error',
+        // crossManager: 'error',
       }
     }
   }
