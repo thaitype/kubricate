@@ -78,12 +78,12 @@ These patterns result in:
 
 ### 🔍 Existing Solutions (and Limitations)
 
-| Tool                    | Strengths                                   | Weaknesses                                                     |
-|-------------------------|----------------------------------------------|----------------------------------------------------------------|
-| **External Secrets Operator (ESO)** | Reconciles secrets from cloud backends | Heavy YAML usage, CRDs, hard to reuse or test                 |
-| **Vault Agent Injector** | Dynamic injection at runtime                | Requires sidecars, annotations, Vault policy setup             |
-| **SOPS / Sealed Secrets** | GitOps-safe encryption                     | Complex rotation/versioning, no unified source of truth        |
-| **Helm values + `.env`** | Familiar templating                         | No type safety, validation, or traceability                    |
+| Tool                                | Strengths                              | Weaknesses                                              |
+| ----------------------------------- | -------------------------------------- | ------------------------------------------------------- |
+| **External Secrets Operator (ESO)** | Reconciles secrets from cloud backends | Heavy YAML usage, CRDs, hard to reuse or test           |
+| **Vault Agent Injector**            | Dynamic injection at runtime           | Requires sidecars, annotations, Vault policy setup      |
+| **SOPS / Sealed Secrets**           | GitOps-safe encryption                 | Complex rotation/versioning, no unified source of truth |
+| **Helm values + `.env`**            | Familiar templating                    | No type safety, validation, or traceability             |
 
 
 ### 💡 Kubricate’s Approach
@@ -196,7 +196,8 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Connect to external secret systems such as `.env`, Azure Key Vault, 1Password, or Vault.
 
    ```ts
-   secretManager
+   // ./src/setup-secrets.ts
+   export const secretManager = new SecretManager()
      .addConnector('Env', new EnvConnector())
      .addConnector('AzureKV', new AzureKeyVaultConnector());
    ```
@@ -205,6 +206,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Providers define how secrets will be injected into Kubernetes (e.g., as `Secret`, `ConfigMap`, or annotations).
 
    ```ts
+   // ./src/setup-secrets.ts
    secretManager.addProvider(
      'OpaqueSecretProvider',
      new OpaqueSecretProvider({ name: 'secret-application' })
@@ -215,6 +217,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    When multiple connectors are registered, you must set the default one to be used during hydration.
 
    ```ts
+   // ./src/setup-secrets.ts
    secretManager.setDefaultConnector('AzureKV');
    ```
 
@@ -228,6 +231,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Centralize your secrets and optionally map them to a provider.
 
    ```ts
+   // ./src/setup-secrets.ts
    secretManager.addSecret({ name: 'my_app_key' });
    ```
 
@@ -235,6 +239,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Describe how secrets should flow from one system to another (e.g. `.env` → Azure KV).
 
    ```ts
+   // ./src/setup-secrets.ts
    secretManager.addHydrationPlan('EnvToKV', {
      from: 'Env',
      to: 'AzureKV',
@@ -248,6 +253,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Use existing reusable stacks like `AppStack`, and inject secrets from providers.
 
    ```ts
+   // ./src/compose-stacks.ts
    export const myApp = new AppStack()
      .from({
        imageName: 'nginx',
@@ -263,12 +269,16 @@ It gives you full control of infrastructure and secrets **before deployment**, w
 
    ```ts
    import { defineConfig } from 'kubricate';
-   import { myApp } from './src/my-app'; // import your stack
+   import { myApp } from './src/compose-stacks'; // import your stack
+   import { secretManager } from './src/setup-secrets'; // import your secret manager
 
    export default defineConfig({
      stacks: {
-       app: myApp,
+        app: myApp,
      },
+     secrets: {
+        manager: secretManager,
+     }
    });
    ```
 
@@ -283,8 +293,8 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Run secret hydration workflows to sync secrets between systems.
 
    ```bash
-   kubricate secrets plan     # Preview hydration actions
-   kubricate secrets hydrate  # Execute hydration
+   kubricate secret plan     # Preview hydration actions
+   kubricate secret hydrate  # Execute hydration
    ```
 
    > ⚠️ **Note:** Hydration Plan support is in progress. See [Issue #75](https://github.com/thaitype/kubricate/issues/75)
@@ -294,8 +304,8 @@ It gives you full control of infrastructure and secrets **before deployment**, w
     Validate that all declared secrets exist and apply them to providers if needed.
 
     ```bash
-    kubricate secrets validate     # Validate connector/provider state
-    kubricate secrets apply        # Apply secrets to target provider (e.g. Azure KV, Kubernetes)
+    kubricate secret validate     # Validate connector/provider state
+    kubricate secret apply        # Apply secrets to target provider (e.g. Azure KV, Kubernetes)
     ```
 
 ### 🗺️ Workflow Diagram
@@ -353,8 +363,8 @@ This is functionally identical to `kubricate`, making it quicker to type in scri
 
 ```bash
 kbr generate
-kbr secrets plan
-kbr secrets hydrate
+kbr secret plan
+kbr secret hydrate
 ```
 
 > See [PR #77](https://github.com/thaitype/kubricate/pull/77) for details.
