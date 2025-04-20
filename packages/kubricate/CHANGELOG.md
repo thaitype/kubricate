@@ -1,5 +1,12 @@
 # kubricate
 
+## 0.17.0
+
+### Patch Changes
+
+- Updated dependencies [672f82f]
+  - @kubricate/core@0.17.0
+
 ## 0.16.0
 
 ### Patch Changes

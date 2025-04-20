@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.17.0
+
+### Minor Changes
+
+- 672f82f: Feature: Move SecretManager Ownership to Project Level (Global Registry Support)
+
 ## 0.16.0
 
 ### Minor Changes
