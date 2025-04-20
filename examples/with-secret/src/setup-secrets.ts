@@ -2,10 +2,6 @@ import { SecretManager } from '@kubricate/core';
 import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/kubernetes';
 import { EnvConnector } from '@kubricate/env';
 
-export const config = {
-  namespace: 'my-namespace',
-};
-
 export const secretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())
   .addProvider(
