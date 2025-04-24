@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BaseStack } from './BaseStack.js';
 import { ResourceComposer } from './ResourceComposer.js';
-import { SecretManager } from './secrets/SecretManager.js';
+import { SecretManager } from './secret/SecretManager.js';
 
 // Mock SecretManager
 class FakeProvider {

@@ -1,7 +1,7 @@
 import type { BaseStack } from './BaseStack.js';
 import type { ProjectGenerateOptions } from './generate/types.js';
 import { ResourceComposer } from './ResourceComposer.js';
-import type { ProjectSecretOptions } from './secrets/types.js';
+import type { ProjectSecretOptions } from './secret/types.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;

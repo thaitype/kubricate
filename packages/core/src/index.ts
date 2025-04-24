@@ -1,5 +1,5 @@
 export * from './ResourceComposer.js';
 export * from './BaseStack.js';
-export * from './secrets/index.js';
+export * from './secret/index.js';
 export * from './types.js';
 export * from './createStack.js';
