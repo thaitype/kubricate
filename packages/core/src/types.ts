@@ -1,4 +1,5 @@
 import type { BaseStack } from './BaseStack.js';
+import type { ProjectGenerateOptions } from './generate/types.js';
 import { ResourceComposer } from './ResourceComposer.js';
 import type { ProjectSecretOptions } from './secrets/types.js';
 
@@ -35,6 +36,7 @@ export type AnyString = string & {};
 export interface KubricateConfig {
   stacks?: Record<string, BaseStack>;
   secrets?: ProjectSecretOptions;
+  generate?: ProjectGenerateOptions;
 }
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
