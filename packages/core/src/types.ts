@@ -35,7 +35,16 @@ export type AnyString = string & {};
 
 export interface KubricateConfig {
   stacks?: Record<string, BaseStack>;
+  /**
+   * Secrets configuration
+   * 
+   * @deprecated Use `secret` instead
+   */
   secrets?: ProjectSecretOptions;
+  /**
+   * Secret configuration
+   */
+  secret?: ProjectSecretOptions;
   generate?: ProjectGenerateOptions;
 }
 

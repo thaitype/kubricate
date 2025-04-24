@@ -25,12 +25,27 @@ export class BaseCommand {
     console.log(c.blue`kubricate` + ` v${this.options.version}\n`);
   }
 
+  protected handleDeprecatedSecretOptions(config: KubricateConfig | undefined): KubricateConfig | undefined {
+    if (!config) return config;
+    if (config.secrets && config.secret) {
+      throw new Error(`Conflict between 'secret' and 'secrets' options. Please use 'secret' instead`);
+    }
+    if (config.secrets) {
+      this.logger.warn(`The 'secrets' option is deprecated. Please use 'secret' instead.`);
+    }
+    if (config.secret) {
+      config.secrets = config.secret;
+    }
+    return config;
+  }
+
   protected async init() {
     const logger = this.logger;
     logger.debug('Initializing secrets orchestrator...');
     if (!this.config) {
       logger.debug('Loading configuration...');
       this.config = await getConfig(this.options);
+      this.config = this.handleDeprecatedSecretOptions(this.config);
       if (!this.config) {
         logger.error(`No config file found matching '${getMatchConfigFile()}'`);
         logger.error(`Please ensure a config file exists in the root directory:\n   ${this.options.root}`);
