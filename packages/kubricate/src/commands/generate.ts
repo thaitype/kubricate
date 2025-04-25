@@ -12,6 +12,9 @@ export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
 }
 
+/**
+ * @deprecated Use `commands/generate/GenerateCommand.ts` instead.
+ */
 export class GenerateCommand extends BaseCommand {
   constructor(
     protected options: GenerateCommandOptions,
