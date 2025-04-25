@@ -1,11 +1,19 @@
 import type { ProjectGenerateOptions } from "./types.js";
+import { merge } from "lodash-es";
+
+export const defaultConfig: ProjectGenerateOptions = {
+  outputDir: "dist",
+  outputMode: "stack",
+  skipIfUnchanged: true,
+  cleanOutputDir: true,
+}
+
+export class GenerateEngine {
+  constructor(
+    public readonly options: ProjectGenerateOptions,
+  ) {
+    this.options = merge({}, defaultConfig, options);
+  }
 
 
-export function loadConfig(config: ProjectGenerateOptions): ProjectGenerateOptions {
-  return {
-    outputDir: config.outputDir ?? "dist",
-    outputMode: config.outputMode ?? "stack",
-    skipIfUnchanged: config.skipIfUnchanged ?? true,
-    cleanOutputDir: config.cleanOutputDir ?? true,
-  };
 }
