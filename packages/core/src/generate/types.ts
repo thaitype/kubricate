@@ -19,16 +19,6 @@ export interface ProjectGenerateOptions {
   outputMode?: 'flat' | 'stack' | 'resource';
 
   /**
-   * If true, skips writing files that have not changed (based on content hash).
-   * 
-   * Useful for cleaner Git diffs and faster CI.
-   * Automatically disabled if `cleanOutputDir` is true.
-   * 
-   * @default true
-   */
-  skipIfUnchanged?: boolean;
-
-  /**
    * If true, removes all previously generated files in the output directory before generating.
    * 
    * Prevents stale or orphaned files when renaming stacks or switching output modes.

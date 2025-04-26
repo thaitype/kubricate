@@ -43,11 +43,12 @@ export class MetadataInjector {
     }
 
     metadata.annotations[LABELS.version] = this.options.kubricateVersion;
-    metadata.annotations[LABELS.managedAt] = this.options.managedAt ?? new Date().toISOString();
-
+  
     if (this.options.calculateHash) {
       metadata.annotations[LABELS.resourceHash] = this.calculateHash(resource);
     }
+
+    metadata.annotations[LABELS.managedAt] = this.options.managedAt ?? new Date().toISOString();
 
     return resource;
   }
