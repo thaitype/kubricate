@@ -1,4 +1,4 @@
-import { merge, isPlainObject } from 'lodash-es';
+import { merge, isPlainObject, cloneDeep } from 'lodash-es';
 import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 import { get, set } from 'lodash-es';
@@ -21,7 +21,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
   _override: Record<string, unknown> = {};
 
   inject(resourceId: string, path: string, value: unknown) {
-    const composed = this._entries[resourceId];
+    const composed = cloneDeep(this._entries[resourceId]);
     if (!composed) {
       throw new Error(`Cannot inject, resource with ID ${resourceId} not found.`);
     }
@@ -34,6 +34,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     if (existingValue === undefined) {
       // No value yet — safe to set directly
       set(composed.config, path, value);
+      this._entries[resourceId] = composed;
       return;
     }
 
@@ -41,6 +42,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
       // Append array elements (e.g. env vars, volumeMounts)
       const mergedArray = [...existingValue, ...value];
       set(composed.config, path, mergedArray);
+      this._entries[resourceId] = composed;
       return;
     }
 
@@ -48,6 +50,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
       // Deep merge objects
       const mergedObject = merge({}, existingValue, value);
       set(composed.config, path, mergedObject);
+      this._entries[resourceId] = composed;
       return;
     }
 
@@ -57,28 +60,6 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
       `Existing: ${JSON.stringify(existingValue)}. New value: ${JSON.stringify(value)}`
     );
   }
-
-  // private ensureMetadata(resource: Record<string, unknown>) {
-  //   if (!('metadata' in resource)) {
-  //     resource.metadata = {};
-  //   }
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   const metadata = resource.metadata as Record<string, any>;
-  //   metadata.labels ??= {};
-  //   metadata.annotations ??= {};
-  //   return metadata;
-  // }
-
-  // injectMetadata(resource: Record<string, unknown>, resourceId: string) {
-  //   const metadata = this.ensureMetadata(resource);
-
-  //   metadata.labels ??= {};
-  //   metadata.annotations ??= {};
-
-  //   metadata.labels['thaitype.dev/kubricate'] = 'true';
-  //   metadata.labels['thaitype.dev/kubricate/resource-id'] = resourceId;
-  //   return resource;
-  // }
 
   build(): Record<string, unknown> {
     const result: Record<string, unknown> = {};
