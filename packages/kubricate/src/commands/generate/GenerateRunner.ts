@@ -1,15 +1,32 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { GenerateEngine, type ProjectGenerateOptions } from '@kubricate/core';
+import { GenerateEngine, type BaseLogger, type ProjectGenerateOptions } from '@kubricate/core';
 
 import { loadHashCache, saveHashCache } from './hashCacheIO.js';
 import { NodeHashEngine } from './NodeHashEngine.js';
+import { merge } from 'lodash-es';
+
+export const defaultConfig: Required<ProjectGenerateOptions> = {
+  outputDir: 'output',
+  outputMode: 'stack',
+  skipIfUnchanged: true,
+  cleanOutputDir: true,
+};
+
+export interface RenderedFile {
+  filePath: string;
+  content: string;
+}
 
 export class GenerateRunner {
+  public readonly config: Required<ProjectGenerateOptions>;
   constructor(
-    private readonly config: Required<ProjectGenerateOptions>,
-    private readonly renderedFiles: { filePath: string; content: string }[]
-  ) { }
+    config: ProjectGenerateOptions | undefined,
+    private readonly renderedFiles: RenderedFile[],
+    protected logger: BaseLogger,
+  ) { 
+    this.config = merge({}, defaultConfig, config);
+  }
 
   async run() {
     const hashPath = '.kubricate/generate.hash.json';
@@ -55,7 +72,7 @@ export class GenerateRunner {
       files: engine.getUpdatedHashes(),
     });
 
-    console.log(`✅ Wrote ${written.length} file(s) to "${this.config.outputDir}/"`);
+    this.logger.log(`✅ Wrote ${written.length} file(s) to "${this.config.outputDir}/"`);
   }
 
   private cleanOutputDir(dir: string) {

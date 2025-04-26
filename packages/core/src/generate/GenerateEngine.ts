@@ -1,13 +1,5 @@
 import type { ProjectGenerateOptions } from './types.js';
-import { merge } from 'lodash-es';
 import { HashEngine } from './HashEngine.js';
-
-export const defaultConfig: Required<ProjectGenerateOptions> = {
-  outputDir: 'dist',
-  outputMode: 'stack',
-  skipIfUnchanged: true,
-  cleanOutputDir: true,
-};
 
 export interface PlannedWrite {
   filePath: string;
@@ -16,14 +8,12 @@ export interface PlannedWrite {
 }
 
 export class GenerateEngine {
-  public readonly config: Required<ProjectGenerateOptions>;
   private readonly hashEngine: HashEngine;
 
   constructor(
-    options: ProjectGenerateOptions,
+    public readonly config: Required<ProjectGenerateOptions>,
     hashEngine: HashEngine
   ) {
-    this.config = merge({}, defaultConfig, options);
     this.hashEngine = hashEngine;
 
     // Auto-disable skipIfUnchanged if cleaning
