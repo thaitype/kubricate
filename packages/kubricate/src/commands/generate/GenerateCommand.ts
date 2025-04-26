@@ -40,11 +40,10 @@ export class GenerateCommand extends BaseCommand {
     logger.info('Generating stacks for Kubernetes...');
     const renderedFiles = this.getRenderedFiles(config, generateOptions.outputMode);
     const runner = new GenerateRunner(this.options, generateOptions, renderedFiles, this.logger);
-    logger.log('-------------------------------------');
+
     this.showStacks(config);
-    logger.log('-------------------------------------');
+    this.logger.log('');
     await runner.run();
-    logger.log('-------------------------------------\n');
     logger.log(c.green`${MARK_CHECK} Done!`);
   }
 
@@ -76,7 +75,7 @@ export class GenerateCommand extends BaseCommand {
       throw new Error('No stacks found in config');
     }
 
-    logger.log(`Found ${stacksLength} stacks in config:`);
+    logger.info(`Found ${stacksLength} stacks in config:`);
 
     const renderListTree = (kinds: StackInfo['kinds']) => {
       const lastIndex = kinds.length - 1;

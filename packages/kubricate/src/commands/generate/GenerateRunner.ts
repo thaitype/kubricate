@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { BaseLogger, ProjectGenerateOptions } from '@kubricate/core';
-import { MARK_CHECK } from '../../internal/constant.js';
+import { MARK_BULLET, MARK_CHECK, MARK_NODE } from '../../internal/constant.js';
 import type { GlobalConfigOptions } from '../../internal/types.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
@@ -34,11 +34,11 @@ export class GenerateRunner {
       const outputPath = path.join(this.options.root ?? '', filePath);
       this.ensureDir(outputPath);
       fs.writeFileSync(outputPath, content);
-      this.logger.log(`${MARK_CHECK} Written file: ${outputPath}`);
+      this.logger.log(`${MARK_BULLET} Written: ${outputPath}`);
       stats.written++;
     }
 
-    this.logger.log(`\n${MARK_CHECK} Written ${stats.written} file${stats.written > 1 ? 's' : ''} to "${this.generateObjects.outputDir}/"`);
+    this.logger.log(`\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateObjects.outputDir}/"`);
   }
 
   private cleanOutputDir(dir: string) {
