@@ -13,10 +13,11 @@ export interface ProjectGenerateOptions {
    * - 'flat': All resources from all stacks in a single file (e.g. `stacks.yaml`)
    * - 'stack': One file per stack (e.g. `AppStack.yaml`, `CronStack.yaml`)
    * - 'resource': One folder per stack, each resource in its own file (e.g. `AppStack/Deployment_web.yaml`)
+   * - 'stdout': Outputs the generated files to stdout instead of writing them to disk.
    * 
    * @default 'stack'
    */
-  outputMode?: 'flat' | 'stack' | 'resource';
+  outputMode?: 'flat' | 'stack' | 'resource' | 'stdout';
 
   /**
    * If true, removes all previously generated files in the output directory before generating.

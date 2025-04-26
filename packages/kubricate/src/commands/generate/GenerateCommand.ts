@@ -13,6 +13,12 @@ import { merge } from "lodash-es";
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
+  /**
+   * Output into stdout
+   * 
+   * When set, the generated files will be printed to stdout instead of being written to disk.
+   */
+  stdout: boolean;
 }
 
 export class GenerateCommand extends BaseCommand {
@@ -29,7 +35,12 @@ export class GenerateCommand extends BaseCommand {
       outputMode: 'stack',
       cleanOutputDir: true,
     };
-    return merge({}, defaultOptions, config.generate);
+    const result = merge({}, defaultOptions, config.generate);
+    // When `stdout` is true, override the output mode to `stdout`
+    if(this.options.stdout === true){
+      result.outputMode = 'stdout';
+    }
+    return result;
   }
 
   async execute() {

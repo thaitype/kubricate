@@ -95,6 +95,8 @@ export class Renderer {
         return `${resource.stackName}.yml`;
       case 'resource':
         return path.join(resource.stackName, `${resource.kind}_${resource.id}.yml`);
+      case 'stdout':
+        return 'stdout';
     }
     throw new Error(`Unknown output mode: ${mode}`);
   }

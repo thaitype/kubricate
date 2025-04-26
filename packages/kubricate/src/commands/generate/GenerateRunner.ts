@@ -30,16 +30,12 @@ export class GenerateRunner {
     const stats = { written: 0 };
 
     this.logger.info(`Rendering with output mode "${this.generateOptions.outputMode}"`);
-    if(this.generateOptions.cleanOutputDir) {
+    if (this.generateOptions.cleanOutputDir) {
       this.logger.info(`Cleaning output directory: ${this.options.outDir}`);
     }
     this.logger.log(`\nGenerating stacks...`);
-    for (const { filePath, content } of this.renderedFiles) {
-      const outputPath = path.join(this.options.root ?? '', filePath);
-      this.ensureDir(outputPath);
-      fs.writeFileSync(outputPath, content);
-      this.logger.log(`${MARK_BULLET} Written: ${outputPath}`);
-      stats.written++;
+    for (const file of this.renderedFiles) {
+      this.processOutput(file, stats);
     }
 
     this.logger.log(`\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateOptions.outputDir}/"`);
@@ -54,5 +50,18 @@ export class GenerateRunner {
   private ensureDir(filePath: string) {
     const dir = path.dirname(filePath);
     fs.mkdirSync(dir, { recursive: true });
+  }
+
+  private processOutput(file: RenderedFile, stats: { written: number }) {
+    if (this.generateOptions.outputMode === 'stdout') {
+      console.log(file.content);
+      return;
+    }
+
+    const outputPath = path.join(this.options.root ?? '', file.filePath);
+    this.ensureDir(outputPath);
+    fs.writeFileSync(outputPath, file.content);
+    this.logger.log(`${MARK_BULLET} Written: ${outputPath}`);
+    stats.written++;
   }
 }
