@@ -19,6 +19,13 @@ export interface GenerateCommandOptions extends GlobalConfigOptions {
    * When set, the generated files will be printed to stdout instead of being written to disk.
    */
   stdout: boolean;
+
+  /**
+   * Filter stacks or resources by ID (e.g., myStack or myStack.resource)
+   * 
+   * Empty if not specified, all stacks will be included.
+   */
+  filter?: string[];
 }
 
 export class GenerateCommand extends BaseCommand {
@@ -37,7 +44,7 @@ export class GenerateCommand extends BaseCommand {
     };
     const result = merge({}, defaultOptions, config.generate);
     // When `stdout` is true, override the output mode to `stdout`
-    if(this.options.stdout === true){
+    if (this.options.stdout === true) {
       result.outputMode = 'stdout';
     }
     return result;
@@ -74,9 +81,45 @@ export class GenerateCommand extends BaseCommand {
 
     for (const [filePath, contents] of Object.entries(files)) {
       const relatePath = path.join(this.options.outDir, filePath);
-      renderedFiles.push({ filePath: relatePath, content: contents.join('\n') });
+      renderedFiles.push({ filePath: relatePath, originalPath: filePath, content: contents.join('\n') });
+    }
+
+    if (this.options.filter) {
+      return this.filterResources(renderedFiles, this.options.filter);
     }
     return renderedFiles;
+  }
+
+  filterResources(renderedFiles: RenderedFile[], filters: string[]): RenderedFile[] {
+    if (filters.length === 0) return renderedFiles;
+
+    const filterSet = new Set(filters);
+    const matchedFilters = new Set<string>();
+
+    const filtered = renderedFiles.filter((file) => {
+      const originalPath = file.originalPath; // e.g., myStack.deployment
+      const stackId = originalPath.split('.')[0]; // "myStack"
+
+      const matched = filterSet.has(stackId) || filterSet.has(originalPath);
+
+      if (matched) {
+        if (filterSet.has(stackId)) matchedFilters.add(stackId);
+        if (filterSet.has(originalPath)) matchedFilters.add(originalPath);
+      }
+
+      return matched;
+    });
+
+    const unmatchedFilters = filters.filter((f) => !matchedFilters.has(f));
+
+    if (unmatchedFilters.length > 0) {
+      throw new Error(
+        `The following filters did not match any resource: ${unmatchedFilters.join(', ')}.\n` +
+        `Please check your --filter values and try again.`
+      );
+    }
+
+    return filtered;
   }
 
   showStacks(config: KubricateConfig) {

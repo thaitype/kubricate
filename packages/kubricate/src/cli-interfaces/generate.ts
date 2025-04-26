@@ -1,5 +1,4 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
-// import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
 import { ConsoleLogger } from '../internal/logger.js';
 import { handlerError } from '../internal/error.js';
@@ -20,15 +19,22 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
         type: 'boolean',
         describe: 'Output to stdout',
         default: false,
+      })
+      .option('filter', {
+        type: 'string',
+        describe: 'Filter stacks or resources by ID (e.g., myStack or myStack.resource)',
+        array: true,
       }),
-
   handler: async (argv: ArgumentsCamelCase<GenerateCommandOptions>) => {
     let logger = argv.logger ?? new ConsoleLogger();
     // Set logger to silent if stdout is true`
-    if(argv.stdout === true) {
+    if (argv.stdout === true) {
       logger = new ConsoleLogger('silent');
     }
     try {
+      if (argv.stdout === false && argv.filter) {
+        throw new Error('"--filter" option is allowed only when using with "--stdout" option');
+      }
       verboseCliConfig(argv, logger, 'generate');
       await new GenerateCommand(argv, logger).execute();
     } catch (error) {

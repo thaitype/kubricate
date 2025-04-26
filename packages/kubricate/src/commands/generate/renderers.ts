@@ -9,6 +9,7 @@ import { getClassName } from "../../internal/utils.js";
 
 export interface RenderedResource {
   id: string;
+  stackId: string;
   stackName: string;
   kind: string;
   name: string;
@@ -80,7 +81,7 @@ export class Renderer {
         const kind = resource?.kind || 'UnknownKind';
         const name = resource?.metadata?.name || 'unnamed';
         const content = yamlStringify(resource) + '---\n';
-        output.push({ stackName: stackId, kind, name, content, id: resourceId });
+        output.push({ stackName: stackId, kind, name, content, id: resourceId, stackId });
       }
     }
 
@@ -96,7 +97,8 @@ export class Renderer {
       case 'resource':
         return path.join(resource.stackName, `${resource.kind}_${resource.id}.yml`);
       case 'stdout':
-        return 'stdout';
+        // Create canonical name for the resource groped by stackId and resourceId
+        return `${resource.stackId}.${resource.id}`;
     }
     throw new Error(`Unknown output mode: ${mode}`);
   }

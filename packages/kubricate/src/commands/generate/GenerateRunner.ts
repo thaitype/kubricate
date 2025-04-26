@@ -10,6 +10,7 @@ export interface GenerateCommandOptions extends GlobalConfigOptions {
 
 export interface RenderedFile {
   filePath: string;
+  originalPath: string;
   content: string;
 }
 
