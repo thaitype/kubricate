@@ -1,4 +1,4 @@
-import { SecretsOrchestrator, type BaseLogger, type KubricateConfig } from '@kubricate/core';
+import { SecretsOrchestrator, validateId, type BaseLogger, type KubricateConfig } from '@kubricate/core';
 import { getConfig, getMatchConfigFile } from '../internal/load-config.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
 import c from 'ansis';
@@ -39,6 +39,13 @@ export class BaseCommand {
     return config;
   }
 
+  private validateStackId(config: KubricateConfig | undefined) {
+    if (!config) return;
+    for (const stackId of Object.keys(config.stacks ?? {})) {
+      validateId(stackId, 'stackId');
+    }
+  }
+
   protected async init() {
     const logger = this.logger;
     logger.debug('Initializing secrets orchestrator...');
@@ -54,6 +61,9 @@ export class BaseCommand {
         logger.error(`Exiting...`);
         throw new Error('No config file found');
       }
+      this.validateStackId(this.config);
+      logger.debug('Validated Stack Ids');
+      
       logger.debug('Configuration loaded: ' + JSON.stringify(this.config, null, 2));
       logger.debug('Injecting logger into stacks...');
       this.injectLogger(this.config);

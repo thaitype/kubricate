@@ -2,6 +2,7 @@ import { merge, isPlainObject, cloneDeep } from 'lodash-es';
 import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 import { get, set } from 'lodash-es';
+import { validateId } from './utils.js';
 
 export interface ResourceEntry {
   type?: AnyClass;
@@ -63,23 +64,24 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
 
   build(): Record<string, unknown> {
     const result: Record<string, unknown> = {};
-    for (const key of Object.keys(this._entries)) {
-      const { type, entryType: kind } = this._entries[key];
-      const { config } = this._entries[key];
+    for (const resourceId of Object.keys(this._entries)) {
+      validateId(resourceId, 'resourceId');
+      const { type, entryType: kind } = this._entries[resourceId];
+      const { config } = this._entries[resourceId];
 
       if (kind === 'instance') {
-        result[key] = config;
+        result[resourceId] = config;
         continue;
       }
 
-      const mergedConfig = merge({}, config, this._override ? this._override[key] : {});
+      const mergedConfig = merge({}, config, this._override ? this._override[resourceId] : {});
       if (kind === 'object') {
-        result[key] = mergedConfig;
+        result[resourceId] = mergedConfig;
         continue;
       }
       if (!type) continue;
       // Create the resource
-      result[key] = new type(mergedConfig);
+      result[resourceId] = new type(mergedConfig);
     }
     return result;
   }
