@@ -6,6 +6,7 @@ import type { GlobalConfigOptions } from '../../internal/types.js';
 import { ConsoleLogger } from '../../internal/logger.js';
 import { handlerError } from '../../internal/error.js';
 import { verboseCliConfig } from '../../internal/utils.js';
+import { ConfigLoader } from '../../commands/ConfigLoader.js';
 
 export const secretApplyCommand: CommandModule<GlobalConfigOptions, SecretCommandOptions> = {
   command: 'apply',
@@ -15,7 +16,12 @@ export const secretApplyCommand: CommandModule<GlobalConfigOptions, SecretComman
     try {
       verboseCliConfig(argv, logger, 'secret apply');
       const executor = new KubectlExecutor('kubectl', logger, new ExecaExecutor());
-      await new SecretCommand(argv, logger, executor).apply();
+
+      const configLoader = new ConfigLoader(argv, logger);
+      configLoader.showVersion();
+      const { orchestrator } = await configLoader.load();
+
+      await new SecretCommand(argv, logger, executor).apply(orchestrator);
     } catch (error) {
       handlerError(error, logger);
     }

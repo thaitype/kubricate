@@ -1,18 +1,21 @@
-import { SecretsOrchestrator, validateId, type BaseLogger, type KubricateConfig } from '@kubricate/core';
-import { getConfig, getMatchConfigFile } from '../internal/load-config.js';
-import type { GlobalConfigOptions } from '../internal/types.js';
+import { SecretsOrchestrator, validateId, type BaseLogger, type KubricateConfig } from "@kubricate/core";
+import type { GlobalConfigOptions } from "../internal/types.js";
+import { getConfig, getMatchConfigFile } from "../internal/load-config.js";
+import path from "node:path";
 import c from 'ansis';
-import path from 'node:path';
 
-export class BaseCommand {
+export class ConfigLoader {
   protected config: KubricateConfig | undefined;
   protected orchestrator!: SecretsOrchestrator;
 
   constructor(
     protected options: GlobalConfigOptions,
     protected logger: BaseLogger
-  ) {
-    this.showVersion();
+  ) { }
+
+
+  public showVersion() {
+    this.logger.log(c.blue`kubricate` + ` v${this.options.version}\n`);
   }
 
   protected injectLogger(config: KubricateConfig) {
@@ -21,8 +24,11 @@ export class BaseCommand {
     }
   }
 
-  protected showVersion() {
-    this.logger.log(c.blue`kubricate` + ` v${this.options.version}\n`);
+  private validateStackId(config: KubricateConfig | undefined) {
+    if (!config) return;
+    for (const stackId of Object.keys(config.stacks ?? {})) {
+      validateId(stackId, 'stackId');
+    }
   }
 
   protected handleDeprecatedSecretOptions(config: KubricateConfig | undefined): KubricateConfig | undefined {
@@ -39,14 +45,8 @@ export class BaseCommand {
     return config;
   }
 
-  private validateStackId(config: KubricateConfig | undefined) {
-    if (!config) return;
-    for (const stackId of Object.keys(config.stacks ?? {})) {
-      validateId(stackId, 'stackId');
-    }
-  }
 
-  protected async init() {
+  public async load() {
     const logger = this.logger;
     logger.debug('Initializing secrets orchestrator...');
     if (!this.config) {
@@ -63,7 +63,7 @@ export class BaseCommand {
       }
       this.validateStackId(this.config);
       logger.debug('Validated Stack Ids');
-      
+
       logger.debug('Configuration loaded: ' + JSON.stringify(this.config, null, 2));
       logger.debug('Injecting logger into stacks...');
       this.injectLogger(this.config);

@@ -3,7 +3,6 @@ import path from "node:path";
 import type { BaseLogger, KubricateConfig, ProjectGenerateOptions } from "@kubricate/core";
 
 import { Renderer } from "./Renderers.js";
-import { BaseCommand } from "../BaseCommand.js";
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { GenerateRunner, type RenderedFile } from './GenerateRunner.js';
 import c from 'ansis';
@@ -28,13 +27,11 @@ export interface GenerateCommandOptions extends GlobalConfigOptions {
   filter?: string[];
 }
 
-export class GenerateCommand extends BaseCommand {
+export class GenerateCommand {
   constructor(
     protected options: GenerateCommandOptions,
     protected logger: BaseLogger
-  ) {
-    super(options, logger);
-  }
+  ) {}
 
   resolveDefaultGenerateOptions(config: KubricateConfig) {
     const defaultOptions: Required<ProjectGenerateOptions> = {
@@ -50,9 +47,8 @@ export class GenerateCommand extends BaseCommand {
     return result;
   }
 
-  async execute() {
+  async execute(config: KubricateConfig) {
     const logger = this.logger;
-    const { config } = await this.init();
     const generateOptions = this.resolveDefaultGenerateOptions(config);
 
     logger.info('Generating stacks for Kubernetes...');

@@ -4,6 +4,7 @@ import { ConsoleLogger } from '../internal/logger.js';
 import { handlerError } from '../internal/error.js';
 import { verboseCliConfig } from '../internal/utils.js';
 import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate/index.js';
+import { ConfigLoader } from '../commands/ConfigLoader.js';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',
@@ -36,7 +37,10 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
         throw new Error('"--filter" option is allowed only when using with "--stdout" option');
       }
       verboseCliConfig(argv, logger, 'generate');
-      await new GenerateCommand(argv, logger).execute();
+      const configLoader = new ConfigLoader(argv, logger);
+      configLoader.showVersion();
+      const { config } = await configLoader.load();
+      await new GenerateCommand(argv, logger).execute(config);
     } catch (error) {
       handlerError(error, logger);
     }
