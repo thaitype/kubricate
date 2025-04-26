@@ -25,7 +25,7 @@ interface KubernetesMetadata {
 
 export class Renderer {
 
-  private readonly metadata: Required<ProjectMetadataOptions>;
+  public readonly metadata: Required<ProjectMetadataOptions>;
 
   constructor(globalOptions: KubricateConfig, private readonly logger: BaseLogger,) {
     this.metadata = merge({}, defaultMetadata, globalOptions.metadata);

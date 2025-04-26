@@ -3,7 +3,7 @@ export interface ProjectGenerateOptions {
    * The directory where all generated manifest files will be written.
    * Relative to the project root.
    * 
-   * @default 'dist'
+   * @default 'output'`
    */
   outputDir?: string;
 
