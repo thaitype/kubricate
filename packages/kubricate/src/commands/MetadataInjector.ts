@@ -11,6 +11,7 @@ export interface MetadataInjectorOptions {
   // Stack fields
   stackId?: string;
   stackName?: string;
+  resourceId?: string;
 
   // Secret fields
   secretManagerId?: string;
@@ -24,30 +25,33 @@ export class MetadataInjector {
     if (typeof resource !== 'object' || resource == null) {
       return resource;
     }
-  
+
     const metadata = this.ensureMetadata(resource);
-  
+
     metadata.labels ??= {};
     metadata.annotations ??= {};
-  
+
+    metadata.labels[LABELS.kubricate] = 'true';
+
     if (this.options.type === 'stack') {
       metadata.labels[LABELS.stackId] = this.options.stackId!;
       metadata.annotations[LABELS.stackName] = this.options.stackName!;
+      metadata.labels[LABELS.resourceId] = this.options.resourceId!;
     } else if (this.options.type === 'secret') {
       metadata.labels[LABELS.secretManagerId] = this.options.secretManagerId!;
       metadata.annotations[LABELS.secretManagerName] = this.options.secretManagerName!;
     }
-  
+
     metadata.annotations[LABELS.version] = this.options.kubricateVersion;
     metadata.annotations[LABELS.managedAt] = this.options.managedAt ?? new Date().toISOString();
-  
+
     if (this.options.calculateHash) {
       metadata.annotations[LABELS.resourceHash] = this.calculateHash(resource);
     }
-  
+
     return resource;
   }
-  
+
   private ensureMetadata(resource: Record<string, unknown>) {
     if (!('metadata' in resource)) {
       resource.metadata = {};

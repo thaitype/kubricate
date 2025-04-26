@@ -1,10 +1,10 @@
-import type { BaseLogger, KubricateConfig, ProjectGenerateOptions } from "@kubricate/core";
+import type { BaseLogger, KubricateConfig, ProjectGenerateOptions, ProjectMetadataOptions } from "@kubricate/core";
 import path from "node:path";
 import { stringify as yamlStringify } from 'yaml';
 import { MetadataInjector } from "../MetadataInjector.js";
 import { version } from "../../version.js";
 import c from 'ansis';
-import { cloneDeep } from "lodash-es";
+import { cloneDeep, merge } from "lodash-es";
 import { getClassName } from "../../internal/utils.js";
 
 export interface RenderedResource {
@@ -15,44 +15,46 @@ export interface RenderedResource {
   content: string;
 }
 
-export class Renderer {
-  constructor(private readonly logger: BaseLogger) { }
+const defaultMetadata: Required<ProjectMetadataOptions> = {
+  inject: true,
+};
 
-  injectMetadata(resources: unknown[], options: { stackId?: string, stackName?: string }): unknown[] {
-    const injector = new MetadataInjector({
-      type: 'stack',
-      kubricateVersion: version,
-      managedAt: new Date().toISOString(),
-      stackId: options.stackId,
-      stackName: options.stackName,
-      calculateHash: true,
-    });
-    const output: unknown[] = [];
-    for (const resource of resources) {
+interface KubernetesMetadata {
+  kind?: string; metadata?: { name?: string }
+}
+
+export class Renderer {
+
+  private readonly metadata: Required<ProjectMetadataOptions>;
+
+  constructor(globalOptions: KubricateConfig, private readonly logger: BaseLogger,) {
+    this.metadata = merge({}, defaultMetadata, globalOptions.metadata);
+  }
+
+  injectMetadata(resources: Record<string, unknown>, options: { stackId?: string, stackName?: string }): Record<string, unknown> {
+    const createInjector = (resourceId: string) =>
+      new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: version,
+        managedAt: new Date().toISOString(),
+        stackId: options.stackId,
+        stackName: options.stackName,
+        resourceId,
+        calculateHash: true,
+      })
+
+    const output: Record<string, unknown> = {};
+    for (const [resourceId, resource] of Object.entries(resources)) {
       const clone = cloneDeep(resource);
       if (clone && typeof clone !== 'object') {
         this.logger.warn(c.yellow('Warning: Resource is not an object, skipping metadata injection.'));
         continue;
       }
+      const injector = createInjector(resourceId);
       injector.inject(clone as Record<string, unknown>);
-      output.push(clone);
+      output[resourceId] = clone;
     }
     return output;
-  }
-
-  extractReourceIdFromMetadata(resource: unknown): string | undefined {
-    if (typeof resource !== 'object' || resource === null) {
-      this.logger.warn(c.yellow('Warning: Resource is not an object, skipping metadata extraction.'));
-      return;
-    }
-    if (!('metadata' in resource)) {
-      this.logger.warn(c.yellow('Warning: Resource does not have metadata, skipping metadata extraction.'));
-      return;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const metadata = resource.metadata as Record<string, any>;
-    const resourceId = metadata.labels['thaitype.dev/kubricate/resource-id'];
-    return resourceId;
   }
 
   renderStacks(config: KubricateConfig): RenderedResource[] {
@@ -63,18 +65,21 @@ export class Renderer {
     }
 
     for (const [stackId, stack] of Object.entries(config.stacks)) {
-      const builtResources = this.injectMetadata(stack.build(), {
-        stackId,
-        stackName: stack.getName() ?? getClassName(stack) ?? 'unknown',
-      });
+      let builtResources: Record<string, unknown> = {};
+      if (this.metadata.inject === true) {
+        builtResources = this.injectMetadata(stack.build(), {
+          stackId,
+          stackName: stack.getName() ?? getClassName(stack) ?? 'unknown',
+        });
+      } else {
+        builtResources = stack.build();
+        this.logger.debug(`Warning: Metadata injection is disabled, skipping metadata injection`);
+      }
 
-      for (const resource of builtResources as Array<{ kind?: string; metadata?: { name?: string } }>) {
+      for (const [resourceId, resource] of Object.entries(builtResources as Record<string, KubernetesMetadata>)) {
         const kind = resource?.kind || 'UnknownKind';
         const name = resource?.metadata?.name || 'unnamed';
-
         const content = yamlStringify(resource) + '---\n';
-
-        const resourceId = this.extractReourceIdFromMetadata(resource) ?? name ?? 'unknown';
         output.push({ stackName: stackId, kind, name, content, id: resourceId });
       }
     }

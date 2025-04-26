@@ -11,7 +11,7 @@ describe('NamespaceStack', () => {
     stack.from(input);
 
     // Build the stack and get the result
-    const resources = stack.build();
+    const resources = Object.values(stack.build());
 
     expect(resources).toHaveLength(1);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,6 +22,5 @@ describe('NamespaceStack', () => {
 
     // Check metadata
     expect(ns.metadata?.name).toBe('my-namespace');
-    expect(ns.metadata?.labels?.['thaitype.dev/kubricate']).toBe('true');
   });
 });

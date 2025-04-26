@@ -21,7 +21,7 @@ export class GenerateCommand extends BaseCommand {
 
   async execute() {
     const { config } = await this.init();
-    const renderer = new Renderer(this.logger);
+    const renderer = new Renderer(config, this.logger);
     const rendered = renderer.renderStacks(config);
 
     const outputMode = config.generate?.outputMode ?? 'stack';

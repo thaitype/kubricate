@@ -6,7 +6,7 @@ import type { ProjectSecretOptions } from './secret/types.js';
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyClass = { new (...args: any[]): any };
+export type AnyClass = { new(...args: any[]): any };
 
 /**
  * Accept any type of key, including string, number, or symbol, Like `keyof any`.
@@ -32,9 +32,24 @@ export type InferConfigureComposerFunc<T> = T extends (...args: any[]) => Resour
  */
 export type AnyString = string & {};
 
+/**
+ * Metadata configuration for project-wide resource generation behavior.
+ */
+export interface ProjectMetadataOptions {
+  /**
+   * Whether to automatically inject standard Kubricate metadata
+   * (such as labels and annotations) into every generated resource.
+   * If `true`, Kubricate will inject fields like `stack-id`, `stack-name`, `version`, and `managed-at`.
+   * Defaults to `true` if omitted.
+   * 
+  * @default true
+   */
+  inject?: boolean;
+}
 
 export interface KubricateConfig {
   stacks?: Record<string, BaseStack>;
+  metadata?: ProjectMetadataOptions;
   /**
    * Secrets configuration
    * 
@@ -61,9 +76,9 @@ export interface BaseLogger {
 
 export class SilentLogger implements BaseLogger {
   level: LogLevel = 'silent';
-  log() {}
-  info() {}
-  warn() {}
-  error() {}
-  debug() {}
+  log() { }
+  info() { }
+  warn() { }
+  error() { }
+  debug() { }
 }

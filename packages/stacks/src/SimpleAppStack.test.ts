@@ -12,7 +12,7 @@ describe('SimpleAppStack', () => {
       imageName: 'my-app',
     });
 
-    const resources = stack.build();
+    const resources = Object.values(stack.build())
 
     // Should return 2 resources: Deployment + Service
     expect(resources).toHaveLength(2);
@@ -46,7 +46,7 @@ describe('SimpleAppStack', () => {
       replicas: 5,
     });
 
-    const [deployment, service] = stack.build();
+    const [deployment, service] = Object.values(stack.build());
 
     expect((deployment as Deployment).spec?.replicas).toBe(5);
     expect((deployment as Deployment).spec?.template.spec?.containers[0].image).toBe('docker.io/my-app');

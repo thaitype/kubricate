@@ -134,31 +134,22 @@ describe('ResourceComposer', () => {
       const config = { metadata: { name: 'test' } };
       composer.addClass({ id: 'test', type: TestClass, config });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect(result[0]).toBeInstanceOf(TestClass);
-      expect((result[0] as TestClass).config.metadata.labels).toEqual({
-        'thaitype.dev/kubricate': 'true',
-        "thaitype.dev/kubricate/resource-id": "test",
-      });
     });
 
     it('should build object resources with managed-by labels', () => {
       const config = { metadata: { name: 'test' } };
       composer.addObject({ id: 'test', config });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
         metadata: {
           name: 'test',
-          annotations: {},
-          labels: {
-            'thaitype.dev/kubricate': 'true',
-            "thaitype.dev/kubricate/resource-id": "test",
-          },
         },
       });
     });
@@ -167,7 +158,7 @@ describe('ResourceComposer', () => {
       const config = { metadata: { name: 'test' } };
       composer.addInstance({ id: 'test', config });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(config);
@@ -182,7 +173,7 @@ describe('ResourceComposer', () => {
         test: { metadata: { annotations: { key: 'value' } } },
       });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect((result[0] as TestClass).config.metadata.annotations).toEqual({ key: 'value' });
@@ -197,7 +188,7 @@ describe('ResourceComposer', () => {
         test: { metadata: { annotations: { key: 'value' } } },
       });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect((result[0] as any).metadata.annotations).toEqual({ key: 'value' });
@@ -215,7 +206,7 @@ describe('ResourceComposer', () => {
         .addObject({ id: 'object', config: objectConfig })
         .addInstance({ id: 'instance', config: instanceConfig });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(3);
       expect(result.some((r: unknown) => r instanceof TestClass)).toBe(true);
@@ -231,7 +222,7 @@ describe('ResourceComposer', () => {
         // type is missing
       };
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(0);
     });
@@ -257,14 +248,12 @@ describe('ResourceComposer', () => {
         },
       });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       // Both original and override labels should be present
       expect((result[0] as TestClass).config.metadata.labels).toEqual({
         original: 'value',
         override: 'value',
-        'thaitype.dev/kubricate': 'true',
-        "thaitype.dev/kubricate/resource-id": "test",
       });
     });
   });

@@ -12,7 +12,7 @@ const myApp = new AppStack()
   .from({
     namespace: config.namespace,
     imageName: 'nginx',
-    name: 'my-app11',
+    name: 'my-app',
   })
   .useSecrets(secretManager, c => {
     c.secrets('my_app_key').forName('ENV_APP_KEY').inject();
