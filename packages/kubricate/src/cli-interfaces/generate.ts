@@ -5,6 +5,7 @@ import { handlerError } from '../internal/error.js';
 import { verboseCliConfig } from '../internal/utils.js';
 import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate/index.js';
 import { ConfigLoader } from '../commands/ConfigLoader.js';
+import type { BaseLogger } from '@kubricate/core';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',
@@ -27,19 +28,28 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
         array: true,
       }),
   handler: async (argv: ArgumentsCamelCase<GenerateCommandOptions>) => {
-    let logger = argv.logger ?? new ConsoleLogger();
-    // Set logger to silent if stdout is true`
-    if (argv.stdout === true) {
-      logger = new ConsoleLogger('silent');
-    }
+    let logger: BaseLogger | undefined = new ConsoleLogger('silent');
+
     try {
+      verboseCliConfig(argv, logger, 'generate');
+      const configLoader = new ConfigLoader(argv, logger);
+
+      const config = await configLoader.load();
+
+      // Set to normal log level
+      logger = argv.logger ?? new ConsoleLogger();
+      if (config.generate?.outputMode === 'stdout' || argv.stdout) {
+        argv.stdout = true;
+        logger = new ConsoleLogger('silent');
+      }
       if (argv.stdout === false && argv.filter) {
         throw new Error('"--filter" option is allowed only when using with "--stdout" option');
       }
-      verboseCliConfig(argv, logger, 'generate');
-      const configLoader = new ConfigLoader(argv, logger);
+
+      configLoader.setLogger(logger);
       configLoader.showVersion();
-      const { config } = await configLoader.load();
+      await configLoader.prepare(config);
+
       await new GenerateCommand(argv, logger).execute(config);
     } catch (error) {
       handlerError(error, logger);

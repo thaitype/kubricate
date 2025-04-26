@@ -1,6 +1,10 @@
 import type { BaseLogger } from '@kubricate/core';
+import { ConsoleLogger } from './logger.js';
 
-export function handlerError(error: unknown, logger: BaseLogger): void {
+export function handlerError(error: unknown, logger?: BaseLogger | undefined): void {
+  if (logger === undefined) {
+    logger = new ConsoleLogger('error');
+  }
   if (error instanceof Error) {
     logger.error(`Error: ${error.message}`);
     if (logger.level === 'debug') {

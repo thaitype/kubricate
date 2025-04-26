@@ -5,7 +5,6 @@ import { ExecaExecutor } from '../../executor/execa-executor.js';
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { ConsoleLogger } from '../../internal/logger.js';
 import { handlerError } from '../../internal/error.js';
-import { verboseCliConfig } from '../../internal/utils.js';
 import { ConfigLoader } from '../../commands/ConfigLoader.js';
 
 export const secretValidateCommand: CommandModule<GlobalConfigOptions, SecretCommandOptions> = {
@@ -14,12 +13,13 @@ export const secretValidateCommand: CommandModule<GlobalConfigOptions, SecretCom
   handler: async argv => {
     const logger = argv.logger ?? new ConsoleLogger();
     try {
-      verboseCliConfig(argv, logger, 'secret validate');
       const executor = new KubectlExecutor('kubectl', logger, new ExecaExecutor());
 
       const configLoader = new ConfigLoader(argv, logger);
-      configLoader.showVersion();
-      const { orchestrator } = await configLoader.load();
+      const { orchestrator } = await configLoader.initialize({
+        subject: 'secret validate',
+        commandOptions: argv,
+      });
 
       await new SecretCommand(argv, logger, executor).validate(orchestrator);
     } catch (error) {
