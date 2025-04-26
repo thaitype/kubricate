@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { BaseLogger, ProjectGenerateOptions } from '@kubricate/core';
-import { MARK_BULLET, MARK_CHECK, MARK_NODE } from '../../internal/constant.js';
+import { MARK_BULLET, MARK_CHECK } from '../../internal/constant.js';
 import type { GlobalConfigOptions } from '../../internal/types.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
@@ -17,19 +17,23 @@ export class GenerateRunner {
 
   constructor(
     public readonly options: GenerateCommandOptions,
-    public readonly generateObjects: Required<ProjectGenerateOptions>,
+    public readonly generateOptions: Required<ProjectGenerateOptions>,
     private readonly renderedFiles: RenderedFile[],
     protected readonly logger: BaseLogger,
   ) { }
 
   async run() {
-    if (this.generateObjects.cleanOutputDir) {
-      this.cleanOutputDir(path.join(this.options.root ?? '', this.generateObjects.outputDir));
+    if (this.generateOptions.cleanOutputDir) {
+      this.cleanOutputDir(path.join(this.options.root ?? '', this.generateOptions.outputDir));
     }
 
     const stats = { written: 0 };
 
-    this.logger.info(`Rendering with output mode "${this.generateObjects.outputMode}"\n`);
+    this.logger.info(`Rendering with output mode "${this.generateOptions.outputMode}"`);
+    if(this.generateOptions.cleanOutputDir) {
+      this.logger.info(`Cleaning output directory: ${this.options.outDir}`);
+    }
+    this.logger.log(`\nGenerating stacks...`);
     for (const { filePath, content } of this.renderedFiles) {
       const outputPath = path.join(this.options.root ?? '', filePath);
       this.ensureDir(outputPath);
@@ -38,7 +42,7 @@ export class GenerateRunner {
       stats.written++;
     }
 
-    this.logger.log(`\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateObjects.outputDir}/"`);
+    this.logger.log(`\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateOptions.outputDir}/"`);
   }
 
   private cleanOutputDir(dir: string) {

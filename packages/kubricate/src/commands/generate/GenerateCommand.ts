@@ -38,6 +38,7 @@ export class GenerateCommand extends BaseCommand {
     const generateOptions = this.resolveDefaultGenerateOptions(config);
 
     logger.info('Generating stacks for Kubernetes...');
+
     const renderedFiles = this.getRenderedFiles(config, generateOptions.outputMode);
     const runner = new GenerateRunner(this.options, generateOptions, renderedFiles, this.logger);
 
