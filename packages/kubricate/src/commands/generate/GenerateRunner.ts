@@ -39,6 +39,10 @@ export class GenerateRunner {
       this.processOutput(file, stats);
     }
 
+    if(stats.written === 0) {
+      this.logger.warn(`No files generated.`);
+      return;
+    }
     this.logger.log(`\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateOptions.outputDir}/"`);
   }
 
