@@ -67,10 +67,11 @@ export class Renderer {
 
     for (const [stackId, stack] of Object.entries(config.stacks)) {
       let builtResources: Record<string, unknown> = {};
+      const stackName = stack.getName() ?? getClassName(stack) ?? 'unknown';
       if (this.metadata.inject === true) {
         builtResources = this.injectMetadata(stack.build(), {
           stackId,
-          stackName: stack.getName() ?? getClassName(stack) ?? 'unknown',
+          stackName,
         });
       } else {
         builtResources = stack.build();
@@ -81,7 +82,7 @@ export class Renderer {
         const kind = resource?.kind || 'UnknownKind';
         const name = resource?.metadata?.name || 'unnamed';
         const content = yamlStringify(resource) + '---\n';
-        output.push({ stackName: stackId, kind, name, content, id: resourceId, stackId });
+        output.push({ stackName, kind, name, content, id: resourceId, stackId });
       }
     }
 
@@ -93,9 +94,9 @@ export class Renderer {
       case 'flat':
         return 'stacks.yml';
       case 'stack':
-        return `${resource.stackName}.yml`;
+        return `${resource.stackId}.yml`;
       case 'resource':
-        return path.join(resource.stackName, `${resource.kind}_${resource.id}.yml`);
+        return path.join(resource.stackId, `${resource.kind}_${resource.id}.yml`);
       case 'stdout':
         // Create canonical name for the resource groped by stackId and resourceId
         return `${resource.stackId}.${resource.id}`;
