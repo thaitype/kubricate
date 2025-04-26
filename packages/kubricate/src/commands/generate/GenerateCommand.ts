@@ -3,7 +3,7 @@ import path from "node:path";
 import type { BaseLogger, KubricateConfig, ProjectGenerateOptions } from "@kubricate/core";
 
 import { Renderer } from "./Renderers.js";
-import { BaseCommand } from "../base.js";
+import { BaseCommand } from "../BaseCommand.js";
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { GenerateRunner, type RenderedFile } from './GenerateRunner.js';
 import c from 'ansis';

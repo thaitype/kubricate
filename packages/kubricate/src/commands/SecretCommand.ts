@@ -3,7 +3,7 @@ import type { GlobalConfigOptions } from '../internal/types.js';
 import type { KubectlExecutor } from '../executor/kubectl-executor.js';
 import { MARK_CHECK } from '../internal/constant.js';
 import c from 'ansis';
-import { BaseCommand } from './base.js';
+import { BaseCommand } from './BaseCommand.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SecretCommandOptions extends GlobalConfigOptions { }

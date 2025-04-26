@@ -1,5 +1,5 @@
 import type { CommandModule } from 'yargs';
-import { SecretCommand, type SecretCommandOptions } from '../../commands/secret.js';
+import { SecretCommand, type SecretCommandOptions } from '../../commands/SecretCommand.js';
 import { ExecaExecutor } from '../../executor/execa-executor.js';
 import { KubectlExecutor } from '../../executor/kubectl-executor.js';
 import type { GlobalConfigOptions } from '../../internal/types.js';

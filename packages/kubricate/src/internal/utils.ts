@@ -1,7 +1,7 @@
 import type { GlobalConfigOptions } from './types.js';
 import type { BaseLogger, BaseStack, KubricateConfig, ResourceEntry } from '@kubricate/core';
 import { getMatchConfigFile } from './load-config.js';
-import type { SecretCommandOptions } from '../commands/secret.js';
+import type { SecretCommandOptions } from '../commands/SecretCommand.js';
 import type { GenerateCommandOptions } from '../commands/generate/index.js';
 
 export function getClassName(obj: unknown): string {
