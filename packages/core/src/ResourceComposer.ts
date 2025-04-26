@@ -58,16 +58,40 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     );
   }
 
+  private ensureMetadata(resource: Record<string, unknown>) {
+    if (!('metadata' in resource)) {
+      resource.metadata = {};
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const metadata = resource.metadata as Record<string, any>;
+    metadata.labels ??= {};
+    metadata.annotations ??= {};
+    return metadata;
+  }
+
+  injectMetadata(resource: Record<string, unknown>, resourceId: string) {
+    const metadata = this.ensureMetadata(resource);
+
+    metadata.labels ??= {};
+    metadata.annotations ??= {};
+
+    metadata.labels['thaitype.dev/kubricate'] = 'true';
+    metadata.labels['thaitype.dev/kubricate/resource-id'] = resourceId;
+    return resource;
+  }
+
   build() {
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(this._entries)) {
       const { type, entryType: kind } = this._entries[key];
-      const { config } = this._entries[key];
+      let { config } = this._entries[key];
 
       if (kind === 'instance') {
         result[key] = config;
         continue;
       }
+
+      config = this.injectMetadata(config, key);
 
       const mergedConfig = merge({}, config, this._override ? this._override[key] : {});
       if (kind === 'object') {

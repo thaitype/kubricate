@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ResourceComposer, LABEL_MANAGED_BY_KEY, LABEL_MANAGED_BY_VALUE } from './ResourceComposer.js';
+import { ResourceComposer } from './ResourceComposer.js';
 
 class TestClass {
-  constructor(public config: Record<string, any>) {}
+  constructor(public config: Record<string, any>) { }
 }
 
 describe('ResourceComposer', () => {
@@ -129,29 +129,6 @@ describe('ResourceComposer', () => {
     });
   });
 
-  describe('attachLabels method', () => {
-    it('should create metadata.labels if it does not exist', () => {
-      const config = { metadata: {} };
-      const labels = { 'test-label': 'value' };
-
-      const result = composer['attachLabels'](config, labels);
-
-      expect(result.metadata.labels).toEqual(labels);
-    });
-
-    it('should merge labels with existing labels', () => {
-      const config = { metadata: { labels: { existing: 'label' } } };
-      const labels = { 'test-label': 'value' };
-
-      const result = composer['attachLabels'](config, labels);
-
-      expect(result.metadata.labels).toEqual({
-        existing: 'label',
-        'test-label': 'value',
-      });
-    });
-  });
-
   describe('build method', () => {
     it('should build class resources with managed-by labels', () => {
       const config = { metadata: { name: 'test' } };
@@ -162,7 +139,8 @@ describe('ResourceComposer', () => {
       expect(result).toHaveLength(1);
       expect(result[0]).toBeInstanceOf(TestClass);
       expect((result[0] as TestClass).config.metadata.labels).toEqual({
-        [LABEL_MANAGED_BY_KEY]: LABEL_MANAGED_BY_VALUE,
+        'thaitype.dev/kubricate': 'true',
+        "thaitype.dev/kubricate/resource-id": "test",
       });
     });
 
@@ -176,8 +154,10 @@ describe('ResourceComposer', () => {
       expect(result[0]).toEqual({
         metadata: {
           name: 'test',
+          annotations: {},
           labels: {
-            [LABEL_MANAGED_BY_KEY]: LABEL_MANAGED_BY_VALUE,
+            'thaitype.dev/kubricate': 'true',
+            "thaitype.dev/kubricate/resource-id": "test",
           },
         },
       });
@@ -283,7 +263,8 @@ describe('ResourceComposer', () => {
       expect((result[0] as TestClass).config.metadata.labels).toEqual({
         original: 'value',
         override: 'value',
-        [LABEL_MANAGED_BY_KEY]: LABEL_MANAGED_BY_VALUE,
+        'thaitype.dev/kubricate': 'true',
+        "thaitype.dev/kubricate/resource-id": "test",
       });
     });
   });

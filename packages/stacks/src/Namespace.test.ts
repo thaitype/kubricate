@@ -22,6 +22,6 @@ describe('NamespaceStack', () => {
 
     // Check metadata
     expect(ns.metadata?.name).toBe('my-namespace');
-    expect(ns.metadata?.labels?.['thaitype.dev/managed-by']).toBe('kubricate');
+    expect(ns.metadata?.labels?.['thaitype.dev/kubricate']).toBe('true');
   });
 });

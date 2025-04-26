@@ -1,11 +1,8 @@
-
-import fs from 'fs/promises';
 import path from "node:path";
 
 import type { BaseLogger } from "@kubricate/core";
 
-import { MARK_CHECK } from "../../internal/constant.js";
-import { renderStacks, resolveOutputPath } from "./renderers.js";
+import { Renderer } from "./Renderers.js";
 import { BaseCommand } from "../base.js";
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { GenerateRunner, type RenderedFile } from './GenerateRunner.js';
@@ -24,7 +21,8 @@ export class GenerateCommand extends BaseCommand {
 
   async execute() {
     const { config } = await this.init();
-    const rendered = renderStacks(config);
+    const renderer = new Renderer(this.logger);
+    const rendered = renderer.renderStacks(config);
 
     const outputMode = config.generate?.outputMode ?? 'stack';
 
@@ -32,7 +30,7 @@ export class GenerateCommand extends BaseCommand {
     const renderedFiles: RenderedFile[] = [];
 
     for (const r of rendered) {
-      const outPath = resolveOutputPath(r, outputMode);
+      const outPath = renderer.resolveOutputPath(r, outputMode);
       if (!files[outPath]) files[outPath] = [];
       files[outPath].push(r.content);
     }
