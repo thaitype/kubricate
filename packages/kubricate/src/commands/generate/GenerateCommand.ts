@@ -96,9 +96,15 @@ export class GenerateCommand extends BaseCommand {
     const filterSet = new Set(filters);
     const matchedFilters = new Set<string>();
 
+    const stackIds = new Set<string>();
+    const fullResourceIds = new Set<string>();
+
     const filtered = renderedFiles.filter((file) => {
-      const originalPath = file.originalPath; // e.g., myStack.deployment
-      const stackId = originalPath.split('.')[0]; // "myStack"
+      const originalPath = file.originalPath; // e.g., myApp.deployment
+      const [stackId] = originalPath.split('.');
+
+      stackIds.add(stackId);
+      fullResourceIds.add(originalPath);
 
       const matched = filterSet.has(stackId) || filterSet.has(originalPath);
 
@@ -113,14 +119,29 @@ export class GenerateCommand extends BaseCommand {
     const unmatchedFilters = filters.filter((f) => !matchedFilters.has(f));
 
     if (unmatchedFilters.length > 0) {
+      const stacksList = Array.from(stackIds).sort().join('\n     - ');
+      const resourcesList = Array.from(fullResourceIds).sort().join('\n     - ');
+      const stacksSection = stackIds.size > 0 ?
+        `  • Stacks: \n` +
+        `     - ${stacksList}\n`
+        : '';
+      const resourcesSection = fullResourceIds.size > 0 ?
+        `  • Resources: \n` +
+        `     - ${resourcesList}\n`
+        : '';
+
       throw new Error(
-        `The following filters did not match any resource: ${unmatchedFilters.join(', ')}.\n` +
-        `Please check your --filter values and try again.`
+        `The following filters did not match any resource: ${unmatchedFilters.join(', ')}.\n\n` +
+        `Available filters:\n` +
+        stacksSection +
+        resourcesSection +
+        `\nPlease check your --filter values and try again.`
       );
     }
 
     return filtered;
   }
+
 
   showStacks(config: KubricateConfig) {
     const logger = this.logger;
