@@ -22,7 +22,7 @@ export class BaseCommand {
   }
 
   protected showVersion() {
-    console.log(c.blue`kubricate` + ` v${this.options.version}\n`);
+    this.logger.log(c.blue`kubricate` + ` v${this.options.version}\n`);
   }
 
   protected handleDeprecatedSecretOptions(config: KubricateConfig | undefined): KubricateConfig | undefined {
