@@ -7,7 +7,7 @@ export default defineConfig({
     frontend: sharedStacks.frontend,
   },
   generate: {
-    outputMode: 'stack',
+    outputMode: 'flat',
   },
   metadata,
 });
