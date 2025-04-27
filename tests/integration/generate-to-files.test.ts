@@ -45,16 +45,6 @@ describe.each(scenarios)('CLI Integration ($name)', ({ fixture }) => {
     expect(exitCode).toBe(0);
     expect(stdout).toContain('Generating stacks');
 
-
     await snapshotDirectory(outputFixtureDir, `${fixture}/${outputDir}`);
-    // const files = await fs.readdir(outputFixtureDir);
-
-    // await Promise.all(files.map(async (file) => {
-    //   const fullPath = path.join(outputFixtureDir, file);
-    //   const content = await fs.readFile(fullPath, 'utf-8');
-
-    //   // ✨ Snapshot using fixture + filename
-    //   expect(content).toMatchSnapshot(`${fixture}/${outputDir}/${file}`);
-    // }));
   });
 });
