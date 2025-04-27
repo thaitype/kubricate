@@ -2,7 +2,7 @@ import path from "node:path";
 
 import type { BaseLogger, KubricateConfig, ProjectGenerateOptions } from "@kubricate/core";
 
-import { Renderer } from "./Renderers.js";
+import { Renderer } from "./Renderer.js";
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { GenerateRunner, type RenderedFile } from './GenerateRunner.js';
 import c from 'ansis';
