@@ -40,10 +40,6 @@ export class GenerateCommand {
       cleanOutputDir: true,
     };
     const result = merge({}, defaultOptions, config.generate);
-    // When `stdout` is true, override the output mode to `stdout`
-    if (this.options.stdout === true) {
-      result.outputMode = 'stdout';
-    }
     return result;
   }
 
@@ -70,7 +66,7 @@ export class GenerateCommand {
     const renderedFiles: RenderedFile[] = [];
 
     for (const r of rendered) {
-      const outPath = renderer.resolveOutputPath(r, outputMode);
+      const outPath = renderer.resolveOutputPath(r, outputMode, this.options.stdout);
       if (!files[outPath]) files[outPath] = [];
       files[outPath].push(r.content);
     }

@@ -89,7 +89,12 @@ export class Renderer {
     return output;
   }
 
-  resolveOutputPath(resource: RenderedResource, mode: ProjectGenerateOptions['outputMode']): string {
+  resolveOutputPath(resource: RenderedResource, mode: ProjectGenerateOptions['outputMode'], stdout: boolean): string {
+    if (stdout) {
+      // Create canonical name for the resource groped by stackId and resourceId
+      return `${resource.stackId}.${resource.id}`;
+    }
+    
     switch (mode) {
       case 'flat':
         return 'stacks.yml';
@@ -97,9 +102,6 @@ export class Renderer {
         return `${resource.stackId}.yml`;
       case 'resource':
         return path.join(resource.stackId, `${resource.kind}_${resource.id}.yml`);
-      case 'stdout':
-        // Create canonical name for the resource groped by stackId and resourceId
-        return `${resource.stackId}.${resource.id}`;
     }
     throw new Error(`Unknown output mode: ${mode}`);
   }

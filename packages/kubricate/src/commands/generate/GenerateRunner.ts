@@ -2,11 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { BaseLogger, ProjectGenerateOptions } from '@kubricate/core';
 import { MARK_BULLET, MARK_CHECK } from '../../internal/constant.js';
-import type { GlobalConfigOptions } from '../../internal/types.js';
-
-export interface GenerateCommandOptions extends GlobalConfigOptions {
-  outDir: string;
-}
+import type { GenerateCommandOptions } from './GenerateCommand.js';
 
 export interface RenderedFile {
   filePath: string;
@@ -58,7 +54,7 @@ export class GenerateRunner {
   }
 
   private processOutput(file: RenderedFile, stats: { written: number }) {
-    if (this.generateOptions.outputMode === 'stdout') {
+    if (this.options.stdout) {
       console.log(file.content);
       return;
     }

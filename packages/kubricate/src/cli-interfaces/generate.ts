@@ -28,27 +28,17 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
         array: true,
       }),
   handler: async (argv: ArgumentsCamelCase<GenerateCommandOptions>) => {
-    let logger: BaseLogger | undefined = new ConsoleLogger('silent');
+    const logger = argv.stdout ? new ConsoleLogger('silent') : (argv.logger ?? new ConsoleLogger('info'));
 
     try {
-      verboseCliConfig(argv, logger, 'generate');
-      const configLoader = new ConfigLoader(argv, logger);
-
-      const config = await configLoader.load();
-
-      // Set to normal log level
-      logger = argv.logger ?? new ConsoleLogger();
-      if (config.generate?.outputMode === 'stdout' || argv.stdout) {
-        argv.stdout = true;
-        logger = new ConsoleLogger('silent');
-      }
       if (argv.stdout === false && argv.filter) {
         throw new Error('"--filter" option is allowed only when using with "--stdout" option');
       }
-
-      configLoader.setLogger(logger);
-      configLoader.showVersion();
-      await configLoader.prepare(config);
+      const configLoader = new ConfigLoader(argv, logger);
+      const { config } = await configLoader.initialize({
+        commandOptions: argv,
+        subject: 'generate'
+      });
 
       await new GenerateCommand(argv, logger).execute(config);
     } catch (error) {
