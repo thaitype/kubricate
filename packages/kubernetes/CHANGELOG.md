@@ -1,5 +1,12 @@
 # @kubricate/kubernetes
 
+## 0.18.0
+
+### Patch Changes
+
+- Updated dependencies [681a196]
+  - @kubricate/core@0.18.0
+
 ## 0.17.0
 
 ### Minor Changes
