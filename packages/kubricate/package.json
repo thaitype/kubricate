@@ -45,6 +45,7 @@
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
     "@kubricate/mono": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.13.9",
     "@types/yargs": "^17.0.33"
   },
@@ -52,9 +53,11 @@
     "@kubricate/core": "workspace:*",
     "ansis": "^3.17.0",
     "execa": "^9.5.2",
+    "lodash-es": "^4.17.21",
     "unconfig": "^7.3.1",
     "yaml": "^2.7.0",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "zod": "^3.24.2"
   },
   "keywords": [
     "kubernetes",

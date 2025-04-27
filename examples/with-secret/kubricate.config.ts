@@ -6,7 +6,7 @@ export default defineConfig({
   stacks: {
     ...simpleAppStack,
   },
-  secrets: {
+  secret: {
     manager: secretManager,
     conflict: {
       strategies: {

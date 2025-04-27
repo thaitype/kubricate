@@ -3,10 +3,11 @@ import { MARK_ERROR, MARK_INFO, MARK_WARNING } from './constant.js';
 import type { BaseLogger, LogLevel } from '@kubricate/core';
 
 export class ConsoleLogger implements BaseLogger {
-  constructor(public level: LogLevel = 'debug') {}
+  constructor(public level: LogLevel = 'debug') { }
 
   private shouldLog(target: LogLevel) {
-    const levels: LogLevel[] = ['silent', 'error', 'warn', 'info', 'debug'];
+    if (this.level === 'silent') return false; // silent disables all except manual error()
+    const levels: LogLevel[] = ['error', 'warn', 'info', 'debug'];
     return levels.indexOf(target) <= levels.indexOf(this.level);
   }
 
@@ -23,7 +24,7 @@ export class ConsoleLogger implements BaseLogger {
   }
 
   error(message: string) {
-    if (this.shouldLog('error')) console.error(c.red(`${MARK_ERROR} ${message}`));
+    console.error(c.red(`${MARK_ERROR} ${message}`));
   }
 
   debug(message: string) {

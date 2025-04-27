@@ -1,11 +1,12 @@
 import type { BaseStack } from './BaseStack.js';
+import type { ProjectGenerateOptions } from './generate/types.js';
 import { ResourceComposer } from './ResourceComposer.js';
-import type { ProjectSecretOptions } from './secrets/types.js';
+import type { ProjectSecretOptions } from './secret/types.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyClass = { new (...args: any[]): any };
+export type AnyClass = { new(...args: any[]): any };
 
 /**
  * Accept any type of key, including string, number, or symbol, Like `keyof any`.
@@ -31,10 +32,73 @@ export type InferConfigureComposerFunc<T> = T extends (...args: any[]) => Resour
  */
 export type AnyString = string & {};
 
+/**
+ * Metadata configuration for project-wide resource generation behavior.
+ */
+export interface ProjectMetadataOptions {
+  /**
+   * Whether to automatically inject standard Kubricate metadata
+   * (such as labels and annotations) into every generated resource.
+   * If `true`, Kubricate will inject fields like `stack-id`, `stack-name`, `version`, and `managed-at`.
+   * Defaults to `true` if omitted.
+   * 
+  * @default true
+   */
+  inject?: boolean;
+  /**
+   * Whether to inject the 'managed-at' annotation into each generated resource.
+   * If false, Kubricate will omit the 'thaitype.dev/kubricate/managed-at' field.
+   *
+   * Defaults to `true`.
+   * 
+   * @default true
+   */
+  injectManagedAt?: boolean;
+
+  /**
+   * Whether to inject the 'resource-hash' annotation into each generated resource.
+   * 
+   * When enabled, Kubricate will calculate a stable hash of the resource content
+   * (excluding dynamic fields like 'managed-at') and inject it into
+   * the annotation 'thaitype.dev/kubricate/resource-hash'.
+   * 
+   * Useful for GitOps and drift detection tools to track changes in resource specifications.
+   * 
+   * Defaults to `true` if omitted.
+   * 
+   * @default true
+   */
+  injectResourceHash?: boolean;
+  /**
+   * Whether to inject the 'version' annotation into each generated resource.
+   * 
+   * When enabled, Kubricate will inject the CLI framework version
+   * (e.g., `0.17.0`) into the annotation 'thaitype.dev/kubricate/version'.
+   * 
+   * Useful for tracking which Kubricate version was used to generate the manifest,
+   * which can assist in debugging, auditing, or reproducing environments.
+   * 
+   * Defaults to `true` if omitted.
+   * 
+   * @default true
+   */
+  injectVersion?: boolean;
+}
 
 export interface KubricateConfig {
   stacks?: Record<string, BaseStack>;
+  metadata?: ProjectMetadataOptions;
+  /**
+   * Secrets configuration
+   * 
+   * @deprecated Use `secret` instead
+   */
   secrets?: ProjectSecretOptions;
+  /**
+   * Secret configuration
+   */
+  secret?: ProjectSecretOptions;
+  generate?: ProjectGenerateOptions;
 }
 
 export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug';
@@ -50,9 +114,9 @@ export interface BaseLogger {
 
 export class SilentLogger implements BaseLogger {
   level: LogLevel = 'silent';
-  log() {}
-  info() {}
-  warn() {}
-  error() {}
-  debug() {}
+  log() { }
+  info() { }
+  warn() { }
+  error() { }
+  debug() { }
 }

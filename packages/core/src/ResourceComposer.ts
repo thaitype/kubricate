@@ -1,7 +1,8 @@
-import { merge, isPlainObject } from 'lodash-es';
+import { merge, isPlainObject, cloneDeep } from 'lodash-es';
 import type { AnyClass } from './types.js';
 import type { Call, Objects } from 'hotscript';
 import { get, set } from 'lodash-es';
+import { validateId } from './utils.js';
 
 export interface ResourceEntry {
   type?: AnyClass;
@@ -15,24 +16,13 @@ export interface ResourceEntry {
   entryType: 'class' | 'object' | 'instance';
 }
 
-export const LABEL_MANAGED_BY_KEY = 'thaitype.dev/managed-by';
-export const LABEL_MANAGED_BY_VALUE = 'kubricate';
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
   _entries: Record<string, ResourceEntry> = {};
   _override: Record<string, unknown> = {};
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private attachLabels(config: Record<string, any>, labels: Record<string, string>) {
-    if (!config.metadata?.labels) {
-      config.metadata.labels = {};
-    }
-    config.metadata.labels = { ...config.metadata?.labels, ...labels };
-    return config;
-  }
-
   inject(resourceId: string, path: string, value: unknown) {
-    const composed = this._entries[resourceId];
+    const composed = cloneDeep(this._entries[resourceId]);
     if (!composed) {
       throw new Error(`Cannot inject, resource with ID ${resourceId} not found.`);
     }
@@ -45,6 +35,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     if (existingValue === undefined) {
       // No value yet — safe to set directly
       set(composed.config, path, value);
+      this._entries[resourceId] = composed;
       return;
     }
 
@@ -52,6 +43,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
       // Append array elements (e.g. env vars, volumeMounts)
       const mergedArray = [...existingValue, ...value];
       set(composed.config, path, mergedArray);
+      this._entries[resourceId] = composed;
       return;
     }
 
@@ -59,6 +51,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
       // Deep merge objects
       const mergedObject = merge({}, existingValue, value);
       set(composed.config, path, mergedObject);
+      this._entries[resourceId] = composed;
       return;
     }
 
@@ -69,30 +62,28 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
     );
   }
 
-  build() {
+  build(): Record<string, unknown> {
     const result: Record<string, unknown> = {};
-    for (const key of Object.keys(this._entries)) {
-      const { type, entryType: kind } = this._entries[key];
-      let { config } = this._entries[key];
+    for (const resourceId of Object.keys(this._entries)) {
+      validateId(resourceId, 'resourceId');
+      const { type, entryType: kind } = this._entries[resourceId];
+      const { config } = this._entries[resourceId];
 
       if (kind === 'instance') {
-        result[key] = config;
+        result[resourceId] = config;
         continue;
       }
-      // Inject the managed-by label
-      const injectedLabel: Record<string, string> = {};
-      injectedLabel[LABEL_MANAGED_BY_KEY] = LABEL_MANAGED_BY_VALUE;
-      config = this.attachLabels(config, injectedLabel);
-      const mergedConfig = merge({}, config, this._override ? this._override[key] : {});
+
+      const mergedConfig = merge({}, config, this._override ? this._override[resourceId] : {});
       if (kind === 'object') {
-        result[key] = mergedConfig;
+        result[resourceId] = mergedConfig;
         continue;
       }
       if (!type) continue;
       // Create the resource
-      result[key] = new type(mergedConfig);
+      result[resourceId] = new type(mergedConfig);
     }
-    return Object.values(result);
+    return result;
   }
 
   /**
@@ -164,7 +155,7 @@ export class ResourceComposer<Entries extends Record<string, unknown> = {}> {
 
   findResourceIdsByKind(kind: string): string[] {
     const resourceIds: string[] = [];
-    const buildResources: unknown[] = this.build();
+    const buildResources: unknown[] = Object.values(this.build());
     const entryIds = Object.keys(this._entries);
 
     for (let i = 0; i < buildResources.length; i++) {

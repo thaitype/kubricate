@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "hotscript": "^1.0.13",
-    "js-base64": "^3.7.7",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",

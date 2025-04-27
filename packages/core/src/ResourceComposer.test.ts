@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { ResourceComposer, LABEL_MANAGED_BY_KEY, LABEL_MANAGED_BY_VALUE } from './ResourceComposer.js';
+import { ResourceComposer } from './ResourceComposer.js';
 
 class TestClass {
-  constructor(public config: Record<string, any>) {}
+  constructor(public config: Record<string, any>) { }
 }
 
 describe('ResourceComposer', () => {
@@ -77,7 +77,7 @@ describe('ResourceComposer', () => {
       composer.addClass({ id: 'test', type: TestClass, config });
       composer.inject('test', 'metadata.annotations', { key: 'value' });
 
-      expect(config).toEqual({
+      expect(composer._entries['test'].config).toEqual({
         metadata: {
           name: 'test',
           annotations: { key: 'value' },
@@ -90,7 +90,7 @@ describe('ResourceComposer', () => {
       composer.addObject({ id: 'test', config });
       composer.inject('test', 'metadata.annotations', { key: 'value' });
 
-      expect(config).toEqual({
+      expect(composer._entries['test'].config).toEqual({
         metadata: {
           name: 'test',
           annotations: { key: 'value' },
@@ -129,56 +129,27 @@ describe('ResourceComposer', () => {
     });
   });
 
-  describe('attachLabels method', () => {
-    it('should create metadata.labels if it does not exist', () => {
-      const config = { metadata: {} };
-      const labels = { 'test-label': 'value' };
-
-      const result = composer['attachLabels'](config, labels);
-
-      expect(result.metadata.labels).toEqual(labels);
-    });
-
-    it('should merge labels with existing labels', () => {
-      const config = { metadata: { labels: { existing: 'label' } } };
-      const labels = { 'test-label': 'value' };
-
-      const result = composer['attachLabels'](config, labels);
-
-      expect(result.metadata.labels).toEqual({
-        existing: 'label',
-        'test-label': 'value',
-      });
-    });
-  });
-
   describe('build method', () => {
     it('should build class resources with managed-by labels', () => {
       const config = { metadata: { name: 'test' } };
       composer.addClass({ id: 'test', type: TestClass, config });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect(result[0]).toBeInstanceOf(TestClass);
-      expect((result[0] as TestClass).config.metadata.labels).toEqual({
-        [LABEL_MANAGED_BY_KEY]: LABEL_MANAGED_BY_VALUE,
-      });
     });
 
     it('should build object resources with managed-by labels', () => {
       const config = { metadata: { name: 'test' } };
       composer.addObject({ id: 'test', config });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual({
         metadata: {
           name: 'test',
-          labels: {
-            [LABEL_MANAGED_BY_KEY]: LABEL_MANAGED_BY_VALUE,
-          },
         },
       });
     });
@@ -187,7 +158,7 @@ describe('ResourceComposer', () => {
       const config = { metadata: { name: 'test' } };
       composer.addInstance({ id: 'test', config });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(config);
@@ -202,7 +173,7 @@ describe('ResourceComposer', () => {
         test: { metadata: { annotations: { key: 'value' } } },
       });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect((result[0] as TestClass).config.metadata.annotations).toEqual({ key: 'value' });
@@ -217,7 +188,7 @@ describe('ResourceComposer', () => {
         test: { metadata: { annotations: { key: 'value' } } },
       });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(1);
       expect((result[0] as any).metadata.annotations).toEqual({ key: 'value' });
@@ -235,7 +206,7 @@ describe('ResourceComposer', () => {
         .addObject({ id: 'object', config: objectConfig })
         .addInstance({ id: 'instance', config: instanceConfig });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(3);
       expect(result.some((r: unknown) => r instanceof TestClass)).toBe(true);
@@ -251,7 +222,7 @@ describe('ResourceComposer', () => {
         // type is missing
       };
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       expect(result).toHaveLength(0);
     });
@@ -277,13 +248,12 @@ describe('ResourceComposer', () => {
         },
       });
 
-      const result = composer.build();
+      const result = Object.values(composer.build());
 
       // Both original and override labels should be present
       expect((result[0] as TestClass).config.metadata.labels).toEqual({
         original: 'value',
         override: 'value',
-        [LABEL_MANAGED_BY_KEY]: LABEL_MANAGED_BY_VALUE,
       });
     });
   });
