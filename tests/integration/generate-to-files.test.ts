@@ -11,6 +11,7 @@ const scenarios = [
   { name: 'Output Mode: Stack', fixture: 'generate-output-stack' },
   { name: 'Output Mode: Flat', fixture: 'generate-output-flat' },
   { name: 'Output Mode: Resource', fixture: 'generate-output-resource' },
+  { name: 'Output Mode: Flat With Secret', fixture: 'generate-output-with-secret' },
 ] as const;
 
 async function snapshotDirectory(dir: string, fixturePrefix: string) {

@@ -4,6 +4,7 @@ import { ResourceComposer, BaseStack } from '@kubricate/core';
 
 export interface ISimpleAppStack {
   name: string;
+  namespace?: string;
   imageName: string;
   replicas?: number;
   imageRegistry?: string;
@@ -15,7 +16,7 @@ function configureComposer(data: ISimpleAppStack) {
   const replicas = data.replicas || 1;
   const imageRegistry = data.imageRegistry || '';
 
-  const metadata = { name: data.name };
+  const metadata = { name: data.name, namespace: data.namespace };
   const labels = { app: data.name };
 
   return new ResourceComposer()
