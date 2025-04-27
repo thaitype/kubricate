@@ -6,7 +6,6 @@ export interface MetadataInjectorOptions {
   type: 'stack' | 'secret';
   kubricateVersion: string;
   managedAt?: string;
-  calculateHash?: boolean;
 
   // Stack fields
   stackId?: string;
@@ -16,6 +15,15 @@ export interface MetadataInjectorOptions {
   // Secret fields
   secretManagerId?: string;
   secretManagerName?: string;
+
+  /**
+   * Inject Options to enable/disable to the labels and annotations injected into the resource.
+   */
+  inject?: {
+    managedAt?: boolean;
+    resourceHash?: boolean;
+    version?: boolean;
+  }
 }
 
 export class MetadataInjector {
@@ -42,13 +50,17 @@ export class MetadataInjector {
       metadata.annotations[LABELS.secretManagerName] = this.options.secretManagerName!;
     }
 
-    metadata.annotations[LABELS.version] = this.options.kubricateVersion;
-  
-    if (this.options.calculateHash) {
+    if (this.options.inject?.version) {
+      metadata.annotations[LABELS.version] = this.options.kubricateVersion;
+    }
+
+    if (this.options.inject?.resourceHash) {
       metadata.annotations[LABELS.resourceHash] = this.calculateHash(resource);
     }
 
-    metadata.annotations[LABELS.managedAt] = this.options.managedAt ?? new Date().toISOString();
+    if (this.options.inject?.managedAt) {
+      metadata.annotations[LABELS.managedAt] = this.options.managedAt ?? new Date().toISOString();
+    }
 
     return resource;
   }

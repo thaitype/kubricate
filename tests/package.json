@@ -26,16 +26,19 @@
     "check-types": "mono check-types"
   },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@kubricate/config-vitest": "workspace:*"
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*",
+    "execa": "^9.5.2",
+    "rimraf": "^6.0.1"
   },
   "dependencies": {
     "@kubricate/core": "workspace:*",
     "@kubricate/env": "workspace:*",
     "@kubricate/kubernetes": "workspace:*",
     "@kubricate/stacks": "workspace:*",
-    "kubernetes-models": "^4.4.2"
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
   }
 }

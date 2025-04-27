@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CLI Integration (generate) > should generate expected files > namespace.yml 1`] = `
+"apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+  labels:
+    thaitype.dev/kubricate: "true"
+    thaitype.dev/kubricate/stack-id: namespace
+    thaitype.dev/kubricate/resource-id: namespace
+  annotations:
+    thaitype.dev/kubricate/stack-name: NamespaceStack
+    thaitype.dev/kubricate/resource-hash: 446fa07a363d589aef6d97e7338f6d74f9fd397d9cec5209be5fd4b2b26bd3e0
+---
+"
+`;

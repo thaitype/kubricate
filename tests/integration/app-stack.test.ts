@@ -1,66 +1,35 @@
 import path from 'node:path';
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { rimraf } from 'rimraf';
+import { executeKubricate } from '../helpers/execute-kubricate';
+import fs from 'node:fs/promises';
 
-import { EnvConnector } from '@kubricate/env';
-import { OpaqueSecretProvider } from '@kubricate/kubernetes';
-import { SecretManager } from '@kubricate/core';
-import { SimpleAppStack, NamespaceStack } from '@kubricate/stacks';
+const rootDir = path.resolve(__dirname, '..');
+const fixturesDir = path.join(rootDir, 'fixtures', 'generate-output-stack');
+const outputDir = path.join(fixturesDir, 'output');
 
-describe('SimpleAppStack with OpaqueSecretProvider', () => {
-  test('injects APP_KEY from .env to container env', async () => {
-  //   // Setup connector from test fixture
-  //   const connector = new EnvConnector({ allowDotEnv: true });
-  //   connector.setWorkingDir(path.resolve(__dirname, '../fixtures/app-env'));
+describe('CLI Integration (generate)', () => {
+  
+  it('should generate expected files', async () => {
+    const args = [
+      'generate',
+      '--root',
+      fixturesDir,
+    ];
 
-  //   // Setup provider
-  //   const provider = new OpaqueSecretProvider({
-  //     name: 'app-secret',
-  //   });
+    const { stdout, exitCode } = await executeKubricate(args, { reject: false });
 
-  //   // Setup secret manager
-  //   const secretManager = new SecretManager()
-  //     .addConnector('env', connector)
-  //     .addProvider('env', provider)
-  //     .setDefaultConnector('env')
-  //     .setDefaultProvider('env')
-  //     .addSecret('APP_KEY');
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain('Generating stacks');
 
-  //   // Build stacks
-  //   const namespace = new NamespaceStack().from({ name: 'my-namespace' });
+    const files = await fs.readdir(outputDir);
 
-  //   const app = new SimpleAppStack()
-  //     .useSecrets(secretManager, ctx => {
-  //       ctx.secrets('APP_KEY').inject({ kind: 'env', containerIndex: 0 }).intoResource('deployment')
-  //     })
-  //     .from({
-  //       imageName: 'nginx',
-  //       name: 'my-app',
-  //     })
-  //     .override({
-  //       service: {
-  //         spec: { type: 'LoadBalancer' },
-  //       },
-  //     });
+    for (const file of files) {
+      const fullPath = path.join(outputDir, file);
+      const content = await fs.readFile(fullPath, 'utf-8');
 
-  //   // Build and assert
-  //   const resources = [...namespace.build(), ...app.build()];
-
-  //   const secret = resources.find((r: any) => r.kind === 'Secret') as any;
-  //   expect(secret?.metadata.name).toBe('app-secret');
-
-  //   const deployment = resources.find((r: any) => r.kind === 'Deployment') as any;
-  //   const injectedEnv = deployment?.spec?.template?.spec?.containers?.[0]?.env;
-
-  //   expect(injectedEnv).toContainEqual({
-  //     name: 'APP_KEY',
-  //     valueFrom: {
-  //       secretKeyRef: {
-  //         name: 'app-secret',
-  //         key: 'APP_KEY',
-  //       },
-  //     },
-  //   });
-  // });
-  expect(true).toBe(true); // Mock Test
+      // ✅ Snapshot EACH file individually
+      expect(content).toMatchSnapshot(file);
+    }
   });
 });

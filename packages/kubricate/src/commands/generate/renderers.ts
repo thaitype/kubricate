@@ -18,6 +18,9 @@ export interface RenderedResource {
 
 const defaultMetadata: Required<ProjectMetadataOptions> = {
   inject: true,
+  injectManagedAt: true,
+  injectResourceHash: true,
+  injectVersion: true,
 };
 
 interface KubernetesMetadata {
@@ -41,7 +44,11 @@ export class Renderer {
         stackId: options.stackId,
         stackName: options.stackName,
         resourceId,
-        calculateHash: true,
+        inject: {
+          managedAt: this.metadata.injectManagedAt,
+          resourceHash: this.metadata.injectResourceHash,
+          version: this.metadata.injectVersion,
+        }
       })
 
     const output: Record<string, unknown> = {};
@@ -94,7 +101,7 @@ export class Renderer {
       // Create canonical name for the resource groped by stackId and resourceId
       return `${resource.stackId}.${resource.id}`;
     }
-    
+
     switch (mode) {
       case 'flat':
         return 'stacks.yml';

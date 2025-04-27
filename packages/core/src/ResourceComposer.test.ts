@@ -77,7 +77,7 @@ describe('ResourceComposer', () => {
       composer.addClass({ id: 'test', type: TestClass, config });
       composer.inject('test', 'metadata.annotations', { key: 'value' });
 
-      expect(config).toEqual({
+      expect(composer._entries['test'].config).toEqual({
         metadata: {
           name: 'test',
           annotations: { key: 'value' },
@@ -90,7 +90,7 @@ describe('ResourceComposer', () => {
       composer.addObject({ id: 'test', config });
       composer.inject('test', 'metadata.annotations', { key: 'value' });
 
-      expect(config).toEqual({
+      expect(composer._entries['test'].config).toEqual({
         metadata: {
           name: 'test',
           annotations: { key: 'value' },
