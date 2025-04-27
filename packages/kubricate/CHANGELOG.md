@@ -1,5 +1,16 @@
 # kubricate
 
+## 0.18.0
+
+### Minor Changes
+
+- 681a196: feat(cli): support --stdout, --filter, outputMode config, improve metadata injection and secret handling
+
+### Patch Changes
+
+- Updated dependencies [681a196]
+  - @kubricate/core@0.18.0
+
 ## 0.17.0
 
 ### Patch Changes
