@@ -21,9 +21,11 @@
     "README.md"
   ],
   "scripts": {
-    "pre:dev": "typedoc --out api/core --options typedoc.core.json",
+    "pre:core": "typedoc --out api/core --options typedoc.core.json",
+    "pre:env": "typedoc --out api/env --options typedoc.env.json",
     "dev": "vitepress dev",
-    "build": "run-s pre:dev docs:build",
+    "post:typedoc": "tsx post-typedoc.ts",
+    "build": "run-s pre:* post:* docs:build",
     "docs:build": "vitepress build",
     "preview": "vitepress preview"
   },
@@ -43,10 +45,11 @@
     "kubernetes-models": "^4.4.2",
     "kubricate": "workspace:*",
     "ts-odata-client": "^2.0.2",
-    "vitepress": "^1.2.2",
-    "vue": "^3.4.27",
+    "tsx": "^4.19.3",
     "typedoc": "^0.28.3",
     "typedoc-plugin-markdown": "^4.6.3",
-    "typedoc-vitepress-theme": "^1.1.2"
+    "typedoc-vitepress-theme": "^1.1.2",
+    "vitepress": "^1.2.2",
+    "vue": "^3.4.27"
   }
 }
