@@ -1,10 +1,8 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const targetReadme: string[] = [
-  'api/core/index.md',
-  'api/env/index.md',
-];
+const packages = ['core', 'env', 'kubricate', 'kubernetes', 'stacks', 'toolkit'];
+const targetReadme = packages.map(pkg => `api/${pkg}/index.md`);
 
 async function updateMarkdownHeaders() {
   for (const filepath of targetReadme) {
