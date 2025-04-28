@@ -9,6 +9,7 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "@examples/*",
-    "@kubricate/tests"
+    "@kubricate/tests",
+    "@kubricate/docs"
   ]
 }
