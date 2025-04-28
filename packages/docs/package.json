@@ -23,9 +23,14 @@
   "scripts": {
     "pre:core": "typedoc --out api/core --options typedoc.core.json",
     "pre:env": "typedoc --out api/env --options typedoc.env.json",
+    "pre:kubernetes": "typedoc --out api/kubernetes --options typedoc.kubernetes.json",
+    "pre:stacks": "typedoc --out api/stacks --options typedoc.stacks.json",
+    "pre:toolkit": "typedoc --out api/toolkit --options typedoc.toolkit.json",
+    "pre:kubricate": "typedoc --out api/kubricate --options typedoc.kubricate.json",
+    "typedoc": "run-s pre:* post:*",
     "dev": "vitepress dev",
     "post:typedoc": "tsx post-typedoc.ts",
-    "build": "run-s pre:* post:* docs:build",
+    "build": "run-s docs:build",
     "docs:build": "vitepress build",
     "preview": "vitepress preview"
   },
