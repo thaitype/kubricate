@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 import { baseSidebar } from "./shared";
 import coreTypedocSidebar from "../api/core/typedoc-sidebar.json";
+import envTypedocSidebar from "../api/env/typedoc-sidebar.json";
 
 export const enGuideSidebar = baseSidebar.clone().toSidebarItems();
 
@@ -12,12 +13,21 @@ export const en = defineConfig({
     nav: [
       { text: "Guide", link: "/guide/overview" },
       { text: "API", link: "/api" },
+      // {
+      //   text: "API",
+      //   items: [
+      //     {
+      //       text: 'core',
+      //       link: '/api/core/',
+      //     }
+      //   ]
+      // }
     ],
 
-    // sidebar: enSidebar,
     sidebar: {
       '/guide/': { base: '/guide/', items: enGuideSidebar },
-      '/api/core/': { base: '', items: coreTypedocSidebar }
+      '/api/core/': { base: '', items: coreTypedocSidebar },
+      '/api/env/': { base: '', items: envTypedocSidebar },
     },
 
     footer: {

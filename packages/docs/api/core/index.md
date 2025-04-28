@@ -1,4 +1,4 @@
-# Documentation
+# @kubricate/core API Documentation
 
 ## Modules
 
