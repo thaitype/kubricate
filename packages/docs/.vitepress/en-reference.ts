@@ -14,5 +14,7 @@ export const enReference = new Sidebar({
    * Reference Section
    */
   .addGroup("/api", { text: "API" })
+  .add("/api", "index", { text: "All Packages", link: "/", })
   .add("/api", "core", { text: "@kubricate/core", link: "/core" })
+  .add("/api", "env", { text: "@kubricate/env", link: "/env" })
   .toSidebarItems()

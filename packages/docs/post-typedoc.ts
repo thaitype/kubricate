@@ -19,9 +19,10 @@ async function updateMarkdownHeaders() {
       }
 
       const projectName = match[1]; // เช่น core หรือ env
+      const linkLine = `[All Packages](../index.md) / @kubricate/${projectName}`;
       const newHeader = `# @kubricate/${projectName} API Documentation`;
 
-      const updatedContent = content.replace(/^# Documentation\s*/m, `${newHeader}\n\n`);
+      const updatedContent = content.replace(/^# Documentation\s*/m, `${linkLine}\n\n${newHeader}\n\n`);
 
       await fs.writeFile(fullPath, updatedContent, 'utf8');
       console.log(`✅ Updated header in ${filepath}`);
