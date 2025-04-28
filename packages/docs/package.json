@@ -21,9 +21,11 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "vitepress dev src",
-    "build": "vitepress build src",
-    "preview": "vitepress preview src"
+    "pre:dev": "typedoc",
+    "dev": "vitepress dev",
+    "build": "run-s pre:dev docs:build",
+    "docs:build": "vitepress build",
+    "preview": "vitepress preview"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
@@ -42,6 +44,9 @@
     "kubricate": "workspace:*",
     "ts-odata-client": "^2.0.2",
     "vitepress": "^1.2.2",
-    "vue": "^3.4.27"
+    "vue": "^3.4.27",
+    "typedoc": "^0.28.3",
+    "typedoc-plugin-markdown": "^4.6.3",
+    "typedoc-vitepress-theme": "^1.1.2"
   }
 }

@@ -174,4 +174,5 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
-src/.vitepress/cache
+.vitepress/cache
+.examples
