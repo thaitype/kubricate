@@ -1,0 +1,41 @@
+name: Build and Deploy
+on: 
+  push:
+    branches:
+      - feature/docs # For testing
+      - main
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: 22.14.x
+  DOCS_WORKING_DIR: packages/docs
+
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Dependencies
+        run: pnpm i
+
+      - name: Doc Build
+        run: pnpm build
+        working-directory: ${{ env.DOCS_WORKING_DIR }}
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: ${{ env.DOCS_WORKING_DIR }}/dist
