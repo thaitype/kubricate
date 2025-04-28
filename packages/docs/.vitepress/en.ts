@@ -28,6 +28,7 @@ export const en = defineConfig({
     sidebar: {
       '/guide/': { base: '/guide/', items: enGuideSidebar },
       '/reference/': { base: '', items: enReference },
+      '/api/': { base: '', items: enReference },
       '/api/core/': { base: '', items: coreTypedocSidebar },
       '/api/env/': { base: '', items: envTypedocSidebar },
     },

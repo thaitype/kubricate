@@ -1,3 +1,5 @@
+[All Packages](../index.md) / @kubricate/core
+
 # @kubricate/core API Documentation
 
 ## Modules
