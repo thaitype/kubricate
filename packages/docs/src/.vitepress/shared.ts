@@ -61,7 +61,7 @@ export const baseSidebar = new Sidebar({
   extraMessage: "🚧",
 })
   /**
-   * Start Reading Section
+   * Introduction Section
    */
   .addGroup("/", { text: "Introduction" })
   .add("/", "overview", { text: "Overview", link: "/overview" })
