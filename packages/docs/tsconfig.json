@@ -1,0 +1,4 @@
+{
+  "extends": "@kubricate/config-typescript/bundler.json",
+  "exclude": ["node_modules", "*.config.ts", "dist"]
+}

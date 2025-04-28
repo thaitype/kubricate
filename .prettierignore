@@ -1,0 +1,5 @@
+# Ignore artifacts:
+output
+
+# Ignore vitepress cache
+packages/docs/src/.vitepress/cache
