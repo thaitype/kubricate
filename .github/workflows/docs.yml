@@ -41,7 +41,6 @@ jobs:
 
       - name: Doc Build
         run: pnpm build
-        working-directory: ${{ env.DOCS_WORKING_DIR }}
 
       - name: Deploy to Azure Static Web Apps
         uses: nick-fields/retry@v2.8.3
@@ -49,6 +48,6 @@ jobs:
           timeout_minutes: ${{ env.RETRY_TIMEOUT_MINUTES }}
           max_attempts: ${{ env.RETRY_MAX_ATTEMPTS }}
           polling_interval_seconds: ${{ env.RETRY_DELAY_SECONDS }}
-          command: npx @azure/static-web-apps-cli deploy ${{ env.DOCS_WORKING_DIR }}/src/.vitepress/dist --env production -n  ${{ env.SWA_NAME }}
+          command: npx @azure/static-web-apps-cli deploy ${{ env.DOCS_WORKING_DIR }}/.vitepress/dist --env production -n  ${{ env.SWA_NAME }}
         env:
           SWA_CLI_DEPLOYMENT_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_YELLOW_WATER_084BCB900 }}
