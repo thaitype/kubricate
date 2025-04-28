@@ -21,7 +21,7 @@
     "README.md"
   ],
   "scripts": {
-    "pre:dev": "typedoc",
+    "pre:dev": "typedoc --out api/core --options typedoc.core.json",
     "dev": "vitepress dev",
     "build": "run-s pre:dev docs:build",
     "docs:build": "vitepress build",
