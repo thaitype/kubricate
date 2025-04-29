@@ -2,6 +2,8 @@
 
 # @kubricate/env API Documentation
 
+Secret connector for `.env` and environment variables
+
 ## Modules
 
 | Module | Description |

@@ -2,6 +2,8 @@
 
 # @kubricate/stacks API Documentation
 
+Official reusable stack definitions
+
 ## Modules
 
 | Module | Description |

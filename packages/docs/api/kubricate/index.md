@@ -1,6 +1,8 @@
-[All Packages](../index.md) / @kubricate/kubricate
+[All Packages](../index.md) / kubricate
 
-# @kubricate/kubricate API Documentation
+# kubricate API Documentation
+
+CLI for configuration and manifest generation
 
 ## Modules
 

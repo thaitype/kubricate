@@ -2,6 +2,8 @@
 
 # @kubricate/toolkit API Documentation
 
+Utility functions for custom stack authors
+
 ## Modules
 
 | Module | Description |

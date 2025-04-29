@@ -2,6 +2,8 @@
 
 # @kubricate/core API Documentation
 
+Core framework for creating and managing stacks
+
 ## Modules
 
 | Module | Description |
