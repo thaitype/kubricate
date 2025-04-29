@@ -2,6 +2,8 @@
 
 # @kubricate/kubernetes API Documentation
 
+Kubernetes connectors
+
 ## Modules
 
 | Module | Description |
