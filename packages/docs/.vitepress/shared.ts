@@ -65,6 +65,5 @@ export const baseSidebar = new Sidebar({
    * Introduction Section
    */
   .addGroup("/", { text: "Introduction" })
-  .add("/", "overview", { text: "Overview", link: "/overview" })
   .add("/", "why-kubricate", { text: "Why Kubricate", link: "/why-kubricate" })
   .add("/", "getting-started", { text: "Getting Started", link: "/getting-started" })
