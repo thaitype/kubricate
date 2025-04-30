@@ -1,4 +1,4 @@
-export const FRAMEWORK_LABEL = 'thaitype.dev/kubricate';
+export const FRAMEWORK_LABEL = 'kubricate.thaitype.dev';
 
 export const LABELS = {
   kubricate: FRAMEWORK_LABEL,

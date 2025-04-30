@@ -23,8 +23,8 @@ describe('CLI Integration (Generate with Secret Manager)', () => {
     expect(stdout).toContain('namespace: my-namespace');
 
     // 🌟 Check labels and annotations injected
-    expect(stdout).toContain('thaitype.dev/kubricate/stack-id: frontend');
-    expect(stdout).toContain('thaitype.dev/kubricate/resource-id: deployment');
+    expect(stdout).toContain('kubricate.thaitype.dev/stack-id: frontend');
+    expect(stdout).toContain('kubricate.thaitype.dev/resource-id: deployment');
 
     // 🌟 Check secrets injected into env
     expect(stdout).toContain('secretKeyRef');
@@ -56,8 +56,8 @@ describe('CLI Integration (Generate with Secret Registry)', () => {
     expect(stdout).toContain('namespace: my-namespace');
 
     // 🌟 Check labels and annotations injected
-    expect(stdout).toContain('thaitype.dev/kubricate/stack-id: frontend');
-    expect(stdout).toContain('thaitype.dev/kubricate/resource-id: deployment');
+    expect(stdout).toContain('kubricate.thaitype.dev/stack-id: frontend');
+    expect(stdout).toContain('kubricate.thaitype.dev/resource-id: deployment');
 
     // 🌟 Check secrets injected into env
     expect(stdout).toContain('secretKeyRef');

@@ -21,7 +21,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "mono test",
+    "test": "mono test:integration",
     "test:watch": "mono test:watch",
     "check-types": "mono check-types"
   },
