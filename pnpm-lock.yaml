@@ -98,6 +98,72 @@ importers:
         specifier: ^3.0.9
         version: 3.1.1(@types/debug@4.1.12)(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(tsx@4.19.3)(yaml@2.7.1)
 
+  docs:
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../configs/config-vitest
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../packages/core
+      '@kubricate/env':
+        specifier: workspace:*
+        version: link:../packages/env
+      '@kubricate/kubernetes':
+        specifier: workspace:*
+        version: link:../packages/kubernetes
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../tools/mono
+      '@kubricate/stacks':
+        specifier: workspace:*
+        version: link:../packages/stacks
+      '@shikijs/vitepress-twoslash':
+        specifier: ^1.5.2
+        version: 1.29.2(typescript@5.8.2)
+      '@thaitype/vitepress-typed-navbar':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@types/bun':
+        specifier: latest
+        version: 1.2.11
+      '@types/node':
+        specifier: ^20.12.12
+        version: 20.17.31
+      kubernetes-models:
+        specifier: ^4.4.2
+        version: 4.4.2
+      kubricate:
+        specifier: workspace:*
+        version: link:../packages/kubricate
+      ts-odata-client:
+        specifier: ^2.0.2
+        version: 2.0.2
+      tsx:
+        specifier: ^4.19.3
+        version: 4.19.3
+      typedoc:
+        specifier: ^0.28.3
+        version: 0.28.3(typescript@5.8.2)
+      typedoc-plugin-markdown:
+        specifier: ^4.6.3
+        version: 4.6.3(typedoc@0.28.3(typescript@5.8.2))
+      typedoc-vitepress-theme:
+        specifier: ^1.1.2
+        version: 1.1.2(typedoc-plugin-markdown@4.6.3(typedoc@0.28.3(typescript@5.8.2)))
+      vitepress:
+        specifier: ^1.2.2
+        version: 1.6.3(@algolia/client-search@5.23.4)(@types/node@20.17.31)(postcss@8.5.3)(search-insights@2.17.3)(typescript@5.8.2)
+      vue:
+        specifier: ^3.4.27
+        version: 3.5.13(typescript@5.8.2)
+
   examples/with-custom-stack:
     dependencies:
       '@kubricate/core':
@@ -252,72 +318,6 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
-
-  packages/docs:
-    devDependencies:
-      '@kubricate/config-eslint':
-        specifier: workspace:*
-        version: link:../../configs/config-eslint
-      '@kubricate/config-typescript':
-        specifier: workspace:*
-        version: link:../../configs/config-typescript
-      '@kubricate/config-vitest':
-        specifier: workspace:*
-        version: link:../../configs/config-vitest
-      '@kubricate/core':
-        specifier: workspace:*
-        version: link:../core
-      '@kubricate/env':
-        specifier: workspace:*
-        version: link:../env
-      '@kubricate/kubernetes':
-        specifier: workspace:*
-        version: link:../kubernetes
-      '@kubricate/mono':
-        specifier: workspace:*
-        version: link:../../tools/mono
-      '@kubricate/stacks':
-        specifier: workspace:*
-        version: link:../stacks
-      '@shikijs/vitepress-twoslash':
-        specifier: ^1.5.2
-        version: 1.29.2(typescript@5.8.2)
-      '@thaitype/vitepress-typed-navbar':
-        specifier: ^1.0.1
-        version: 1.0.1
-      '@types/bun':
-        specifier: latest
-        version: 1.2.10
-      '@types/node':
-        specifier: ^20.12.12
-        version: 20.17.31
-      kubernetes-models:
-        specifier: ^4.4.2
-        version: 4.4.2
-      kubricate:
-        specifier: workspace:*
-        version: link:../kubricate
-      ts-odata-client:
-        specifier: ^2.0.2
-        version: 2.0.2
-      tsx:
-        specifier: ^4.19.3
-        version: 4.19.3
-      typedoc:
-        specifier: ^0.28.3
-        version: 0.28.3(typescript@5.8.2)
-      typedoc-plugin-markdown:
-        specifier: ^4.6.3
-        version: 4.6.3(typedoc@0.28.3(typescript@5.8.2))
-      typedoc-vitepress-theme:
-        specifier: ^1.1.2
-        version: 1.1.2(typedoc-plugin-markdown@4.6.3(typedoc@0.28.3(typescript@5.8.2)))
-      vitepress:
-        specifier: ^1.2.2
-        version: 1.6.3(@algolia/client-search@5.23.4)(@types/node@20.17.31)(postcss@8.5.3)(search-insights@2.17.3)(typescript@5.8.2)
-      vue:
-        specifier: ^3.4.27
-        version: 3.5.13(typescript@5.8.2)
 
   packages/env:
     dependencies:
@@ -1446,8 +1446,8 @@ packages:
   '@thaitype/vitepress-typed-navbar@1.0.1':
     resolution: {integrity: sha512-6LFEszQ7YYq+3z6WE7mKxGb8bi6ycetuQ+oKliMgMcvb29g6+FHmUBwXLj+M95vekbRuNzzH+mxKP7wv/xfdaA==}
 
-  '@types/bun@1.2.10':
-    resolution: {integrity: sha512-eilv6WFM3M0c9ztJt7/g80BDusK98z/FrFwseZgT4bXCq2vPhXD4z8R3oddmAn+R/Nmz9vBn4kweJKmGTZj+lg==}
+  '@types/bun@1.2.11':
+    resolution: {integrity: sha512-ZLbbI91EmmGwlWTRWuV6J19IUiUC5YQ3TCEuSHI3usIP75kuoA8/0PVF+LTrbEnVc8JIhpElWOxv1ocI1fJBbw==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -1891,8 +1891,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
-  bun-types@1.2.10:
-    resolution: {integrity: sha512-b5ITZMnVdf3m1gMvJHG+gIfeJHiQPJak0f7925Hxu6ZN5VKA8AGy4GZ4lM+Xkn6jtWxg5S3ldWvfmXdvnkp3GQ==}
+  bun-types@1.2.11:
+    resolution: {integrity: sha512-dbkp5Lo8HDrXkLrONm6bk+yiiYQSntvFUzQp0v3pzTAsXk6FtgVMjdQ+lzFNVAmQFUkPQZ3WMZqH5tTo+Dp/IA==}
 
   cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
@@ -5302,9 +5302,9 @@ snapshots:
 
   '@thaitype/vitepress-typed-navbar@1.0.1': {}
 
-  '@types/bun@1.2.10':
+  '@types/bun@1.2.11':
     dependencies:
-      bun-types: 1.2.10
+      bun-types: 1.2.11
 
   '@types/debug@4.1.12':
     dependencies:
@@ -5849,9 +5849,9 @@ snapshots:
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
 
-  bun-types@1.2.10:
+  bun-types@1.2.11:
     dependencies:
-      '@types/node': 20.17.31
+      '@types/node': 22.13.14
 
   cac@6.7.14: {}
 

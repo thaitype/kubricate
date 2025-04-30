@@ -2,4 +2,4 @@
 output
 
 # Ignore vitepress cache
-packages/docs/.vitepress/cache
+docs/.vitepress/cache
