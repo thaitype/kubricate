@@ -58,7 +58,7 @@ function googleFonts(): HeadConfig[] {
 }
 
 export const baseSidebar = new Sidebar({
-  collapsed: true,
+  collapsed: false,
   extraMessage: "🚧",
 })
   /**

@@ -122,9 +122,56 @@ It runs *before* you deploy — validating, generating, and syncing all config a
 You control the outputs, the flow, and the integration.  
 No magic controllers. No surprises at runtime.
 
----
-
 By separating **definition**, **source of truth**, and **generation**,  
 Kubricate helps you scale infrastructure *without scaling entropy.*
 
 > And every piece — from a Deployment to a database password — lives in the open, testable, and typed.
+
+## Key Benefits
+
+**Kubricate brings order, visibility, and trust into your Kubernetes workflow.**
+
+### **1. Type Safety — Bugs caught before deploy**
+
+Every Stack, every secret, every config object is fully typed.  
+Miss a required field? Wrong format? You’ll know in your IDE — not at 2am.
+
+> Infrastructure becomes something you can *refactor* — not fear.
+
+### **2. Reuse and Composition — Build once, scale everywhere**
+
+Define patterns once — like a `WebAppStack`, `AuthStack`, or `IngressGroup`.  
+Use them across environments and teams, with confidence that behavior stays consistent.
+
+> Copy-paste is replaced with clarity and control.
+
+### **3. Plugin System — Integrate with any backend, your way**
+
+Kubricate’s plugin architecture lets you connect to any secret provider (Vault, 1Password, dotenv, Azure) and output to any format (Secret, ConfigMap, ExternalSecret).
+
+Switching providers doesn’t touch your application logic — just the connector.
+
+> Abstraction without losing power.
+
+### **4. CI/CD Native — No runtime surprises**
+
+Kubricate fits into your GitOps or CI pipeline like any build tool.
+
+You run `kbr generate` to build manifests.  
+You validate secrets before rollout.  
+You don’t rely on sidecars, injectors, or controllers you can’t trace.
+
+> It’s infrastructure you can *see*, *test*, and *trust* — before it goes live.
+
+### **5. Zero Lock-in — Output is just YAML**
+
+Kubricate doesn’t take over your cluster.  
+It doesn’t require a controller.  
+It generates plain, valid Kubernetes manifests — nothing more.
+
+> Use it with ArgoCD, Flux, kubectl — or just as a smarter way to write YAML.
+
+
+Kubricate isn’t trying to be the platform.  
+It gives *you* the tools to build yours — cleanly, safely, and with less noise.
+
