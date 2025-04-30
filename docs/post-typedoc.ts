@@ -13,7 +13,7 @@ interface PackageInfo {
   target?: {
     readmePath: string;
     content: string;
-  }
+  };
 }
 
 let packageInfo: PackageInfo[] = [
@@ -49,7 +49,7 @@ packageInfo = packageInfo.map(pkg => ({
 }));
 
 async function getPackageInfo(pkg: PackageInfo): Promise<PackageInfo> {
-  if(!pkg.packageDir) {
+  if (!pkg.packageDir) {
     throw new Error(`Package directory is not defined for package ${pkg.name}`);
   }
   const packageJsonPath = path.join(pkg.packageDir, 'package.json');
@@ -66,14 +66,14 @@ function processTarget(pkg: PackageInfo): PackageInfo {
   const linkLine = `[All Packages](../index.md) / ${projectName}`;
   const newHeader = `# ${projectName} API Documentation`;
   const description = `\n\n${pkg.description}`;
-  const content = `${linkLine}\n\n${newHeader}${description}\n\n`
+  const content = `${linkLine}\n\n${newHeader}${description}\n\n`;
   return {
     ...pkg,
     target: {
       readmePath: `api/${pkg.name}/index.md`,
       content,
-    }
-  }
+    },
+  };
 }
 
 async function updateMarkdownHeaders() {
@@ -90,7 +90,7 @@ async function updateMarkdownHeaders() {
     if (!pkg.target.content) {
       throw new Error(`Target content is not defined for package ${pkg.name}`);
     }
-    const filepath = pkg.target.readmePath
+    const filepath = pkg.target.readmePath;
     try {
       const fullPath = path.resolve(filepath);
       const content = await fs.readFile(fullPath, 'utf8');

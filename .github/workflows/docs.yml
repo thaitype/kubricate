@@ -10,7 +10,7 @@ permissions:
 
 env:
   NODE_VERSION: 22.14.x
-  DOCS_WORKING_DIR: packages/docs
+  DOCS_WORKING_DIR: docs
 
   SWA_NAME: "thaitype-kubricate"
 
