@@ -10,6 +10,7 @@ const scripts: MonoScripts = {
 
   // Test Scripts
   'test': 'vitest run',
+  'test:integration': 'vitest run --no-file-parallelism',
   'test:watch': 'vitest watch',
 
   // Build in order: ESM, CJS, Annotate for support dual package both ESM and CJS

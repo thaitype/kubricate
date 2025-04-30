@@ -47,7 +47,7 @@ export interface ProjectMetadataOptions {
   inject?: boolean;
   /**
    * Whether to inject the 'managed-at' annotation into each generated resource.
-   * If false, Kubricate will omit the 'thaitype.dev/kubricate/managed-at' field.
+   * If false, Kubricate will omit the 'kubricate.thaitype.dev/managed-at' field.
    *
    * Defaults to `true`.
    * 
@@ -60,7 +60,7 @@ export interface ProjectMetadataOptions {
    * 
    * When enabled, Kubricate will calculate a stable hash of the resource content
    * (excluding dynamic fields like 'managed-at') and inject it into
-   * the annotation 'thaitype.dev/kubricate/resource-hash'.
+   * the annotation 'kubricate.thaitype.dev/resource-hash'.
    * 
    * Useful for GitOps and drift detection tools to track changes in resource specifications.
    * 
@@ -73,7 +73,7 @@ export interface ProjectMetadataOptions {
    * Whether to inject the 'version' annotation into each generated resource.
    * 
    * When enabled, Kubricate will inject the CLI framework version
-   * (e.g., `0.17.0`) into the annotation 'thaitype.dev/kubricate/version'.
+   * (e.g., `0.17.0`) into the annotation 'kubricate.thaitype.dev/version'.
    * 
    * Useful for tracking which Kubricate version was used to generate the manifest,
    * which can assist in debugging, auditing, or reproducing environments.
