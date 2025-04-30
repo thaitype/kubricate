@@ -12,7 +12,7 @@ export const en = defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: "Guide", link: "/guide/overview" },
+      { text: "Guide", link: "/guide/why-kubricate" },
       { text: "Reference", link: "/reference" },
       // {
       //   text: "API",

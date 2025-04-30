@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Why Kubricate
 
 **Why is managing Kubernetes infrastructure still so tedious and error-prone?**
@@ -175,3 +179,176 @@ It generates plain, valid Kubernetes manifests — nothing more.
 Kubricate isn’t trying to be the platform.  
 It gives *you* the tools to build yours — cleanly, safely, and with less noise.
 
+## Comparison
+
+### 1. YAML Template Builders — How we write manifests in code
+
+Most infrastructure-as-code tools today fall into two broad styles:
+
+#### **Stateful Builders**  
+Tools like [Terraform](https://github.com/hashicorp/terraform), [Pulumi](https://github.com/pulumi/pulumi), or [cdk8s](https://github.com/cdk8s-team/cdk8s) treat infrastructure as a living system — with a state file, construct tree, or engine to track what’s been deployed and how it changes. They offer powerful abstractions, but also introduce complexity:
+
+- You often need to manage lifecycle state explicitly.
+- Switching between environments means juggling context or stacks.
+- Secrets and configs tend to be tightly bound to the tool's internal engine.
+
+They’re ideal when you want to *control the whole world*.  
+But they come with runtime dependencies — and learning curves.
+
+#### **Stateless Builders**  
+Tools like [Kosko](https://github.com/tommy351/kosko) take a simpler route: treat Kubernetes as plain YAML generation.  
+You write TypeScript. You output manifests. That’s it.
+
+No control plane. No magic. Just predictable builds.
+
+Kosko is lightweight — but it leaves composition and structure up to you.  
+You’re responsible for organizing complexity as your platform grows.
+
+**Kubricate** sits in the stateless category — but brings the structure that’s usually missing.
+
+It gives you:
+- **Type-safe primitives** to define manifests clearly  
+- **Stack-level composition** so you can scale patterns, not just templates  
+- **Plugin hooks** to extend behavior, without introducing runtime drift
+
+> Like Kosko, Kubricate runs before deployment.  
+> But unlike Kosko, it understands *platform structure* — not just files.
+
+You don’t manage state.  
+You don’t run a daemon.  
+You don’t explain what changed — you declare what *should be*.
+
+### 2. Grouping Templates — How we reuse structure across environments
+
+Managing one YAML file is easy.  
+Managing 30 services across 3 environments? That’s when most teams reach for **Helm**.
+
+#### **Helm**
+
+Helm lets you template values into your YAML — like functions with parameters.  
+You write one chart, then inject different values (`values.yaml`) for dev, staging, or prod.
+
+It’s powerful — and familiar to many teams.  
+But it introduces complexity when logic grows:
+
+- Templates are untyped — one wrong indent can break everything.
+- Logic is hidden in Go templating, hard to validate or refactor.
+- Sharing patterns between charts often means copy-paste or deep conventions.
+
+> Helm helps with reuse — but logic often hides inside templates, making visibility harder across teams.
+
+Helm also includes lifecycle tools: `install`, `upgrade`, `rollback`.  
+If you use those features, Helm tracks what it installs — as **releases** stored in your cluster.
+
+But Helm can also be used purely for rendering — as a template engine without state or deployment logic.  
+Many teams use it this way in GitOps workflows.
+
+> Helm gives you both: templating and deployment.  
+> That integration comes with more moving parts — by design.
+
+#### **Kubricate**
+
+Kubricate takes a design-first approach.
+
+You **declare what secrets are needed** — like `addSecret('API_KEY')` — and define **where they come from** and **where they go**.  
+This turns secrets into part of the platform’s *structure*, not just its config.
+
+> No scattered annotations. No runtime surprises. Just declarative intent.
+
+Kubricate separates secret ownership into two concepts:
+
+- **Connectors** — describe *where* secrets come from (e.g. dotenv, Vault, 1Password)
+- **Providers** — describe *how* those secrets should be delivered (e.g. Kubernetes `Secret`, `ExternalSecret`, or annotations)
+
+This means your application logic stays clean.  
+If you want to switch from Vault to 1Password — or from `ExternalSecret` to `Secret` — you don’t rewrite templates.  
+You rewire the config.
+
+> With Vault Agent, the injection logic is encoded in annotations — often copied across multiple YAML files.  
+> With Kubricate, that logic lives in code — versioned, testable, and abstracted.
+
+Kubricate doesn’t replace your secret backend.  
+It replaces the glue, templates, and trial-and-error needed to make those tools work together.
+
+> Design your secrets like code.  
+> Render them like infrastructure.  
+> Deliver them without guessing.
+
+### 3. Secret Solutions — How we manage sensitive data in Kubernetes
+
+**Secret management in Kubernetes has long been a fragmented challenge.**
+
+Most teams rely on tools like **External Secrets Operator (ESO)**, **Vault Agent**, or **SOPS** to inject, mount, or encrypt secrets across environments.  
+Each of these works — but with trade-offs:
+
+---
+
+#### **ESO (External Secrets Operator)**
+
+ESO syncs secrets from backends like AWS Secrets Manager or Vault into Kubernetes using CRDs.  
+It’s powerful for automation — but deeply tied to YAML and CRD sprawl.
+
+You manage configuration across multiple files, often repeating annotations or labels.  
+Reusing patterns or testing changes becomes harder as the system grows.
+
+---
+
+#### **Vault Agent Injector**
+
+Vault Agent Injector is part of the HashiCorp Vault ecosystem.  
+It injects secrets dynamically into running Pods via sidecar containers — without writing them as Kubernetes Secrets.
+
+This avoids persisting secrets in the cluster — but introduces operational complexity:
+
+- Requires per-Pod annotations to configure secret injection  
+- Relies on Vault auth policies, roles, and token lifecycles  
+- Failures can be silent and difficult to debug during rollout
+
+It’s highly secure — but harder to validate at design time.
+
+---
+
+#### **SOPS / Sealed Secrets**
+
+Tools like SOPS encrypt secrets for Git storage.  
+They’re GitOps-friendly, but introduce lifecycle friction:
+
+- Rotation is manual or tool-driven  
+- Secrets are versioned, but often detached from application ownership  
+- There’s no universal way to trace where secrets go — or who uses them
+
+---
+
+#### **Kubricate**
+
+Kubricate takes a design-first approach.
+
+You **declare what secrets are needed** — like `addSecret('API_KEY')` — and define **where they come from** and **where they go**.  
+This turns secrets into part of the platform’s *structure*, not just its config.
+
+> No scattered annotations. No runtime surprises. Just declarative intent.
+
+Kubricate separates secret ownership into two concepts:
+
+- **Connectors** — describe *where* secrets come from (e.g. dotenv, Vault, 1Password)  
+- **Providers** — describe *how* those secrets should be delivered (e.g. Kubernetes `Secret`, `ExternalSecret`, or annotations)
+
+This separation means your application logic stays clean.  
+If you want to switch from Vault to 1Password — or from `ExternalSecret` to `Secret` — you don’t rewrite templates.  
+You rewire the config.
+
+> With Vault Agent, the injection logic is encoded in annotations — often copied across multiple YAML files.  
+> With Kubricate, that logic lives in code — versioned, testable, and abstracted.
+
+Kubricate doesn’t replace your secret backend.  
+It replaces the glue, templates, and trial-and-error needed to make those tools work together.
+
+> Design your secrets like code.  
+> Render them like infrastructure.  
+> Deliver them without guessing.
+
+### Conclusion — Choosing structure over sprawl
+Kubernetes has tools for templating, syncing, and injecting — but not for organizing.
+
+Kubricate doesn’t replace your secrets, your charts, or your clusters.
+It replaces the friction between them — with code, structure, and clarity.
