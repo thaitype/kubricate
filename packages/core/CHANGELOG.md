@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.18.1
+
+### Patch Changes
+
+- 8d01c60: fix(cli): avoid injecting invalid Kubernetes label/annotation keys
+
 ## 0.18.0
 
 ### Minor Changes
