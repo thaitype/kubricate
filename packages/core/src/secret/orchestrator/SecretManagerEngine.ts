@@ -1,4 +1,5 @@
 import { SecretManager, type SecretOptions } from '../SecretManager.js';
+import { SecretRegistry } from '../SecretRegistry.js';
 import type { PreparedEffect } from '../providers/BaseProvider.js';
 import type { SecretValue } from '../types.js';
 import type { SecretsOrchestratorOptions } from './types.js';
@@ -38,6 +39,21 @@ export interface EffectsOptions {
 export class SecretManagerEngine {
   constructor(public readonly options: SecretsOrchestratorOptions) { }
 
+
+  protected normalizeSecretSpec(input: SecretManager | SecretRegistry): SecretRegistry {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isManager = (val: any): val is SecretManager =>
+      // Check if the value is an instance of SecretManager
+      val instanceof SecretManager ||
+      // Check the SecretManager interface
+      (typeof val?.getSecrets === 'function' &&
+        typeof val?.resolveProvider === 'function' &&
+        typeof val?.resolveConnector === 'function')
+
+    return isManager(input)
+      ? new SecretRegistry().add('default', input)
+      : input;
+  }
   /**
    * Collect all SecretManager instances from the project config.
    *
@@ -49,29 +65,22 @@ export class SecretManagerEngine {
 
     logger.info('Collecting secret managers...');
 
-    // 🚨 Enforce mutual exclusivity
-    if (config.secret?.manager && config.secret?.registry) {
-      throw new Error('[config] Cannot define both "secret.manager" and "secret.registry" — please choose one.');
+    const secretSpec = config.secret?.secretSpec;
+    if (!secretSpec) {
+      throw new Error(
+        '[config] No secret manager or secret registry found. Please define "secret.secretSpec" in kubricate.config.ts.'
+      );
     }
 
     const result: MergedSecretManager = {};
 
-    if (config.secret?.registry) {
-      // 📦 Use SecretRegistry
-      for (const [name, manager] of Object.entries(config.secret.registry.list())) {
-        result[name] = {
-          name,
-          secretManager: manager,
-        };
-      }
-    } else if (config.secret?.manager) {
-      // 📦 Use Single Manager
-      result.default = {
-        name: 'default',
-        secretManager: config.secret.manager,
+    const normalized = this.normalizeSecretSpec(secretSpec);
+
+    for (const [name, manager] of Object.entries(normalized.list())) {
+      result[name] = {
+        name,
+        secretManager: manager,
       };
-    } else {
-      throw new Error('[config] No secret manager found. Please define either "secrets.manager" or "secrets.registry" in kubricate.config.ts.');
     }
 
     logger.debug(`Collected ${Object.keys(result).length} secret manager(s)`);

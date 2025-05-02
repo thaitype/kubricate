@@ -45,7 +45,7 @@ describe('SecretManagerEngine', () => {
         },
       },
       secret: {
-        manager: mockSecretManager
+        secretSpec: mockSecretManager
       }
     };
   });
@@ -89,7 +89,7 @@ describe('SecretManagerEngine.collect()', () => {
       logger: mockLogger as any,
       effectOptions: {},
       config: {
-        secret: { manager },
+        secret: { secretSpec: manager },
         stacks: {},
       },
     });
@@ -110,7 +110,7 @@ describe('SecretManagerEngine.collect()', () => {
       logger: mockLogger as any,
       effectOptions: {},
       config: {
-        secret: { registry },
+        secret: { secretSpec: registry },
         stacks: {},
       },
     });
@@ -120,24 +120,6 @@ describe('SecretManagerEngine.collect()', () => {
     expect(Object.keys(result)).toEqual(['svc1', 'svc2']);
     expect(result.svc1.secretManager).toBeInstanceOf(SecretManager);
     expect(result.svc2.secretManager).toBeInstanceOf(SecretManager);
-  });
-
-  it('throws if both manager and registry are defined', () => {
-    const manager = new SecretManager();
-    const registry = new SecretRegistry().add('svc1', new SecretManager());
-
-    const engine = new SecretManagerEngine({
-      logger: mockLogger as any,
-      effectOptions: {},
-      config: {
-        secret: { manager, registry },
-        stacks: {},
-      },
-    });
-
-    expect(() => engine.collect()).toThrowError(
-      /Cannot define both "secret\.manager" and "secret\.registry"/
-    );
   });
 
   it('throws if neither manager nor registry are defined', () => {
@@ -151,7 +133,7 @@ describe('SecretManagerEngine.collect()', () => {
     });
 
     expect(() => engine.collect()).toThrowError(
-      /No secret manager found/
+      /No secret manager or secret registry/
     );
   });
 });
