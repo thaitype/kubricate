@@ -30,12 +30,15 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
-    "@kubricate/core": "workspace:*",
     "js-base64": "^3.7.7",
     "zod": "^3.24.2",
     "zod-validation-error": "^3.4.0"
   },
+  "peerDependencies": {
+    "@kubricate/core": ">=0.18.0 <1.0.0"
+  },
   "devDependencies": {
+    "@kubricate/core": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",

@@ -2,7 +2,13 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": true,
-  "fixed": [["kubricate", "@kubricate/core", "@kubricate/plugin-env", "@kubricate/stacks", "@kubricate/plugin-kubernetes"]],
+  "fixed": [
+    [
+      "kubricate",
+      "@kubricate/core",
+      "@kubricate/stacks"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

@@ -30,10 +30,13 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
-    "@kubricate/core": "workspace:*",
     "dotenv": "^16.4.7"
   },
+  "peerDependencies": {
+    "@kubricate/core": ">=0.18.0 <1.0.0"
+  },
   "devDependencies": {
+    "@kubricate/core": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",

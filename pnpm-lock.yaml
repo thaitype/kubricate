@@ -131,12 +131,12 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@kubricate/plugin-kubernetes':
-        specifier: workspace:*
-        version: link:../../packages/kubernetes
       '@kubricate/plugin-env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@kubricate/plugin-kubernetes':
+        specifier: workspace:*
+        version: link:../../packages/kubernetes
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
@@ -168,12 +168,12 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@kubricate/plugin-kubernetes':
-        specifier: workspace:*
-        version: link:../../packages/kubernetes
       '@kubricate/plugin-env':
         specifier: workspace:*
         version: link:../../packages/env
+      '@kubricate/plugin-kubernetes':
+        specifier: workspace:*
+        version: link:../../packages/kubernetes
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
@@ -255,9 +255,6 @@ importers:
 
   packages/env:
     dependencies:
-      '@kubricate/core':
-        specifier: workspace:*
-        version: link:../core
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -271,6 +268,9 @@ importers:
       '@kubricate/config-vitest':
         specifier: workspace:*
         version: link:../../configs/config-vitest
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../core
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
@@ -280,9 +280,6 @@ importers:
 
   packages/kubernetes:
     dependencies:
-      '@kubricate/core':
-        specifier: workspace:*
-        version: link:../core
       js-base64:
         specifier: ^3.7.7
         version: 3.7.7
@@ -302,6 +299,9 @@ importers:
       '@kubricate/config-vitest':
         specifier: workspace:*
         version: link:../../configs/config-vitest
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../core
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
@@ -400,12 +400,12 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../packages/core
-      '@kubricate/plugin-kubernetes':
-        specifier: workspace:*
-        version: link:../packages/kubernetes
       '@kubricate/plugin-env':
         specifier: workspace:*
         version: link:../packages/env
+      '@kubricate/plugin-kubernetes':
+        specifier: workspace:*
+        version: link:../packages/kubernetes
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../packages/stacks
