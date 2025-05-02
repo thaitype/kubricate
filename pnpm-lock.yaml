@@ -133,10 +133,10 @@ importers:
         version: link:../../packages/core
       '@kubricate/plugin-env':
         specifier: workspace:*
-        version: link:../../packages/env
+        version: link:../../packages/plugin-env
       '@kubricate/plugin-kubernetes':
         specifier: workspace:*
-        version: link:../../packages/kubernetes
+        version: link:../../packages/plugin-kubernetes
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
@@ -170,10 +170,10 @@ importers:
         version: link:../../packages/core
       '@kubricate/plugin-env':
         specifier: workspace:*
-        version: link:../../packages/env
+        version: link:../../packages/plugin-env
       '@kubricate/plugin-kubernetes':
         specifier: workspace:*
-        version: link:../../packages/kubernetes
+        version: link:../../packages/plugin-kubernetes
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../../packages/stacks
@@ -253,59 +253,6 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
 
-  packages/env:
-    dependencies:
-      dotenv:
-        specifier: ^16.4.7
-        version: 16.4.7
-    devDependencies:
-      '@kubricate/config-eslint':
-        specifier: workspace:*
-        version: link:../../configs/config-eslint
-      '@kubricate/config-typescript':
-        specifier: workspace:*
-        version: link:../../configs/config-typescript
-      '@kubricate/config-vitest':
-        specifier: workspace:*
-        version: link:../../configs/config-vitest
-      '@kubricate/core':
-        specifier: workspace:*
-        version: link:../core
-      '@kubricate/mono':
-        specifier: workspace:*
-        version: link:../../tools/mono
-      '@types/node':
-        specifier: ^22.13.9
-        version: 22.13.14
-
-  packages/kubernetes:
-    dependencies:
-      js-base64:
-        specifier: ^3.7.7
-        version: 3.7.7
-      zod:
-        specifier: ^3.24.2
-        version: 3.24.2
-      zod-validation-error:
-        specifier: ^3.4.0
-        version: 3.4.0(zod@3.24.2)
-    devDependencies:
-      '@kubricate/config-eslint':
-        specifier: workspace:*
-        version: link:../../configs/config-eslint
-      '@kubricate/config-typescript':
-        specifier: workspace:*
-        version: link:../../configs/config-typescript
-      '@kubricate/config-vitest':
-        specifier: workspace:*
-        version: link:../../configs/config-vitest
-      '@kubricate/core':
-        specifier: workspace:*
-        version: link:../core
-      '@kubricate/mono':
-        specifier: workspace:*
-        version: link:../../tools/mono
-
   packages/kubricate:
     dependencies:
       '@kubricate/core':
@@ -355,6 +302,59 @@ importers:
         specifier: ^17.0.33
         version: 17.0.33
 
+  packages/plugin-env:
+    dependencies:
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../core
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+      '@types/node':
+        specifier: ^22.13.9
+        version: 22.13.14
+
+  packages/plugin-kubernetes:
+    dependencies:
+      js-base64:
+        specifier: ^3.7.7
+        version: 3.7.7
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
+      zod-validation-error:
+        specifier: ^3.4.0
+        version: 3.4.0(zod@3.24.2)
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../core
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+
   packages/stacks:
     dependencies:
       '@kubernetes-models/base':
@@ -402,10 +402,10 @@ importers:
         version: link:../packages/core
       '@kubricate/plugin-env':
         specifier: workspace:*
-        version: link:../packages/env
+        version: link:../packages/plugin-env
       '@kubricate/plugin-kubernetes':
         specifier: workspace:*
-        version: link:../packages/kubernetes
+        version: link:../packages/plugin-kubernetes
       '@kubricate/stacks':
         specifier: workspace:*
         version: link:../packages/stacks
