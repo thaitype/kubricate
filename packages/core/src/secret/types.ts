@@ -58,11 +58,15 @@ export type SecretValue = PrimitiveSecretValue | Record<string, PrimitiveSecretV
 export interface SecretManagerRegistrationOptions {
   /**
    * Using default secret manager for the SecretRegistry
+   * 
+   * @deprecated Use `secretSpec` instead, which most support both SecretManager and SecretRegistry
    */
   manager?: AnySecretManager;
 
   /**
    * Register a secret manager from a secret registry.
+   * 
+   * @deprecated Use `secretSpec` instead, which most support both SecretManager and SecretRegistry
    */
   registry?: SecretRegistry;
 }
