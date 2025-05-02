@@ -382,7 +382,7 @@ Documentation is in progress, please explore the [`examples`](https://github.com
 - `kubricate` – CLI for configuration and manifest generation
 - `@kubricate/core` – Core framework for creating and managing stacks
 - `@kubricate/plugin-env` – Secret connector for `.env` and environment variables
-- `@kubricate/kubernetes` – Kubernetes connectors
+- `@kubricate/plugin-kubernetes` – Kubernetes connectors
 - `@kubricate/stacks` – Official reusable stack definitions
 - `@kubricate/toolkit` – Utility functions for custom stack authors
 
@@ -393,7 +393,7 @@ Ensure the following packages are always on the same version when upgrading:
 - `kubricate`
 - `@kubricate/core`
 - `@kubricate/plugin-env`
-- `@kubricate/kubernetes`
+- `@kubricate/plugin-kubernetes`
 - `@kubricate/stacks`
 
 ## Development

@@ -131,7 +131,7 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@kubricate/kubernetes':
+      '@kubricate/plugin-kubernetes':
         specifier: workspace:*
         version: link:../../packages/kubernetes
       '@kubricate/plugin-env':
@@ -168,7 +168,7 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@kubricate/kubernetes':
+      '@kubricate/plugin-kubernetes':
         specifier: workspace:*
         version: link:../../packages/kubernetes
       '@kubricate/plugin-env':
@@ -400,7 +400,7 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../packages/core
-      '@kubricate/kubernetes':
+      '@kubricate/plugin-kubernetes':
         specifier: workspace:*
         version: link:../packages/kubernetes
       '@kubricate/plugin-env':

@@ -1,6 +1,6 @@
 import { NamespaceStack, SimpleAppStack } from "@kubricate/stacks";
 import { SecretManager, SecretRegistry } from '@kubricate/core';
-import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/kubernetes';
+import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/plugin-kubernetes';
 import { EnvConnector } from '@kubricate/plugin-env';
 
 export const frontendSecretManager = new SecretManager()

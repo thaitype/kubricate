@@ -1,4 +1,4 @@
-# @kubricate/kubernetes
+# @kubricate/plugin-kubernetes
 
 ## 0.18.1
 

@@ -21,7 +21,7 @@ We use **fixed packages**, as you can see at `.changeset/config.json`:
 
 ```json
 {
-  "fixed": [["kubricate", "@kubricate/core", "@kubricate/plugin-env", "@kubricate/stacks", "@kubricate/kubernetes"]],
+  "fixed": [["kubricate", "@kubricate/core", "@kubricate/plugin-env", "@kubricate/stacks", "@kubricate/plugin-kubernetes"]],
 }
 ```
 
