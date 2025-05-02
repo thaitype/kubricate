@@ -1,4 +1,4 @@
-# @kubricate/env
+# @kubricate/plugin-env
 
 ## 0.18.1
 

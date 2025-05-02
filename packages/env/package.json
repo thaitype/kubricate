@@ -1,5 +1,5 @@
 {
-  "name": "@kubricate/env",
+  "name": "@kubricate/plugin-env",
   "version": "0.18.1",
   "type": "module",
   "main": "./dist/cjs/index.js",
