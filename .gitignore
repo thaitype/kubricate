@@ -47,3 +47,6 @@ coverage.json
 
 
 .nx
+
+
+docs/.vitepress/cache

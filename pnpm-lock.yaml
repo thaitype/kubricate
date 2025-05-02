@@ -449,12 +449,12 @@ importers:
       '@babel/plugin-transform-modules-commonjs':
         specifier: '>=7.24.1 <8.0.0'
         version: 7.26.3(@babel/core@7.26.10)
+      '@thaitype/mono-scripts':
+        specifier: ^0.1.1
+        version: 0.1.1
       babel-plugin-annotate-pure-calls:
         specifier: '>=0.4.0 <1.0.0'
         version: 0.5.0(@babel/core@7.26.10)
-      execa:
-        specifier: ^9.5.2
-        version: 9.5.2
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*
@@ -465,9 +465,6 @@ importers:
       '@types/node':
         specifier: ^22.13.9
         version: 22.13.14
-      picocolors:
-        specifier: ^1.1.1
-        version: 1.1.1
 
   tools/template:
     devDependencies:
@@ -1060,6 +1057,9 @@ packages:
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
+
+  '@thaitype/mono-scripts@0.1.1':
+    resolution: {integrity: sha512-R6C0xFefxG/5yd2SY6MJDY0RrCLxBschWn8DrYEWZa8Mh1AKZSSbxFx7KJnBXpNKofSRP3ghzjlxu3LiAZ0kXg==}
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
@@ -3983,6 +3983,11 @@ snapshots:
   '@swc/helpers@0.5.15':
     dependencies:
       tslib: 2.8.1
+
+  '@thaitype/mono-scripts@0.1.1':
+    dependencies:
+      execa: 9.5.2
+      picocolors: 1.1.1
 
   '@types/estree@1.0.7': {}
 

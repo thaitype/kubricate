@@ -1,4 +1,4 @@
-import { type MonoScripts, runScript } from './libs.js';
+import { type MonoScripts, runScript } from '@thaitype/mono-scripts';
 
 const binName = 'mono';
 
