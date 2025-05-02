@@ -114,7 +114,7 @@ export class SecretsOrchestrator {
   async apply(): Promise<PreparedEffect[]> {
     const managers = await this.validate();
 
-    this.logOrchestratorContext(this.engine.options.config.secrets);
+    this.logOrchestratorContext(this.engine.options.config.secret);
 
     // 1. Load and resolve all secrets
     const resolvedSecrets = await this.loadSecretsFromManagers(managers);
@@ -233,7 +233,7 @@ export class SecretsOrchestrator {
           providerNames.size > 1 ? 'crossProvider' :
             'intraProvider';
 
-      const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secrets);
+      const strategy = this.resolveStrategyForLevel(level, this.engine.options.config.secret);
       const providerName = group[0].providerName;
       const provider = this.resolveProviderByName(providerName, group[0].managerName);
 
@@ -352,7 +352,7 @@ export class SecretsOrchestrator {
    */
   private validateConfig(config: KubricateConfig): void {
     // Validate conflict options
-    this.validateConflictOptions(config.secrets);
+    this.validateConflictOptions(config.secret);
   }
 
   /**
