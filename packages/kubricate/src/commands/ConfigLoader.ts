@@ -75,27 +75,11 @@ export class ConfigLoader {
     }
   }
 
-  protected handleDeprecatedSecretOptions(config: KubricateConfig | undefined): KubricateConfig | undefined {
-    if (!config) return config;
-    if (config.secrets && config.secret) {
-      throw new Error(`Conflict between 'secret' and 'secrets' options. Please use 'secret' instead`);
-    }
-    if (config.secrets) {
-      this.logger.warn(`The 'secrets' option is deprecated. Please use 'secret' instead.`);
-    }
-    if (config.secret) {
-      config.secrets = config.secret;
-    }
-    return config;
-  }
-
   public async load(): Promise<KubricateConfig> {
     const logger = this.logger;
     logger.debug('Initializing secrets orchestrator...');
-    let config: KubricateConfig | undefined;
     logger.debug('Loading configuration...');
-    config = await getConfig(this.options);
-    config = this.handleDeprecatedSecretOptions(config);
+    const config = await getConfig(this.options);
     if (!config) {
       logger.error(`No config file found matching '${getMatchConfigFile()}'`);
       logger.error(`Please ensure a config file exists in the root directory:\n   ${this.options.root}`);

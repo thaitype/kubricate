@@ -50,25 +50,25 @@ export class SecretManagerEngine {
     logger.info('Collecting secret managers...');
 
     // 🚨 Enforce mutual exclusivity
-    if (config.secrets?.manager && config.secrets?.registry) {
-      throw new Error('[config] Cannot define both "secrets.manager" and "secrets.registry" — please choose one.');
+    if (config.secret?.manager && config.secret?.registry) {
+      throw new Error('[config] Cannot define both "secret.manager" and "secret.registry" — please choose one.');
     }
 
     const result: MergedSecretManager = {};
 
-    if (config.secrets?.registry) {
+    if (config.secret?.registry) {
       // 📦 Use SecretRegistry
-      for (const [name, manager] of Object.entries(config.secrets.registry.list())) {
+      for (const [name, manager] of Object.entries(config.secret.registry.list())) {
         result[name] = {
           name,
           secretManager: manager,
         };
       }
-    } else if (config.secrets?.manager) {
+    } else if (config.secret?.manager) {
       // 📦 Use Single Manager
       result.default = {
         name: 'default',
-        secretManager: config.secrets.manager,
+        secretManager: config.secret.manager,
       };
     } else {
       throw new Error('[config] No secret manager found. Please define either "secrets.manager" or "secrets.registry" in kubricate.config.ts.');

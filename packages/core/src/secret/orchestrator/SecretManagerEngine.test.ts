@@ -44,7 +44,7 @@ describe('SecretManagerEngine', () => {
           getSecretManagers: () => ({ main: mockSecretManager }),
         },
       },
-      secrets: {
+      secret: {
         manager: mockSecretManager
       }
     };
@@ -89,7 +89,7 @@ describe('SecretManagerEngine.collect()', () => {
       logger: mockLogger as any,
       effectOptions: {},
       config: {
-        secrets: { manager },
+        secret: { manager },
         stacks: {},
       },
     });
@@ -110,7 +110,7 @@ describe('SecretManagerEngine.collect()', () => {
       logger: mockLogger as any,
       effectOptions: {},
       config: {
-        secrets: { registry },
+        secret: { registry },
         stacks: {},
       },
     });
@@ -130,13 +130,13 @@ describe('SecretManagerEngine.collect()', () => {
       logger: mockLogger as any,
       effectOptions: {},
       config: {
-        secrets: { manager, registry },
+        secret: { manager, registry },
         stacks: {},
       },
     });
 
     expect(() => engine.collect()).toThrowError(
-      /Cannot define both "secrets\.manager" and "secrets\.registry"/
+      /Cannot define both "secret\.manager" and "secret\.registry"/
     );
   });
 
@@ -145,7 +145,7 @@ describe('SecretManagerEngine.collect()', () => {
       logger: mockLogger as any,
       effectOptions: {},
       config: {
-        secrets: {},
+        secret: {},
         stacks: {},
       },
     });
