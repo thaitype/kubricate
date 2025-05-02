@@ -23,12 +23,11 @@
     "babel-plugin-annotate-pure-calls": ">=0.4.0 <1.0.0"
   },
   "dependencies": {
-    "execa": "^9.5.2"
+    "@thaitype/mono-scripts": "^0.1.1"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@types/node": "^22.13.9",
-    "picocolors": "^1.1.1"
+    "@types/node": "^22.13.9"
   }
 }
