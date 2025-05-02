@@ -11,7 +11,7 @@ This monorepo uses [Changesets](https://github.com/changesets/changesets) for **
 - `@kubricate/toolkit` — independent tools
 - `kubricate` — CLI tool (uses `core` only for setup config types)
 - Future packages:
-  - `@kubricate/env`, `@kubricate/secrets`, `@kubricate/azure-keyvault` → depend on `core`
+  - `@kubricate/plugin-env`, `@kubricate/plugin-secrets`, `@kubricate/plugin-azure-keyvault` → depend on `core`
 
 ---
 
@@ -21,7 +21,7 @@ We use **fixed packages**, as you can see at `.changeset/config.json`:
 
 ```json
 {
-  "fixed": [["kubricate", "@kubricate/core", "@kubricate/env", "@kubricate/stacks", "@kubricate/kubernetes"]],
+  "fixed": [["kubricate", "@kubricate/core", "@kubricate/plugin-env", "@kubricate/stacks", "@kubricate/kubernetes"]],
 }
 ```
 
