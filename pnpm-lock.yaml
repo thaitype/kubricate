@@ -1440,11 +1440,14 @@ packages:
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
 
+  '@thaitype/mono-scripts@0.1.1':
+    resolution: {integrity: sha512-R6C0xFefxG/5yd2SY6MJDY0RrCLxBschWn8DrYEWZa8Mh1AKZSSbxFx7KJnBXpNKofSRP3ghzjlxu3LiAZ0kXg==}
+
   '@thaitype/vitepress-typed-navbar@1.0.1':
     resolution: {integrity: sha512-6LFEszQ7YYq+3z6WE7mKxGb8bi6ycetuQ+oKliMgMcvb29g6+FHmUBwXLj+M95vekbRuNzzH+mxKP7wv/xfdaA==}
 
-  '@types/bun@1.2.10':
-    resolution: {integrity: sha512-eilv6WFM3M0c9ztJt7/g80BDusK98z/FrFwseZgT4bXCq2vPhXD4z8R3oddmAn+R/Nmz9vBn4kweJKmGTZj+lg==}
+  '@types/bun@1.2.11':
+    resolution: {integrity: sha512-ZLbbI91EmmGwlWTRWuV6J19IUiUC5YQ3TCEuSHI3usIP75kuoA8/0PVF+LTrbEnVc8JIhpElWOxv1ocI1fJBbw==}
 
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
@@ -5297,11 +5300,16 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@thaitype/mono-scripts@0.1.1':
+    dependencies:
+      execa: 9.5.2
+      picocolors: 1.1.1
+
   '@thaitype/vitepress-typed-navbar@1.0.1': {}
 
-  '@types/bun@1.2.10':
+  '@types/bun@1.2.11':
     dependencies:
-      bun-types: 1.2.10
+      bun-types: 1.2.11
 
   '@types/debug@4.1.12':
     dependencies:
