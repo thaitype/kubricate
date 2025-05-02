@@ -75,11 +75,41 @@ export class ConfigLoader {
     }
   }
 
+  protected handleDeprecatedOptions(config: KubricateConfig | undefined): KubricateConfig {
+    if (!config) return {};
+    if (!config.secret) return config;
+
+    const { secret } = config;
+
+    if (secret.manager && secret.registry) {
+      throw new Error(`[config.secret] Cannot define both "manager" and "registry". Use "secretSpec" instead.`);
+    }
+
+    if (secret.manager || secret.registry) {
+      this.logger.warn(
+        `[config.secret] 'manager' and 'registry' are deprecated. Please use 'secretSpec' instead.`
+      );
+    }
+
+    if (secret.manager) {
+      config.secret = { ...secret, secretSpec: secret.manager };
+    } else if (secret.registry) {
+      config.secret = { ...secret, secretSpec: secret.registry };
+    }
+
+    delete config.secret.manager;
+    delete config.secret.registry;
+
+    return config;
+  }
+
   public async load(): Promise<KubricateConfig> {
     const logger = this.logger;
     logger.debug('Initializing secrets orchestrator...');
+    let config: KubricateConfig | undefined;
     logger.debug('Loading configuration...');
-    const config = await getConfig(this.options);
+    config = await getConfig(this.options);
+    config = this.handleDeprecatedOptions(config);
     if (!config) {
       logger.error(`No config file found matching '${getMatchConfigFile()}'`);
       logger.error(`Please ensure a config file exists in the root directory:\n   ${this.options.root}`);

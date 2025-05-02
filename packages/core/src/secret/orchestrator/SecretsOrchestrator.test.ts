@@ -69,7 +69,7 @@ describe('SecretsOrchestrator', () => {
               crossManager: 'error',
             }
           },
-          manager: mockSecretManager,
+          secretSpec: mockSecretManager,
         }
       },
       logger: mockLogger,
@@ -175,7 +175,7 @@ describe('SecretsOrchestrator Multi-Level Merge Strategy', () => {
               crossManager: 'autoMerge',
             }
           },
-          manager: _mockSecretManager,
+          secretSpec: _mockSecretManager,
         }
       }
     };
@@ -254,7 +254,7 @@ describe('SecretsOrchestrator Advanced Merge Tests', () => {
               intraProvider: 'autoMerge',
             }
           },
-          manager: _mockSecretManager,
+          secretSpec: _mockSecretManager,
         }
       }
     };
@@ -310,7 +310,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: {
             strategies: {
               intraProvider: 'error', // This will trigger the error
@@ -355,7 +355,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: {
             strategies: {
               intraProvider: 'autoMerge',
@@ -404,7 +404,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: {
             strategies: {
               intraProvider: 'overwrite',
@@ -453,7 +453,7 @@ describe('SecretsOrchestrator intraProvider  (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: { strategies: { intraProvider: 'overwrite' } }
         }
       }
@@ -519,7 +519,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: {
             strategies: {
               crossProvider: 'error',
@@ -573,7 +573,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: {
             strategies: {
               crossProvider: 'autoMerge',
@@ -622,7 +622,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: {
             strategies: { crossProvider: 'overwrite' },
           }
@@ -669,7 +669,7 @@ describe('SecretsOrchestrator crossProvider (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          manager: secretManager,
+          secretSpec: secretManager,
           conflict: { strategies: { crossProvider: 'overwrite' } }
         }
       }
@@ -726,7 +726,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: { app: stack as any },
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: {
             strategies: { crossManager: 'error' as const },
           }
@@ -766,7 +766,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: { app: stack as any },
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: {
             strategies: { crossManager: 'autoMerge' as const },
           }
@@ -814,7 +814,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: {
             strategies: { crossManager: 'overwrite' },
           }
@@ -859,7 +859,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: { strategies: { crossManager: 'overwrite' } }
         }
       }
@@ -907,7 +907,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: { app: { getSecretManagers: () => ({ svc1, svc2 }) } as any },
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: { strategies: { crossManager: 'error' } },
         },
       },
@@ -938,7 +938,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: { app: { getSecretManagers: () => ({ svc1, svc2 }) } as any },
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: { strategies: { crossManager: 'overwrite' } },
         },
       },
@@ -972,7 +972,7 @@ describe('SecretsOrchestrator crossManager (Integration Tests)', () => {
       config: {
         stacks: { app: { getSecretManagers: () => ({ svc1, svc2 }) } as any },
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: { strategies: { crossManager: 'autoMerge' } },
         },
       },
@@ -1029,7 +1029,7 @@ describe('SecretsOrchestrator cross-stack using single SecretManager (Integratio
       config: {
         stacks: stacks as any,
         secret: {
-          manager: sharedManager,
+          secretSpec: sharedManager,
         },
       },
     };
@@ -1157,7 +1157,7 @@ describe('SecretsOrchestrator Cross-Manager Conflict Detection', () => {
       config: {
         stacks: stacks as any,
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
           conflict: {
             strategies: {
               crossManager: 'error', // ❗ สำคัญ
@@ -1218,7 +1218,7 @@ describe('SecretsOrchestrator - Multiple SecretManagers with Same Provider Name'
       effectOptions: {},
       config: {
         secret: {
-          registry: secretRegistry,
+          secretSpec: secretRegistry,
         },
         stacks: {},
       },

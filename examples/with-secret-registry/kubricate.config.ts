@@ -7,7 +7,7 @@ export default defineConfig({
     ...simpleAppStack,
   },
   secret: {
-    registry: secretRegistry,
+    secretSpec: secretRegistry,
     conflict: {
       strategies: {
         // Default conflict handling strategies
