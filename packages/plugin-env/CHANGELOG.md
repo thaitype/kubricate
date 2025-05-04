@@ -1,5 +1,11 @@
 # @kubricate/plugin-env
 
+## 0.19.0
+
+### Minor Changes
+
+- b2a4244: Fix Bump version for plugin-kubernetes, plugin-env
+
 ### Minor Changes
 
 - 42a39f7: feat: unify secret config to secretSpec, rename plugins, drop deprecated fields
