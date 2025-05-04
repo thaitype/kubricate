@@ -1,5 +1,12 @@
 # @kubricate/stacks
 
+## 0.19.0
+
+### Patch Changes
+
+- Updated dependencies [42a39f7]
+  - @kubricate/core@0.19.0
+
 ## 0.18.1
 
 ### Patch Changes

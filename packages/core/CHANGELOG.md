@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.19.0
+
+### Minor Changes
+
+- 42a39f7: feat: unify secret config to secretSpec, rename plugins, drop deprecated fields
+
 ## 0.18.1
 
 ### Patch Changes
