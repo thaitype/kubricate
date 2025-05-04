@@ -1,5 +1,5 @@
 {
-  "name": "@kubricate/env",
+  "name": "@kubricate/plugin-kubernetes",
   "version": "0.18.1",
   "type": "module",
   "main": "./dist/cjs/index.js",
@@ -30,15 +30,19 @@
     "check-types": "mono check-types"
   },
   "dependencies": {
-    "@kubricate/core": "workspace:*",
-    "dotenv": "^16.4.7"
+    "js-base64": "^3.7.7",
+    "zod": "^3.24.2",
+    "zod-validation-error": "^3.4.0"
+  },
+  "peerDependencies": {
+    "@kubricate/core": ">=0.18.0 <1.0.0"
   },
   "devDependencies": {
+    "@kubricate/core": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*",
-    "@types/node": "^22.13.9"
+    "@kubricate/mono": "workspace:*"
   },
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
   "keywords": [

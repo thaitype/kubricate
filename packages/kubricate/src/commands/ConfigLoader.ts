@@ -75,17 +75,31 @@ export class ConfigLoader {
     }
   }
 
-  protected handleDeprecatedSecretOptions(config: KubricateConfig | undefined): KubricateConfig | undefined {
-    if (!config) return config;
-    if (config.secrets && config.secret) {
-      throw new Error(`Conflict between 'secret' and 'secrets' options. Please use 'secret' instead`);
+  protected handleDeprecatedOptions(config: KubricateConfig | undefined): KubricateConfig {
+    if (!config) return {};
+    if (!config.secret) return config;
+
+    const { secret } = config;
+
+    if (secret.manager && secret.registry) {
+      throw new Error(`[config.secret] Cannot define both "manager" and "registry". Use "secretSpec" instead.`);
     }
-    if (config.secrets) {
-      this.logger.warn(`The 'secrets' option is deprecated. Please use 'secret' instead.`);
+
+    if (secret.manager || secret.registry) {
+      this.logger.warn(
+        `[config.secret] 'manager' and 'registry' are deprecated. Please use 'secretSpec' instead.`
+      );
     }
-    if (config.secret) {
-      config.secrets = config.secret;
+
+    if (secret.manager) {
+      config.secret = { ...secret, secretSpec: secret.manager };
+    } else if (secret.registry) {
+      config.secret = { ...secret, secretSpec: secret.registry };
     }
+
+    delete config.secret.manager;
+    delete config.secret.registry;
+
     return config;
   }
 
@@ -95,7 +109,7 @@ export class ConfigLoader {
     let config: KubricateConfig | undefined;
     logger.debug('Loading configuration...');
     config = await getConfig(this.options);
-    config = this.handleDeprecatedSecretOptions(config);
+    config = this.handleDeprecatedOptions(config);
     if (!config) {
       logger.error(`No config file found matching '${getMatchConfigFile()}'`);
       logger.error(`Please ensure a config file exists in the root directory:\n   ${this.options.root}`);

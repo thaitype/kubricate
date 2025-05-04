@@ -206,8 +206,8 @@ It gives you full control of infrastructure and secrets **before deployment**, w
 
    ```ts
    secretManager.addProvider(
-     'EnvSecretProvider',
-     new EnvSecretProvider({ name: 'secret-application' })
+     'OpaqueSecretProvider',
+     new OpaqueSecretProvider({ name: 'secret-application' })
    );
    ```
 
@@ -221,7 +221,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    > ℹ️ **If multiple providers are registered**, you must also set:
 
    ```ts
-   secretManager.setDefaultProvider('EnvSecretProvider');
+   secretManager.setDefaultProvider('OpaqueSecretProvider');
    ```
 
 4. ### **Declare Secrets**
@@ -371,8 +371,8 @@ Documentation is in progress, please explore the [`examples`](https://github.com
 
 - `kubricate` – CLI for configuration and manifest generation
 - `@kubricate/core` – Core framework for creating and managing stacks
-- `@kubricate/env` – Secret connector for `.env` and environment variables
-- `@kubricate/kubernetes` – Kubernetes connectors
+- `@kubricate/plugin-env` – Secret connector for `.env` and environment variables
+- `@kubricate/plugin-kubernetes` – Kubernetes connectors
 - `@kubricate/stacks` – Official reusable stack definitions
 - `@kubricate/toolkit` – Utility functions for custom stack authors
 
@@ -382,8 +382,8 @@ Ensure the following packages are always on the same version when upgrading:
 
 - `kubricate`
 - `@kubricate/core`
-- `@kubricate/env`
-- `@kubricate/kubernetes`
+- `@kubricate/plugin-env`
+- `@kubricate/plugin-kubernetes`
 - `@kubricate/stacks`
 
 ## Development

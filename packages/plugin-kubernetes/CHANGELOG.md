@@ -1,4 +1,4 @@
-# @kubricate/env
+# @kubricate/plugin-kubernetes
 
 ## 0.18.1
 
@@ -16,6 +16,10 @@
 
 ## 0.17.0
 
+### Minor Changes
+
+- 672f82f: Feature: Move SecretManager Ownership to Project Level (Global Registry Support)
+
 ### Patch Changes
 
 - Updated dependencies [672f82f]
@@ -23,12 +27,20 @@
 
 ## 0.16.0
 
+### Minor Changes
+
+- 420f4dd: Feature: Add targetPath Support to SecretInjectionStrategy for Flexible Injection Paths
+
 ### Patch Changes
 
 - Updated dependencies [420f4dd]
   - @kubricate/core@0.16.0
 
 ## 0.15.0
+
+### Minor Changes
+
+- 978f1b8: Rename EnvSecretProvider to OpaqueSecretProvider and ImagePullSecretProvider to DockerConfigSecretProvider
 
 ### Patch Changes
 
@@ -66,16 +78,18 @@
 
 ### Patch Changes
 
-- @kubricate/core@0.11.2
+- 02da09c: fix: correct target path for imagePullSecret to imagePullSecrets
+  - @kubricate/core@0.11.2
 
-## 0.11.1
+## 0.10.2
 
 ### Patch Changes
 
+- 84d0e72: Fix bug for issue #62, #63, #66
 - Updated dependencies [84d0e72]
   - @kubricate/core@0.11.1
 
-## 0.11.0
+## 0.10.1
 
 ### Patch Changes
 
@@ -92,36 +106,3 @@
 
 - Updated dependencies [c3b3cd9]
   - @kubricate/core@0.10.0
-
-## 0.9.1
-
-### Patch Changes
-
-- c358c6c: Fix Type inference when build with createStack factory helper function
-- Updated dependencies [c358c6c]
-  - @kubricate/core@0.9.1
-
-## 0.9.0
-
-### Patch Changes
-
-- Updated dependencies [dcedcc8]
-  - @kubricate/core@0.9.0
-
-## 0.8.0
-
-### Patch Changes
-
-- Updated dependencies [0c6adef]
-  - @kubricate/core@0.8.0
-
-## 0.7.0
-
-### Minor Changes
-
-- e474bb7: feat(core/secrets): introduce SecretManager integration and CLI orchestration
-
-### Patch Changes
-
-- Updated dependencies [e474bb7]
-  - @kubricate/core@0.7.0

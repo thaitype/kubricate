@@ -19,7 +19,7 @@ export type ExtractSecretManager<Registry extends AnySecretManager> = {
  * Represents any type of SecretManager for type extraction purposes.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnySecretManager = SecretManager<any, any>;
+export type AnySecretManager = SecretManager<any, any, any, any>;
 
 /**
  * Represents the options for environment variables in a Kubernetes deployment.
@@ -58,13 +58,22 @@ export type SecretValue = PrimitiveSecretValue | Record<string, PrimitiveSecretV
 export interface SecretManagerRegistrationOptions {
   /**
    * Using default secret manager for the SecretRegistry
+   * 
+   * @deprecated Use `secretSpec` instead, which most support both SecretManager and SecretRegistry
    */
   manager?: AnySecretManager;
 
   /**
    * Register a secret manager from a secret registry.
+   * 
+   * @deprecated Use `secretSpec` instead, which most support both SecretManager and SecretRegistry
    */
   registry?: SecretRegistry;
+
+  /**
+   * Register a secret manager or secret registry.
+   */
+  secretSpec?: AnySecretManager | SecretRegistry;
 }
 
 export type ProjectSecretOptions = SecretManagerRegistrationOptions & ConfigConflictOptions;

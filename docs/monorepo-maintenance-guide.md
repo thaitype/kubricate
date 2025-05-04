@@ -1,45 +1,57 @@
 # 🧠 Monorepo Maintenance Guide
 
-This monorepo uses [Changesets](https://github.com/changesets/changesets) for **versioning**, **changelog generation**, and **releases**.
-
----
+This monorepo uses [Changesets](https://github.com/changesets/changesets) for **versioning**, **changelog generation**, and **package publishing**.
 
 ## 🧩 Package Structure
 
-- `@kubricate/core` — shared utilities and types
-- `@kubricate/stacks` — depends on `core`
-- `@kubricate/toolkit` — independent tools
-- `kubricate` — CLI tool (uses `core` only for setup config types)
-- Future packages:
-  - `@kubricate/env`, `@kubricate/secrets`, `@kubricate/azure-keyvault` → depend on `core`
-
----
+- `@kubricate/core` — shared contracts, base classes, and orchestration types
+- `@kubricate/stacks` — depends on `core`, contains official reusable stacks
+- `@kubricate/toolkit` — lightweight utilities (independent)
+- `kubricate` — CLI entrypoint (tightly coupled with `core`)
+- Plugin packages:
+  - `@kubricate/plugin-env` — connector for `.env`
+  - `@kubricate/plugin-kubernetes` — provider for Kubernetes secrets
+  - Future: `@kubricate/plugin-keyvault`, `@kubricate/plugin-helm`
 
 ## 🔄 Versioning Strategy
 
-We use **fixed packages**, as you can see at `.changeset/config.json`:
+We use **fixed versioning** only for core packages that are tightly coupled:
 
-```json
-{
-  "fixed": [["kubricate", "@kubricate/core", "@kubricate/env", "@kubricate/stacks", "@kubricate/kubernetes"]],
-}
+```jsonc
+"fixed": [[
+  "kubricate",
+  "@kubricate/core",
+  "@kubricate/stacks"
+]]
 ```
 
+All other packages (e.g., `@kubricate/plugin-*`) are versioned independently. This avoids unnecessary bumps and allows plugins to evolve at their own pace.
+
+## 🔧 Dependency Boundaries
+
+- If a package **calls or extends `@kubricate/core` at runtime**, use `core` as a **dependency**.
+- If it only uses **types or interfaces** (e.g., `BaseConnector`, `BaseProvider`), use `core` as a **peerDependency + devDependency**.
+
+This avoids nested versions of `core` and ensures semver consistency across shared contracts.
+
 ## 🛠 Making a Change
-1. Run pnpm changeset
-	Follow the prompt to select packages and write a summary.
-2. Commit your changes including the .changeset file.
-3. CI will:
-   - Bump versions appropriately
+
+1. Run `pnpm changeset`
+   - Follow the prompts to select affected packages and describe the change.
+2. Commit the changes including the generated `.changeset/*.md` file.
+3. When merged, CI will:
+   - Bump versions based on the changeset
    - Generate changelogs
-   - Publish packages on merge (if configured)
+   - Publish to npm (if configured)
 
 ## 📦 Guidelines
- - If a package uses @kubricate/core at runtime, declare it as a dependency.
- - If a package uses only types from core, declare it as a devDependency to avoid unnecessary releases.
- - Avoid changing version numbers manually — let Changesets handle it.
+
+- Do **not** change version numbers manually — Changesets handles this.
+- Always prefer `peerDependencies` when depending on core abstractions.
+- If you're unsure whether to group versioning, check `.changeset/config.json`.
 
 ## 🔍 Need Help?
- - Refer to [.changeset/config.json](../.changeset/config.json) for versioning rules.
- - Read the [Changesets docs](https://github.com/changesets/changesets/blob/main/docs/config-file-options.md) for full options.
+
+- Review [.changeset/config.json](../.changeset/config.json) for current rules
+- See [Changesets documentation](https://github.com/changesets/changesets/blob/main/docs/config-file-options.md) for configuration details
 

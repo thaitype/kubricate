@@ -90,12 +90,6 @@ export interface KubricateConfig {
   metadata?: ProjectMetadataOptions;
   /**
    * Secrets configuration
-   * 
-   * @deprecated Use `secret` instead
-   */
-  secrets?: ProjectSecretOptions;
-  /**
-   * Secret configuration
    */
   secret?: ProjectSecretOptions;
   generate?: ProjectGenerateOptions;
