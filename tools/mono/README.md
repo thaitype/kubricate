@@ -1,3 +1,3 @@
-# template
+# mono scripts
 
-Use for creating new projects.
+Use for centralized scripts.
