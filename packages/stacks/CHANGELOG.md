@@ -1,5 +1,12 @@
 # @kubricate/stacks
 
+## 0.19.1
+
+### Patch Changes
+
+- 921681e: Fix SimpleAppStack for image name
+  - @kubricate/core@0.19.1
+
 ## 0.19.0
 
 ### Patch Changes
