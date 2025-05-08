@@ -37,7 +37,7 @@ function configureComposer(data: ISimpleAppStack) {
             spec: {
               containers: [
                 {
-                  image: imageRegistry + data.name,
+                  image: imageRegistry + data.imageName,
                   name: data.name,
                   ports: [{ containerPort: port }],
                 },
