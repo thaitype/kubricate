@@ -363,6 +363,9 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../core
+      '@kubricate/toolkit':
+        specifier: workspace:*
+        version: link:../toolkit
       kubernetes-models:
         specifier: ^4.4.2
         version: 4.4.2

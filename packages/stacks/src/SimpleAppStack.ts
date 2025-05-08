@@ -1,6 +1,7 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
 import { ResourceComposer, BaseStack } from '@kubricate/core';
+import { joinPath } from '@kubricate/toolkit';
 
 export interface ISimpleAppStack {
   name: string;
@@ -37,7 +38,7 @@ function configureComposer(data: ISimpleAppStack) {
             spec: {
               containers: [
                 {
-                  image: imageRegistry + data.imageName,
+                  image: joinPath(imageRegistry, data.imageName),
                   name: data.name,
                   ports: [{ containerPort: port }],
                 },

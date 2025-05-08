@@ -10,6 +10,8 @@ describe('joinPath', () => {
     expect(joinPath('/a/', '/b/', '/c/')).toBe('a/b/c');
     expect(joinPath('/a/', '/b/', '/c')).toBe('a/b/c');
     expect(joinPath('/a', '/b', '/c')).toBe('a/b/c');
+    expect(joinPath('/a/xxx', 'b', '/c')).toBe('a/xxx/b/c');
+    expect(joinPath('docker.io', 'test/aaa:ccc')).toBe('docker.io/test/aaa:ccc');
   });
 
   test('test imageUri joinPath', () => {

@@ -46,6 +46,7 @@
   "dependencies": {
     "@kubernetes-models/base": "^5.0.1",
     "kubernetes-models": "^4.4.2",
+    "@kubricate/toolkit": "workspace:*",
     "@kubricate/core": "workspace:*"
   },
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",

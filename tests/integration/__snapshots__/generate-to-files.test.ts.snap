@@ -25,7 +25,7 @@ metadata:
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
     kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 671531dac2f0b78f8d864af1d963d056e484f0413ca8083874e6f8f1ccd30b1f
+    kubricate.thaitype.dev/resource-hash: c9325f337dfc06f0a2245d994a63be2f0b13900d0bb41fa19a4a642451cd5c59
 spec:
   replicas: 1
   selector:
@@ -37,7 +37,7 @@ spec:
         app: my-app
     spec:
       containers:
-        - image: my-app
+        - image: nginx
           name: my-app
           ports:
             - containerPort: 80
@@ -104,7 +104,7 @@ metadata:
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
     kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 940520eb8d1272567d931914a313ea96ce06c1d986b20009cbda69137a345569
+    kubricate.thaitype.dev/resource-hash: 956f8bab85981ce685e2cce42949131bad2f92accf4832a66f56e9da81d4a8a0
 spec:
   replicas: 1
   selector:
@@ -116,7 +116,7 @@ spec:
         app: my-app
     spec:
       containers:
-        - image: my-app
+        - image: nginx
           name: my-app
           ports:
             - containerPort: 80
@@ -157,7 +157,7 @@ metadata:
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
     kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 940520eb8d1272567d931914a313ea96ce06c1d986b20009cbda69137a345569
+    kubricate.thaitype.dev/resource-hash: 956f8bab85981ce685e2cce42949131bad2f92accf4832a66f56e9da81d4a8a0
 spec:
   replicas: 1
   selector:
@@ -169,7 +169,7 @@ spec:
         app: my-app
     spec:
       containers:
-        - image: my-app
+        - image: nginx
           name: my-app
           ports:
             - containerPort: 80
@@ -229,7 +229,7 @@ metadata:
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
     kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 940520eb8d1272567d931914a313ea96ce06c1d986b20009cbda69137a345569
+    kubricate.thaitype.dev/resource-hash: 956f8bab85981ce685e2cce42949131bad2f92accf4832a66f56e9da81d4a8a0
 spec:
   replicas: 1
   selector:
@@ -241,7 +241,7 @@ spec:
         app: my-app
     spec:
       containers:
-        - image: my-app
+        - image: nginx
           name: my-app
           ports:
             - containerPort: 80
