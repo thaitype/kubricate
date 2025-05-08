@@ -41,7 +41,7 @@ describe('SimpleAppStack', () => {
     stack.from({
       name: 'my-app',
       imageName: 'custom-image',
-      imageRegistry: 'docker.io/',
+      imageRegistry: 'docker.io',
       port: 3000,
       replicas: 5,
     });
@@ -49,7 +49,7 @@ describe('SimpleAppStack', () => {
     const [deployment, service] = Object.values(stack.build());
 
     expect((deployment as Deployment).spec?.replicas).toBe(5);
-    expect((deployment as Deployment).spec?.template.spec?.containers[0].image).toBe('docker.io/my-app');
+    expect((deployment as Deployment).spec?.template.spec?.containers[0].image).toBe('docker.io/custom-image');
     expect((deployment as Deployment).spec?.template.spec?.containers[0].ports![0].containerPort).toBe(3000);
     expect((service as Service).spec?.ports?.[0].port).toBe(3000);
   });
