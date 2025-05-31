@@ -1,4 +1,4 @@
-import type { BaseStack } from '../BaseStack.js';
+import type { BaseStack } from '../stack/BaseStack.js';
 import type { BaseProvider } from './providers/BaseProvider.js';
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 import type { SecretManager } from './SecretManager.js';

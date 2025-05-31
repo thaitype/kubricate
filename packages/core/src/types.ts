@@ -1,30 +1,12 @@
-import type { BaseStack } from './BaseStack.js';
+import type { BaseStack } from './stack/BaseStack.js';
 import type { ProjectGenerateOptions } from './generate/types.js';
-import { ResourceComposer } from './ResourceComposer.js';
+import { ResourceComposer } from './stack/ResourceComposer.js';
 import type { ProjectSecretOptions } from './secret/types.js';
 
 export type FunctionLike<Params extends unknown[] = [], Return = unknown> = (...args: Params) => Return;
 export type AnyFunction = FunctionLike<unknown[], unknown>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyClass = { new(...args: any[]): any };
-
-export interface BaseSecretInjectionStrategy {
-  /**
-   * Override the default target path for the secret injection.
-   * 
-   * Moreover, each provider has a default target path for the secret injection.
-   * By using BaseProvider.getTargetPath() 
-   */
-  targetPath?: string;
-}
-
-export type SecretInjectionStrategy =
-  | { kind: 'env'; containerIndex?: number } & BaseSecretInjectionStrategy
-  | { kind: 'volume'; mountPath: string; containerIndex?: number } & BaseSecretInjectionStrategy
-  | { kind: 'annotation' } & BaseSecretInjectionStrategy
-  | { kind: 'imagePullSecret' } & BaseSecretInjectionStrategy
-  | { kind: 'envFrom'; containerIndex?: number } & BaseSecretInjectionStrategy
-  | { kind: 'plugin'; action?: string; args?: unknown[]; [key: string]: unknown; };
 
 /**
  * Accept any type of key, including string, number, or symbol, Like `keyof any`.

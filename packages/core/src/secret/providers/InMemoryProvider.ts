@@ -1,8 +1,8 @@
 import type { BaseProvider, ProviderInjection } from './BaseProvider.js';
-import type { SecretInjectionStrategy } from '../../BaseStack.js'
 import type { SecretValue } from '../types.js';
 import type { CustomEffect, PreparedEffect } from './BaseProvider.js';
 import { createMergeHandler } from './merge-utils.js';
+import type { SecretInjectionStrategy } from '../../stack/index.js';
 
 export interface InMemoryProviderConfig {
   name?: string;

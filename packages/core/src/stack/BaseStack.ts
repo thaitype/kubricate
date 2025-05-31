@@ -1,12 +1,12 @@
 import { ResourceComposer } from './ResourceComposer.js';
-import type { AnyKey, BaseLogger, FunctionLike, InferConfigureComposerFunc } from './types.js';
-import type { AnySecretManager, EnvOptions } from './secret/types.js';
+import type { AnyKey, BaseLogger, FunctionLike, InferConfigureComposerFunc } from '../types.js';
+import type { AnySecretManager, EnvOptions } from '../secret/types.js';
 import {
   SecretsInjectionContext,
   type BaseConnector,
   type BaseProvider,
   type ProviderInjection,
-} from './secret/index.js';
+} from '../secret/index.js';
 import type { Objects, Call } from 'hotscript';
 
 export interface UseSecretsOptions<Key extends AnyKey> {

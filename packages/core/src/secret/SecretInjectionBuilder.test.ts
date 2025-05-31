@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
-import type { SecretInjectionStrategy } from '../BaseStack.js';
 import type { BaseProvider } from './providers/BaseProvider.js';
+import type { SecretInjectionStrategy } from '../stack/index.js';
 
 const createMockProvider = (supportedStrategies: SecretInjectionStrategy['kind'][]): BaseProvider => ({
   supportedStrategies,

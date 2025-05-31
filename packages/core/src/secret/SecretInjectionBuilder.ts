@@ -1,4 +1,5 @@
-import type { BaseStack, SecretInjectionStrategy } from '../BaseStack.js';
+import type { BaseStack } from '../stack/BaseStack.js';
+import type { SecretInjectionStrategy } from '../stack/index.js';
 import type { FallbackIfNever } from '../types.js';
 import type { BaseProvider } from './providers/BaseProvider.js';
 
