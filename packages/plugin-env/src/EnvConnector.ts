@@ -26,7 +26,7 @@ export interface EnvConnectorConfig {
   /**
    * The working directory to load the .env file from.
    * This is useful for loading .env files from different directories.
-   * 
+   *
    * @default `process.cwd()`
    */
   workingDir?: string;

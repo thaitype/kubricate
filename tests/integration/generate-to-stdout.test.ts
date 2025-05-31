@@ -7,7 +7,6 @@ const fixturesRoot = path.join(rootDir, 'fixtures');
 const fixturesDir = path.join(fixturesRoot, 'generate-output-stack');
 
 describe('CLI Integration (Generate to stdout)', () => {
-
   it('should print manifests to stdout', async () => {
     const { stdout, exitCode } = await runGenerate({ root: fixturesDir, stdout: true });
 
@@ -18,7 +17,6 @@ describe('CLI Integration (Generate to stdout)', () => {
 });
 
 describe('CLI Integration (Generate to stdout with filters)', () => {
-
   it('should print only namespace resource', async () => {
     const { stdout, exitCode } = await runGenerate({
       root: fixturesDir,

@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { OpaqueSecretProvider } from './OpaqueSecretProvider.js';
 
 describe('OpaqueSecretProvider', () => {
-
   it('should create correct kubectl effect in prepare()', () => {
     const provider = new OpaqueSecretProvider({ name: 'my-secret', namespace: 'custom-ns' });
 

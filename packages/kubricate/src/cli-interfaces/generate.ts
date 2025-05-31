@@ -35,7 +35,7 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
       const configLoader = new ConfigLoader(argv, logger);
       const { config } = await configLoader.initialize({
         commandOptions: argv,
-        subject: 'generate'
+        subject: 'generate',
       });
 
       await new GenerateCommand(argv, logger).execute(config);

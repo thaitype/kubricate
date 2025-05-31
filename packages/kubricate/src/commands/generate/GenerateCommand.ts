@@ -1,27 +1,29 @@
-import path from "node:path";
+import path from 'node:path';
 
-import type { BaseLogger, KubricateConfig, ProjectGenerateOptions } from "@kubricate/core";
+import type { BaseLogger } from '@kubricate/core';
 
-import { Renderer } from "./Renderer.js";
+import { Renderer } from './Renderer.js';
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { GenerateRunner, type RenderedFile } from './GenerateRunner.js';
 import c from 'ansis';
-import { MARK_CHECK, MARK_NODE, MARK_TREE_END, MARK_TREE_LEAF } from "../../internal/constant.js";
-import { extractStackInfoFromConfig, type StackInfo } from "../../internal/utils.js";
-import { merge } from "lodash-es";
+import { MARK_CHECK, MARK_NODE, MARK_TREE_END, MARK_TREE_LEAF } from '../../internal/constant.js';
+import { extractStackInfoFromConfig, type StackInfo } from '../../internal/utils.js';
+import { merge } from 'lodash-es';
+import type { KubricateConfig } from '../../types.js';
+import type { ProjectGenerateOptions } from './types.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;
   /**
    * Output into stdout
-   * 
+   *
    * When set, the generated files will be printed to stdout instead of being written to disk.
    */
   stdout: boolean;
 
   /**
    * Filter stacks or resources by ID (e.g., myStack or myStack.resource)
-   * 
+   *
    * Empty if not specified, all stacks will be included.
    */
   filter?: string[];
@@ -91,7 +93,7 @@ export class GenerateCommand {
     const stackIds = new Set<string>();
     const fullResourceIds = new Set<string>();
 
-    const filtered = renderedFiles.filter((file) => {
+    const filtered = renderedFiles.filter(file => {
       const originalPath = file.originalPath; // e.g., myApp.deployment
       const [stackId] = originalPath.split('.');
 
@@ -108,32 +110,25 @@ export class GenerateCommand {
       return matched;
     });
 
-    const unmatchedFilters = filters.filter((f) => !matchedFilters.has(f));
+    const unmatchedFilters = filters.filter(f => !matchedFilters.has(f));
 
     if (unmatchedFilters.length > 0) {
       const stacksList = Array.from(stackIds).sort().join('\n     - ');
       const resourcesList = Array.from(fullResourceIds).sort().join('\n     - ');
-      const stacksSection = stackIds.size > 0 ?
-        `  • Stacks: \n` +
-        `     - ${stacksList}\n`
-        : '';
-      const resourcesSection = fullResourceIds.size > 0 ?
-        `  • Resources: \n` +
-        `     - ${resourcesList}\n`
-        : '';
+      const stacksSection = stackIds.size > 0 ? `  • Stacks: \n` + `     - ${stacksList}\n` : '';
+      const resourcesSection = fullResourceIds.size > 0 ? `  • Resources: \n` + `     - ${resourcesList}\n` : '';
 
       throw new Error(
         `The following filters did not match any resource: ${unmatchedFilters.join(', ')}.\n\n` +
-        `Available filters:\n` +
-        stacksSection +
-        resourcesSection +
-        `\nPlease check your --filter values and try again.`
+          `Available filters:\n` +
+          stacksSection +
+          resourcesSection +
+          `\nPlease check your --filter values and try again.`
       );
     }
 
     return filtered;
   }
-
 
   showStacks(config: KubricateConfig) {
     const logger = this.logger;

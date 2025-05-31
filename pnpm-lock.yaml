@@ -13,7 +13,7 @@ importers:
         version: 2.28.1
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
-        version: 3.1.1(vitest@3.1.1)
+        version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))
       eslint:
         specifier: ^9.22.0
         version: 9.23.0(jiti@2.4.2)
@@ -81,7 +81,7 @@ importers:
         version: link:../config-typescript
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
-        version: 3.1.1(vitest@3.1.1)
+        version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))
       '@vitest/ui':
         specifier: 3.0.9
         version: 3.0.9(vitest@3.1.1)
@@ -264,6 +264,9 @@ importers:
       execa:
         specifier: ^9.5.2
         version: 9.5.2
+      hotscript:
+        specifier: ^1.0.13
+        version: 1.0.13
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -369,6 +372,9 @@ importers:
       kubernetes-models:
         specifier: ^4.4.2
         version: 4.4.2
+      kubricate:
+        specifier: workspace:*
+        version: link:../kubricate
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*
@@ -4091,7 +4097,7 @@ snapshots:
       '@typescript-eslint/types': 8.28.0
       eslint-visitor-keys: 4.2.0
 
-  '@vitest/coverage-istanbul@3.1.1(vitest@3.1.1)':
+  '@vitest/coverage-istanbul@3.1.1(vitest@3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))':
     dependencies:
       '@istanbuljs/schema': 0.1.3
       debug: 4.4.0

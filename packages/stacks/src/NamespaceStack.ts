@@ -1,5 +1,5 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { ResourceComposer, BaseStack } from '@kubricate/core';
+import { ResourceComposer, BaseStack } from 'kubricate';
 
 export interface INamespaceStack {
   name: string;

@@ -1,6 +1,6 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { ResourceComposer, createStack} from '@kubricate/core';
+import { ResourceComposer, createStack } from 'kubricate';
 
 export interface IAppStack {
   namespace: string;

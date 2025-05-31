@@ -12,7 +12,7 @@ describe('SimpleAppStack', () => {
       imageName: 'my-app',
     });
 
-    const resources = Object.values(stack.build())
+    const resources = Object.values(stack.build());
 
     // Should return 2 resources: Deployment + Service
     expect(resources).toHaveLength(2);

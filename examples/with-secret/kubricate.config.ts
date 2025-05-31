@@ -11,11 +11,10 @@ export default defineConfig({
     conflict: {
       strategies: {
         // Default conflict handling strategies
-
         // intraProvider: 'error',
         // crossProvider: 'error',
         // crossManager: 'error',
-      }
-    }
-  }
+      },
+    },
+  },
 });

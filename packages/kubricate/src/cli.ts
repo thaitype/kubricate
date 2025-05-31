@@ -8,7 +8,6 @@ import { version } from './version.js';
 cliEntryPoint(process.argv, {
   version,
   scriptName: 'kbr',
-})
-.catch(err => {
+}).catch(err => {
   handlerError(err, new ConsoleLogger('silent'), 99);
 });

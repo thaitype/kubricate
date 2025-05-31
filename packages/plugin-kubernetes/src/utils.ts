@@ -1,5 +1,5 @@
-import { ZodError, ZodSchema } from "zod";
-import { fromZodError } from "zod-validation-error";
+import { ZodError, ZodSchema } from 'zod';
+import { fromZodError } from 'zod-validation-error';
 
 export function parseZodSchema<T>(schema: ZodSchema<T>, data: unknown): T {
   try {

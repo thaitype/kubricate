@@ -1,4 +1,4 @@
-import { SecretManager, SecretRegistry } from '@kubricate/core';
+import { SecretManager, SecretRegistry } from 'kubricate';
 import { OpaqueSecretProvider } from '@kubricate/plugin-kubernetes';
 import { EnvConnector } from '@kubricate/plugin-env';
 
@@ -12,7 +12,7 @@ const frontendSecretManager = new SecretManager()
   )
   .addSecret({
     name: 'frontend_app_key',
-  })
+  });
 
 const backendSecretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())
@@ -24,7 +24,7 @@ const backendSecretManager = new SecretManager()
   )
   .addSecret({
     name: 'backend_app_key',
-  })
+  });
 
 export const secretRegistry = new SecretRegistry()
   .add('frontend', frontendSecretManager)
