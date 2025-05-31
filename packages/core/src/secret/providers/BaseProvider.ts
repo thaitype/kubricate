@@ -1,5 +1,4 @@
-import type { SecretInjectionStrategy } from '../../BaseStack.js';
-import type { BaseLogger } from '../../types.js';
+import type { BaseLogger, SecretInjectionStrategy } from '../../types.js';
 import type { SecretValue } from '../types.js';
 
 export interface BaseProvider<
