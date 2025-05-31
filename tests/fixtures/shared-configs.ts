@@ -1,5 +1,5 @@
 import { NamespaceStack, SimpleAppStack } from '@kubricate/stacks';
-import { SecretManager, SecretRegistry } from '@kubricate/core';
+import { SecretManager, SecretRegistry } from 'kubricate';
 import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/plugin-kubernetes';
 import { EnvConnector } from '@kubricate/plugin-env';
 
