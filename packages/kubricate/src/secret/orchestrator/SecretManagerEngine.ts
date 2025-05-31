@@ -1,7 +1,9 @@
+import type { PreparedEffect, SecretValue } from '@kubricate/core';
+
+import type { SecretsOrchestratorOptions } from './types.js';
+
 import { SecretManager, type SecretOptions } from '../SecretManager.js';
 import { SecretRegistry } from '../SecretRegistry.js';
-import type { PreparedEffect, SecretValue } from '@kubricate/core';
-import type { SecretsOrchestratorOptions } from './types.js';
 
 export type StackName = string;
 export type SecretManagerName = string;

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
+
 import { ResourceComposer } from './ResourceComposer.js';
 
 class TestClass {

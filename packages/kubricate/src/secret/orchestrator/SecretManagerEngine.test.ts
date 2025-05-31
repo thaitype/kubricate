@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SecretManagerEngine, type EffectsOptions } from './SecretManagerEngine.js';
+
 import { SecretManager } from '../SecretManager.js';
 import { SecretRegistry } from '../SecretRegistry.js';
+import { SecretManagerEngine, type EffectsOptions } from './SecretManagerEngine.js';
 
 describe('SecretManagerEngine', () => {
   let mockSecretManager: SecretManager;

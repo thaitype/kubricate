@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest';
-import { GenericStack, createStack } from './createStack.js';
+
 import type { ResourceComposer } from './ResourceComposer.js';
+
+import { GenericStack, createStack } from './createStack.js';
 
 describe('GenericStack', () => {
   it('should call builder and set composer on .from()', () => {

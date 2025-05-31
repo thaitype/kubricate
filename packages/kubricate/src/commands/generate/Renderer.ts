@@ -1,13 +1,16 @@
-import type { BaseLogger } from '@kubricate/core';
-import path from 'node:path';
-import { stringify as yamlStringify } from 'yaml';
-import { MetadataInjector } from '../MetadataInjector.js';
-import { version } from '../../version.js';
 import c from 'ansis';
 import { cloneDeep, merge } from 'lodash-es';
-import { getClassName } from '../../internal/utils.js';
+import path from 'node:path';
+import { stringify as yamlStringify } from 'yaml';
+
+import type { BaseLogger } from '@kubricate/core';
+
 import type { KubricateConfig, ProjectMetadataOptions } from '../../types.js';
 import type { ProjectGenerateOptions } from './types.js';
+
+import { getClassName } from '../../internal/utils.js';
+import { version } from '../../version.js';
+import { MetadataInjector } from '../MetadataInjector.js';
 
 export interface RenderedResource {
   id: string;

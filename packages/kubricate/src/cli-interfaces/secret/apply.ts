@@ -1,11 +1,13 @@
 import type { CommandModule } from 'yargs';
+
+import type { GlobalConfigOptions } from '../../internal/types.js';
+
+import { ConfigLoader } from '../../commands/ConfigLoader.js';
 import { SecretCommand, type SecretCommandOptions } from '../../commands/SecretCommand.js';
 import { ExecaExecutor } from '../../executor/execa-executor.js';
 import { KubectlExecutor } from '../../executor/kubectl-executor.js';
-import type { GlobalConfigOptions } from '../../internal/types.js';
-import { ConsoleLogger } from '../../internal/logger.js';
 import { handlerError } from '../../internal/error.js';
-import { ConfigLoader } from '../../commands/ConfigLoader.js';
+import { ConsoleLogger } from '../../internal/logger.js';
 
 export const secretApplyCommand: CommandModule<GlobalConfigOptions, SecretCommandOptions> = {
   command: 'apply',

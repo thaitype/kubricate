@@ -1,4 +1,5 @@
 import type { BaseLogger } from '@kubricate/core';
+
 import type { KubricateConfig } from '../../types.js';
 
 export interface SecretsOrchestratorOptions {

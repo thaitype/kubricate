@@ -1,7 +1,9 @@
 import type { BaseLogger, SecretValue, BaseProvider, PreparedEffect } from '@kubricate/core';
+
 import type { KubricateConfig } from '../../types.js';
-import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
 import type { ConfigConflictOptions, ConflictLevel, ConflictStrategy, SecretsOrchestratorOptions } from './types.js';
+
+import { SecretManagerEngine, type MergedSecretManager } from './SecretManagerEngine.js';
 
 interface ResolvedSecret {
   key: string;

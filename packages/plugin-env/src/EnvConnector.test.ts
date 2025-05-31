@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { EnvConnector } from './EnvConnector.js';
-import path from 'node:path';
 import { writeFileSync, unlinkSync } from 'node:fs';
+import path from 'node:path';
+import { describe, it, expect, beforeEach } from 'vitest';
+
+import { EnvConnector } from './EnvConnector.js';
 
 describe('EnvConnector', () => {
   const envPath = path.join(process.cwd(), '.env');

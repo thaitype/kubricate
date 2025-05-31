@@ -1,6 +1,8 @@
 import c from 'ansis';
-import { MARK_ERROR, MARK_INFO, MARK_WARNING } from './constant.js';
+
 import type { BaseLogger, LogLevel } from '@kubricate/core';
+
+import { MARK_ERROR, MARK_INFO, MARK_WARNING } from './constant.js';
 
 export class ConsoleLogger implements BaseLogger {
   constructor(public level: LogLevel = 'debug') {}

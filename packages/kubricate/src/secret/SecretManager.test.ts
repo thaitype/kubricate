@@ -1,8 +1,9 @@
 // SecretManager.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
-import { SecretManager } from './SecretManager.js';
+
 import { InMemoryConnector } from './connectors/InMemoryConnector.js';
 import { InMemoryProvider } from './providers/InMemoryProvider.js';
+import { SecretManager } from './SecretManager.js';
 
 describe('SecretManager', () => {
   let manager: SecretManager;

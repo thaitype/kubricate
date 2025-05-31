@@ -1,5 +1,5 @@
-import { createStack, ResourceComposer } from 'kubricate';
 import { CronJob } from 'kubernetes-models/batch/v1';
+import { createStack, ResourceComposer } from 'kubricate';
 
 export interface MyInput {
   name: string;

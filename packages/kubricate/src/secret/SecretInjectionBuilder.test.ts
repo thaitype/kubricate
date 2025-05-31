@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
+
 import type { BaseProvider, SecretInjectionStrategy } from '@kubricate/core';
+
+import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 
 const createMockProvider = (supportedStrategies: SecretInjectionStrategy['kind'][]): BaseProvider =>
   ({

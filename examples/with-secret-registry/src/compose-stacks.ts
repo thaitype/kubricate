@@ -1,7 +1,8 @@
 import { NamespaceStack } from '@kubricate/stacks';
-import { AppStack } from './stacks/AppStack';
-import { config } from './shared-config';
+
 import { secretRegistry } from './setup-secret';
+import { config } from './shared-config';
+import { AppStack } from './stacks/AppStack';
 
 const namespace = new NamespaceStack().from({
   name: config.namespace,

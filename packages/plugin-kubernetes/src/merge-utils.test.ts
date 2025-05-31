@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { createKubernetesMergeHandler } from './merge-utils.js';
 
 describe('createKubernetesMergeHandler', () => {

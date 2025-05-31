@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { createMergeHandler } from './merge-utils.js';
+
 import type { PreparedEffect } from '@kubricate/core';
+
+import { createMergeHandler } from './merge-utils.js';
 
 describe('createMergeHandler', () => {
   const merge = createMergeHandler();

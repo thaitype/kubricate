@@ -1,6 +1,7 @@
 import { SecretManager } from 'kubricate';
-import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/plugin-kubernetes';
+
 import { EnvConnector } from '@kubricate/plugin-env';
+import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/plugin-kubernetes';
 
 export const secretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())

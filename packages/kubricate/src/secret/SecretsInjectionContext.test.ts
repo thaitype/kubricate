@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SecretsInjectionContext } from './SecretsInjectionContext.js';
+
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
+import { SecretsInjectionContext } from './SecretsInjectionContext.js';
 
 describe('SecretsInjectionContext', () => {
   let mockStack: any;

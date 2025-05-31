@@ -1,5 +1,5 @@
-import { createStack, ResourceComposer } from 'kubricate';
 import { Namespace } from 'kubernetes-models/v1';
+import { createStack, ResourceComposer } from 'kubricate';
 
 interface MyInput {
   name: string;

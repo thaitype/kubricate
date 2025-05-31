@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { validateString, getClassName } from './utils.js'; // adjust the import path if needed
 
 describe('validateString', () => {

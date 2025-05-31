@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { NamespaceStack } from './NamespaceStack.js'; // path to your implementation
 import { Namespace } from 'kubernetes-models/v1';
+import { describe, it, expect } from 'vitest';
+
+import { NamespaceStack } from './NamespaceStack.js'; // path to your implementation
 
 describe('NamespaceStack', () => {
   it('should compose and build a Kubernetes Namespace resource', () => {

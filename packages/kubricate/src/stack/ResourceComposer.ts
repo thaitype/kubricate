@@ -1,7 +1,10 @@
-import { merge, isPlainObject, cloneDeep } from 'lodash-es';
-import type { AnyClass } from '../types.js';
 import type { Call, Objects } from 'hotscript';
+
+import { merge, isPlainObject, cloneDeep } from 'lodash-es';
 import { get, set } from 'lodash-es';
+
+import type { AnyClass } from '../types.js';
+
 import { validateId } from '../internal/utils.js';
 
 export interface ResourceEntry {

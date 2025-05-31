@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { resolveCors, type CorsPolicy, type CorsPreset } from './cors.js';
 
 describe('resolveCors', () => {

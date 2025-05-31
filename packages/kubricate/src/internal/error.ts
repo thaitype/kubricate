@@ -1,4 +1,5 @@
 import type { BaseLogger } from '@kubricate/core';
+
 import { ConsoleLogger } from './logger.js';
 
 export function handlerError(error: unknown, logger: BaseLogger | undefined, exitCode = 3): void {

@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from 'vitest';
-import { InMemoryProvider } from './InMemoryProvider.js';
+
 import type { PreparedEffect } from '@kubricate/core';
+
+import { InMemoryProvider } from './InMemoryProvider.js';
 
 describe('InMemoryProvider', () => {
   it('should return correct path for env strategy', () => {

@@ -1,5 +1,6 @@
-import { validateString } from '../internal/utils.js';
 import type { AnySecretManager } from './types.js';
+
+import { validateString } from '../internal/utils.js';
 
 /**
  * SecretRegistry

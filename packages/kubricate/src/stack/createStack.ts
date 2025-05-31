@@ -1,5 +1,6 @@
-import { BaseStack } from './BaseStack.js';
 import type { ResourceComposer } from './ResourceComposer.js';
+
+import { BaseStack } from './BaseStack.js';
 
 export type ConfigureComposerFunction<Data, Entries extends Record<string, unknown>> = (
   data: Data

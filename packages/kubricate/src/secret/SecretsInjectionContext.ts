@@ -1,8 +1,10 @@
-import type { BaseStack } from '../stack/BaseStack.js';
 import type { BaseProvider } from '@kubricate/core';
-import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
+
+import type { BaseStack } from '../stack/BaseStack.js';
 import type { SecretManager } from './SecretManager.js';
 import type { AnySecretManager, ExtractSecretManager } from './types.js';
+
+import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 
 export type ExtractProviderKeyFromSecretManager<
   SM extends AnySecretManager,

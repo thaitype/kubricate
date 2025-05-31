@@ -6,6 +6,7 @@ import type {
   SecretValue,
   SecretInjectionStrategy,
 } from '@kubricate/core';
+
 import { createMergeHandler } from './merge-utils.js';
 
 export interface InMemoryProviderConfig {

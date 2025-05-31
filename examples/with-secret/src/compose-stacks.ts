@@ -1,8 +1,9 @@
 import { NamespaceStack } from '@kubricate/stacks';
-import { AppStack } from './stacks/AppStack';
+
 import { secretManager } from './setup-secrets';
-import { CronJobStack } from './stacks/CronJobStack';
 import { config } from './shared-config';
+import { AppStack } from './stacks/AppStack';
+import { CronJobStack } from './stacks/CronJobStack';
 
 const namespace = new NamespaceStack().from({
   name: config.namespace,
