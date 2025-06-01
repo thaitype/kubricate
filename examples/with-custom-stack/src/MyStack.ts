@@ -1,43 +1,25 @@
 import { Namespace } from 'kubernetes-models/v1';
-import { createStack, defineConfig, initStack, ResourceComposer } from 'kubricate';
+import { Stack } from 'kubricate';
 
-import { configClass, defineStackTemplate } from '@kubricate/core';
+import { defineStackTemplate } from '@kubricate/core';
+import { kubeModel } from '@kubricate/kubernetes-models';
 
 interface MyInput {
   name: string;
 }
 
-const namespaceStackTemplate = defineStackTemplate('MyStackNew', (data: MyInput) => {
+const namespaceStackTemplate = defineStackTemplate('MyStack', (data: MyInput) => {
   return {
-    namespace: configClass(Namespace, {
+    namespace: kubeModel(Namespace, {
       metadata: { name: data.name },
     }),
   };
 });
 
-const myStackNew = initStack(namespaceStackTemplate, {
-  name: 'MyStackNew',
-});
-
-defineConfig({
-  stacks: {
-    MyStackNew: myStackNew,
-  },
-});
-
-const MyStack = createStack('MyStack', (data: MyInput) => {
-  return new ResourceComposer().addClass({
-    id: 'namespace',
-    type: Namespace,
-    config: {
-      metadata: { name: data.name },
-    },
-  });
-});
-
-export const frontend = MyStack.from({
+export const frontend = Stack.fromTemplate(namespaceStackTemplate, {
   name: 'frontend-namespace',
 });
-export const backend = MyStack.from({
+
+export const backend = Stack.fromTemplate(namespaceStackTemplate, {
   name: 'backend-namespace',
 });

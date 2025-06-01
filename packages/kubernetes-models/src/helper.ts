@@ -1,6 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyClass = new (...args: any[]) => any;
-
+type AnyClass = new (...args: any[]) => any;
+export interface TypeMeta {
+  apiVersion: string;
+  kind: string;
+}
+type WithTypeMeta<T> = T extends Omit<infer U, keyof TypeMeta> ? U : T;
 /**
  * Converts a Kubernetes model class (from `kubernetes-models` package)
  * into a plain JSON-compatible object.
@@ -34,11 +38,19 @@ export type AnyClass = new (...args: any[]) => any;
 export function kubeModel<T extends AnyClass>(
   type: T,
   config: ConstructorParameters<T>[0]
-): ConstructorParameters<T>[0] {
+): NonNullable<WithTypeMeta<ConstructorParameters<T>[0]>> {
   const instance = new type(config);
+
+  if (instance === undefined) {
+    throw new Error(`[kubeModel] ${type.name} returned undefined. Ensure the constructor is correctly implemented.`);
+  }
 
   if (typeof instance.toJSON !== 'function') {
     throw new Error(`[kubeModel] ${type.name} does not implement .toJSON(). This function only supports kubernetes-models.`);
+  }
+
+  if(typeof instance.validate === 'function') {
+    instance.validate();
   }
 
   return structuredClone(instance.toJSON());

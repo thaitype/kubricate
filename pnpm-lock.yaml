@@ -106,9 +106,15 @@ importers:
       '@kubricate/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@kubricate/kubernetes-models':
+        specifier: workspace:*
+        version: link:../../packages/kubernetes-models
       kubernetes-models:
         specifier: ^4.4.2
         version: 4.4.2
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
     devDependencies:
       '@kubernetes-models/base':
         specifier: ^5.0.1
@@ -125,9 +131,6 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
-      kubricate:
-        specifier: workspace:*
-        version: link:../../packages/kubricate
 
   examples/with-secret:
     dependencies:
@@ -291,6 +294,9 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
       unconfig:
         specifier: ^7.3.1
         version: 7.3.1
@@ -3173,6 +3179,10 @@ packages:
   type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
+
+  type-fest@4.41.0:
+    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
+    engines: {node: '>=16'}
 
   typed-array-buffer@1.0.3:
     resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
@@ -6451,6 +6461,8 @@ snapshots:
       prelude-ls: 1.2.1
 
   type-fest@0.8.1: {}
+
+  type-fest@4.41.0: {}
 
   typed-array-buffer@1.0.3:
     dependencies:

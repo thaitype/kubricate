@@ -19,12 +19,3 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
     create: factory,
   };
 }
-
-// export type AnyClass = new (...args: any[]) => any;
-
-// export function configClass<T extends AnyClass>(
-//   type: T,
-//   config: ConstructorParameters<T>[0]
-// ): ConstructorParameters<T>[0] {
-//   return config;
-// }
