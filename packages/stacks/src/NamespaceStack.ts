@@ -1,7 +1,7 @@
 import { Namespace } from 'kubernetes-models/v1';
 import { ResourceComposer, BaseStack } from 'kubricate';
 
-export interface INamespaceStack {
+interface INamespaceStack {
   name: string;
 }
 
@@ -17,6 +17,9 @@ function configureComposer(data: INamespaceStack) {
   });
 }
 
+/**
+ * @deprecated Use `namespaceStackTemplate` instead.
+ */
 export class NamespaceStack extends BaseStack<typeof configureComposer> {
   constructor() {
     super();
