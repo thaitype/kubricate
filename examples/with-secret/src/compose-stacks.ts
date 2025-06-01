@@ -1,15 +1,16 @@
-import { namespaceStackTemplate, simpleAppStackTemplate } from '@kubricate/stacks';
 import { Stack } from 'kubricate';
+
+import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
 
 import { secretManager } from './setup-secrets';
 import { config } from './shared-config';
 import { cronJobTemplate } from './stacks/CronJobStack';
 
-const namespace = Stack.fromTemplate(namespaceStackTemplate, {
+const namespace = Stack.fromTemplate(namespaceTemplate, {
   name: config.namespace,
 });
 
-const myApp = Stack.fromTemplate(simpleAppStackTemplate, {
+const myApp = Stack.fromTemplate(simpleAppTemplate, {
   namespace: config.namespace,
   imageName: 'nginx',
   name: 'my-app',

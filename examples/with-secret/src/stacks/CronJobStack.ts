@@ -1,4 +1,5 @@
 import { CronJob } from 'kubernetes-models/batch/v1';
+
 import { defineStackTemplate } from '@kubricate/core';
 import { kubeModel } from '@kubricate/kubernetes-models';
 

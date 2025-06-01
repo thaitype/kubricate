@@ -8,7 +8,7 @@ interface MyInput {
   name: string;
 }
 
-const namespaceStackTemplate = defineStackTemplate('MyStack', (data: MyInput) => {
+const namespaceTemplate = defineStackTemplate('Namespace', (data: MyInput) => {
   return {
     namespace: kubeModel(Namespace, {
       metadata: { name: data.name },
@@ -16,10 +16,10 @@ const namespaceStackTemplate = defineStackTemplate('MyStack', (data: MyInput) =>
   };
 });
 
-export const frontend = Stack.fromTemplate(namespaceStackTemplate, {
+export const frontend = Stack.fromTemplate(namespaceTemplate, {
   name: 'frontend-namespace',
 });
 
-export const backend = Stack.fromTemplate(namespaceStackTemplate, {
+export const backend = Stack.fromTemplate(namespaceTemplate, {
   name: 'backend-namespace',
 });

@@ -1,12 +1,12 @@
 import { Namespace } from 'kubernetes-models/v1';
 import { describe, it, expect } from 'vitest';
 
-import { namespaceStackTemplate } from './namespaceStackTemplate.js';
+import { namespaceTemplate } from './namespaceTemplate.js';
 
 describe('namespaceStackTemplate', () => {
   it('should return a plain object representing a Kubernetes Namespace', () => {
     // Generate the resource using the stack template
-    const resources = namespaceStackTemplate.create({ name: 'my-namespace' });
+    const resources = namespaceTemplate.create({ name: 'my-namespace' });
 
     // Ensure the returned object has a 'namespace' key
     expect(resources).toHaveProperty('namespace');

@@ -2,11 +2,11 @@ import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
 import { describe, it, expect } from 'vitest';
 
-import { simpleAppStackTemplate } from './simpleAppStackTemplate.js';
+import { simpleAppTemplate } from './simpleAppTemplate.js';
 
 describe('simpleAppStackTemplate', () => {
   it('should generate Deployment and Service with defaults', () => {
-    const result = simpleAppStackTemplate.create({
+    const result = simpleAppTemplate.create({
       name: 'my-app',
       imageName: 'my-app',
     });
@@ -27,7 +27,7 @@ describe('simpleAppStackTemplate', () => {
   });
 
   it('should override defaults if values provided', () => {
-    const result = simpleAppStackTemplate.create({
+    const result = simpleAppTemplate.create({
       name: 'my-app',
       imageName: 'custom-image',
       imageRegistry: 'docker.io',
