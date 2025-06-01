@@ -47,6 +47,7 @@
     "kubricate": "workspace:*",
     "@kubernetes-models/base": "^5.0.1",
     "kubernetes-models": "^4.4.2",
+    "@kubricate/kubernetes-models": "workspace:*",
     "@kubricate/toolkit": "workspace:*",
     "@kubricate/core": "workspace:*"
   },

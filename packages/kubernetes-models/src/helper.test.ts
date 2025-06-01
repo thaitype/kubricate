@@ -30,9 +30,9 @@ describe('kubeModel', () => {
   });
 
   it('should throw error if class does not implement toJSON()', () => {
-    expect(() =>
-      kubeModel(NoToJSONModel as any, { metadata: { name: 'fail' } })
-    ).toThrowError('[kubeModel] NoToJSONModel does not implement .toJSON()');
+    expect(() => kubeModel(NoToJSONModel as any, { metadata: { name: 'fail' } })).toThrowError(
+      '[kubeModel] NoToJSONModel does not implement .toJSON()'
+    );
   });
 
   it('should deeply clone the object and not share reference', () => {

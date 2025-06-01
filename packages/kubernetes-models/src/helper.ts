@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyClass = new (...args: any[]) => any;
-export interface TypeMeta {
+interface TypeMeta {
   apiVersion: string;
   kind: string;
 }
@@ -46,10 +46,12 @@ export function kubeModel<T extends AnyClass>(
   }
 
   if (typeof instance.toJSON !== 'function') {
-    throw new Error(`[kubeModel] ${type.name} does not implement .toJSON(). This function only supports kubernetes-models.`);
+    throw new Error(
+      `[kubeModel] ${type.name} does not implement .toJSON(). This function only supports kubernetes-models.`
+    );
   }
 
-  if(typeof instance.validate === 'function') {
+  if (typeof instance.validate === 'function') {
     instance.validate();
   }
 

@@ -93,7 +93,7 @@ export abstract class BaseStack<
    */
   abstract from(data: unknown): unknown;
 
-  override(data: InferConfigureComposerFunc<ConfigureComposerFunc>) {
+  override(data: Partial<InferConfigureComposerFunc<ConfigureComposerFunc>>) {
     this._composer.override(data);
     return this;
   }

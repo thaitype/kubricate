@@ -4,7 +4,7 @@ import { ResourceComposer, BaseStack } from 'kubricate';
 
 import { joinPath } from '@kubricate/toolkit';
 
-export interface ISimpleAppStack {
+interface ISimpleAppStack {
   name: string;
   namespace?: string;
   imageName: string;
@@ -68,6 +68,9 @@ function configureComposer(data: ISimpleAppStack) {
     });
 }
 
+/**
+ * @deprecated Use `simpleAppStackTemplate` instead.
+ */
 export class SimpleAppStack extends BaseStack<typeof configureComposer> {
   constructor() {
     super();
