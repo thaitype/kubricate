@@ -53,12 +53,12 @@
     "@kubricate/core": "workspace:*",
     "ansis": "^3.17.0",
     "execa": "^9.5.2",
+    "hotscript": "^1.0.13",
     "lodash-es": "^4.17.21",
     "unconfig": "^7.3.1",
     "yaml": "^2.7.0",
     "yargs": "^17.7.2",
-    "zod": "^3.24.2",
-    "hotscript": "^1.0.13"
+    "zod": "^3.24.2"
   },
   "keywords": [
     "kubernetes",

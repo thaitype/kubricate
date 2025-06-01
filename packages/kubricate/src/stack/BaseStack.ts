@@ -95,7 +95,7 @@ export abstract class BaseStack<
    */
   abstract from(data: unknown): unknown;
 
-  override(data: Call<Objects.PartialDeep, InferConfigureComposerFunc<ConfigureComposerFunc>>) {
+  override(data: InferConfigureComposerFunc<ConfigureComposerFunc>) {
     this._composer.override(data);
     return this;
   }

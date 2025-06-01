@@ -30,3 +30,8 @@ export type SecretInjectionStrategy =
   | ({ kind: 'imagePullSecret' } & BaseSecretInjectionStrategy)
   | ({ kind: 'envFrom'; containerIndex?: number } & BaseSecretInjectionStrategy)
   | { kind: 'plugin'; action?: string; args?: unknown[]; [key: string]: unknown };
+
+export type StackFactory<Input, ResourceMap> = {
+  name: string;
+  create: (input: Input) => ResourceMap;
+};
