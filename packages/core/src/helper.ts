@@ -1,7 +1,7 @@
 
-export type StackTemplate<Input, ResourceMap> = {
+export type StackTemplate<TInput, TResourceMap> = {
   name: string;
-  create: (input: Input) => ResourceMap;
+  create: (input: TInput) => TResourceMap;
 };
 
 /**
@@ -11,10 +11,10 @@ export type StackTemplate<Input, ResourceMap> = {
  * @param factory - A function that takes an input and returns a map of resources.
  * @returns A stack factory function.
  */
-export function defineStackTemplate<I, R extends Record<string, unknown>>(
+export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>>(
   name: string,
-  factory: (input: I) => R
-): StackTemplate<I, R> {
+  factory: (input: TInput) => TResourceMap
+): StackTemplate<TInput, TResourceMap> {
   return {
     name,
     create: factory,
