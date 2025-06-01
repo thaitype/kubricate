@@ -33,7 +33,7 @@ export abstract class BaseStack<
 
   /**
    * The name of the stack.
-   * This is used to identify the stack, generally used with GenericStack.
+   * This is used to identify the stack, generally used with Stack.
    */
   public _name?: string;
   /**

@@ -3,14 +3,14 @@ import { describe, it, expect, vi } from 'vitest';
 
 import type { ResourceComposer } from './ResourceComposer.js';
 
-import { GenericStack, createStack } from './createStack.js';
+import { Stack, createStack } from './createStack.js';
 
-describe('GenericStack', () => {
+describe('Stack', () => {
   it('should call builder and set composer on .from()', () => {
     const mockComposer = {} as ResourceComposer<any>;
     const builder = vi.fn().mockReturnValue(mockComposer);
 
-    const stack = new GenericStack(builder);
+    const stack = new Stack(builder);
     const result = stack.from({ project: 'example' });
 
     expect(builder).toHaveBeenCalledWith({ project: 'example' });

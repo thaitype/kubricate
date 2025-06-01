@@ -9,7 +9,7 @@ export type ConfigureComposerFunction<Data, Entries extends Record<string, unkno
 ) => ResourceComposer<Entries>;
 
 // Generic stack class that holds builder function internally
-export class GenericStack<Data, Entries extends Record<string, unknown>> extends BaseStack<
+export class Stack<Data, Entries extends Record<string, unknown>> extends BaseStack<
   ConfigureComposerFunction<Data, Entries>
 > {
   constructor(public builder: ConfigureComposerFunction<Data, Entries>) {
@@ -35,7 +35,7 @@ export function createStack<Data, Entries extends Record<string, unknown> = {}>(
 ) {
   return {
     from(data: Data) {
-      const stack = new GenericStack<Data, Entries>(builder);
+      const stack = new Stack<Data, Entries>(builder);
       stack.setName(name);
       return stack.from(data);
     },
@@ -46,7 +46,7 @@ export function createStack<Data, Entries extends Record<string, unknown> = {}>(
  * Creates a runtime-ready stack from a given stack factory and input.
  *
  * This function takes a pure stack definition (created using `defineStack`) and user-provided input,
- * then wraps the resulting resource map into a `GenericStack` that supports additional orchestration
+ * then wraps the resulting resource map into a `Stack` that supports additional orchestration
  * like secret injection and CLI-based deployment.
  *
  * @template I - The input type required by the stack factory
@@ -55,7 +55,7 @@ export function createStack<Data, Entries extends Record<string, unknown> = {}>(
  * @param factory - A stack factory created via `defineStack`, containing the name and creation logic
  * @param input - The input object to pass into the stack's factory function
  *
- * @returns A `GenericStack` instance that is ready to be used by the Kubricate CLI or programmatic consumers.
+ * @returns A `Stack` instance that is ready to be used by the Kubricate CLI or programmatic consumers.
  *
  * @example
  * ```ts
@@ -71,7 +71,7 @@ export function createStack<Data, Entries extends Record<string, unknown> = {}>(
 export function initStack<I, R extends Record<string, unknown>>(
   factory: StackFactory<I, R>,
   input: I
-): GenericStack<I, R> {
+): Stack<I, R> {
   const builder = (data: I) => {
     const resources = factory.create(data);
     const composer = new ResourceComposer<R>();
@@ -84,7 +84,7 @@ export function initStack<I, R extends Record<string, unknown>>(
     return composer;
   };
 
-  const stack = new GenericStack(builder);
+  const stack = new Stack(builder);
   stack.setName(factory.name);
   stack.from(input);
   return stack;
