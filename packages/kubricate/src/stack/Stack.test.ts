@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest';
-
 import type { ResourceComposer } from './ResourceComposer.js';
 
 import { Stack, createStack } from './Stack.js';
+import { defineStackTemplate } from '@kubricate/core';
 
 describe('Stack', () => {
   it('should call builder and set composer on .from()', () => {
@@ -27,5 +27,36 @@ describe('Stack', () => {
     expect(stack._name).toBe('my-stack');
     expect(stack._composer).toBe(mockComposer);
     expect(builder).toHaveBeenCalledWith({ foo: 'bar' });
+  });
+
+  it('should build from a StackTemplate using fromTemplate()', () => {
+    const template = defineStackTemplate('hello', (input: { name: string }) => ({
+      ns: {
+        apiVersion: 'v1',
+        kind: 'Namespace',
+        metadata: { name: input.name },
+      },
+    }));
+
+    const stack = Stack.fromTemplate(template, { name: 'my-ns' });
+    const built = stack.build();
+
+    expect(stack._name).toBe('hello');
+    expect((built.ns as any).metadata?.name).toBe('my-ns');
+  });
+
+  it('should build from static resource using fromStatic()', () => {
+    const stack = Stack.fromStatic('static-stack', {
+      configMap: {
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: { name: 'my-config' },
+      },
+    });
+
+    const built = stack.build();
+
+    expect(stack._name).toBe('static-stack');
+    expect((built.configMap as any).metadata?.name).toBe('my-config');
   });
 });
