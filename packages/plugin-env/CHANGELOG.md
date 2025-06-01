@@ -1,6 +1,6 @@
 # @kubricate/plugin-env
 
-## 1.0.0
+## 0.20.0
 
 ### Minor Changes
 
