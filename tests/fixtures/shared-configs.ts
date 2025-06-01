@@ -1,5 +1,5 @@
-import { NamespaceStack, SimpleAppStack } from '@kubricate/stacks';
-import { SecretManager, SecretRegistry } from 'kubricate';
+import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
+import { SecretManager, SecretRegistry, Stack } from 'kubricate';
 import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/plugin-kubernetes';
 import { EnvConnector } from '@kubricate/plugin-env';
 
@@ -36,28 +36,26 @@ export const secretRegistry = new SecretRegistry()
   .add('docker', dockerSecretManager);
 
 export const sharedStacks = {
-  namespace: new NamespaceStack().from({ name: 'my-namespace' }),
-  frontend: new SimpleAppStack().from({
+  namespace: Stack.fromTemplate(namespaceTemplate, { name: 'my-namespace' }),
+  frontend: Stack.fromTemplate(simpleAppTemplate, {
     name: 'my-app',
     namespace: 'my-namespace',
     imageName: 'nginx',
   }),
-  frontendWithSecretManager: new SimpleAppStack()
-    .from({
-      name: 'my-app',
-      namespace: 'my-namespace',
-      imageName: 'nginx',
-    })
+  frontendWithSecretManager: Stack.fromTemplate(simpleAppTemplate, {
+    name: 'my-app',
+    namespace: 'my-namespace',
+    imageName: 'nginx',
+  })
     .useSecrets(frontendSecretManager, injector => {
       injector.secrets('my_app_key').forName('API_KEY').inject();
       injector.secrets('my_app_key_2').forName('API_KEY_2').inject();
     }),
-  frontendWithSecretRegistry: new SimpleAppStack()
-    .from({
-      name: 'my-app',
-      namespace: 'my-namespace',
-      imageName: 'nginx',
-    })
+  frontendWithSecretRegistry: Stack.fromTemplate(simpleAppTemplate, {
+    name: 'my-app',
+    namespace: 'my-namespace',
+    imageName: 'nginx',
+  })
     .useSecrets(secretRegistry.get('frontend'), injector => {
       injector.secrets('my_app_key').forName('API_KEY').inject();
       injector.secrets('my_app_key_2').forName('API_KEY_2').inject();
