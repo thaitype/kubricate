@@ -1,5 +1,3 @@
-import type { Objects, Call } from 'hotscript';
-
 import type { BaseLogger, BaseProvider, ProviderInjection, BaseConnector } from '@kubricate/core';
 
 import type { AnySecretManager, EnvOptions } from '../secret/types.js';

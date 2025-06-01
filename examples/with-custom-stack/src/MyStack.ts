@@ -1,6 +1,7 @@
-import { configClass, defineStackTemplate } from '@kubricate/core';
 import { Namespace } from 'kubernetes-models/v1';
 import { createStack, defineConfig, initStack, ResourceComposer } from 'kubricate';
+
+import { configClass, defineStackTemplate } from '@kubricate/core';
 
 interface MyInput {
   name: string;
@@ -11,7 +12,7 @@ const namespaceStackTemplate = defineStackTemplate('MyStackNew', (data: MyInput)
     namespace: configClass(Namespace, {
       metadata: { name: data.name },
     }),
-  }
+  };
 });
 
 const myStackNew = initStack(namespaceStackTemplate, {
@@ -21,8 +22,8 @@ const myStackNew = initStack(namespaceStackTemplate, {
 defineConfig({
   stacks: {
     MyStackNew: myStackNew,
-  }
-})
+  },
+});
 
 const MyStack = createStack('MyStack', (data: MyInput) => {
   return new ResourceComposer().addClass({

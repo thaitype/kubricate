@@ -1,4 +1,3 @@
-
 export type StackTemplate<TInput, TResourceMap> = {
   name: string;
   create: (input: TInput) => TResourceMap;

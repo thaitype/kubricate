@@ -1,8 +1,7 @@
-
-import { ResourceComposer } from './ResourceComposer.js';
+import type { StackTemplate } from '@kubricate/core';
 
 import { BaseStack } from './BaseStack.js';
-import type { StackTemplate } from '@kubricate/core';
+import { ResourceComposer } from './ResourceComposer.js';
 
 /**
  * A function that takes input data and returns a `ResourceComposer` with resource entries.
@@ -96,7 +95,7 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
  * Factory function to create a `Stack` instance manually.
  *
  * @deprecated Use `defineStackTemplate` together with `Stack.fromTemplate` instead.
- * 
+ *
  * This method was previously used to define a stack template along with a `from` method,
  * but it mixes type definition with runtime logic. For better separation of concerns,
  * define your stack using `defineStackTemplate(...)` and then instantiate it using `Stack.fromTemplate(...)`.
@@ -111,6 +110,7 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
  * const stack = Stack.fromTemplate(MyStackTemplate, input);
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function createStack<Data, Entries extends Record<string, unknown> = {}>(
   name: string,
   builder: ConfigureComposerFunction<Data, Entries>
