@@ -46,11 +46,10 @@ export const sharedStacks = {
     name: 'my-app',
     namespace: 'my-namespace',
     imageName: 'nginx',
-  })
-    .useSecrets(frontendSecretManager, injector => {
-      injector.secrets('my_app_key').forName('API_KEY').inject();
-      injector.secrets('my_app_key_2').forName('API_KEY_2').inject();
-    }),
+  }).useSecrets(frontendSecretManager, injector => {
+    injector.secrets('my_app_key').forName('API_KEY').inject();
+    injector.secrets('my_app_key_2').forName('API_KEY_2').inject();
+  }),
   frontendWithSecretRegistry: Stack.fromTemplate(simpleAppTemplate, {
     name: 'my-app',
     namespace: 'my-namespace',
