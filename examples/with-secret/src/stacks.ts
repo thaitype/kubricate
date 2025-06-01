@@ -4,7 +4,7 @@ import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
 
 import { secretManager } from './setup-secrets';
 import { config } from './shared-config';
-import { cronJobTemplate } from './stacks/CronJobStack';
+import { cronJobTemplate } from './stack-templates/cronJobTemplate';
 
 const namespace = Stack.fromTemplate(namespaceTemplate, {
   name: config.namespace,
