@@ -27,7 +27,7 @@
   </a>
 </p>
 
-> Kubricate is preparing to release its first stable version as v1 release soon.
+> Kubricate is preparing to release its first stable version as v1 release soon. API will be not changed
 
 ## ✨ Features
 
