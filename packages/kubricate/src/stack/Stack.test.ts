@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 import type { ResourceComposer } from './ResourceComposer.js';
 
-import { Stack, createStack } from './createStack.js';
+import { Stack, createStack } from './Stack.js';
 
 describe('Stack', () => {
   it('should call builder and set composer on .from()', () => {

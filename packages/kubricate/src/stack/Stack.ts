@@ -2,7 +2,7 @@
 import { ResourceComposer } from './ResourceComposer.js';
 
 import { BaseStack } from './BaseStack.js';
-import type { StackFactory } from '@kubricate/core';
+import type { StackTemplate } from '@kubricate/core';
 
 export type ConfigureComposerFunction<Data, Entries extends Record<string, unknown>> = (
   data: Data
@@ -16,6 +16,28 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
     super();
   }
 
+  static fromTemplate<I, R extends Record<string, unknown>>(
+    factory: StackTemplate<I, R>,
+    input: I
+  ): Stack<I, R> {
+    const builder = (data: I) => {
+      const resources = factory.create(data);
+      const composer = new ResourceComposer<R>();
+      for (const [id, resource] of Object.entries(resources)) {
+        composer.addObject({
+          id,
+          config: resource as object,
+        });
+      }
+      return composer;
+    };
+
+    const stack = new Stack(builder);
+    stack.setName(factory.name);
+    stack.from(input);
+    return stack;
+  }
+
   override from(data: Data) {
     const composer = this.builder(data);
     this.setComposer(composer);
@@ -26,7 +48,7 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
 /**
  * Factory function to create stack
  *
- * @deprecated Use `initStack` instead, which is more flexible and supports runtime input.
+ * @deprecated Use `Stack.fromTemplate` instead, which is more flexible and supports runtime input.
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export function createStack<Data, Entries extends Record<string, unknown> = {}>(
@@ -69,7 +91,7 @@ export function createStack<Data, Entries extends Record<string, unknown> = {}>(
  * ```
  */
 export function initStack<I, R extends Record<string, unknown>>(
-  factory: StackFactory<I, R>,
+  factory: StackTemplate<I, R>,
   input: I
 ): Stack<I, R> {
   const builder = (data: I) => {

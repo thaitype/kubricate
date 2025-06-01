@@ -1,3 +1,3 @@
 export * from './BaseStack.js';
 export * from './ResourceComposer.js';
-export * from './createStack.js';
+export * from './Stack.js';

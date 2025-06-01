@@ -1,4 +1,9 @@
-import type { StackFactory } from "./types.js";
+
+export type StackTemplate<Input, ResourceMap> = {
+  name: string;
+  create: (input: Input) => ResourceMap;
+};
+
 /**
  * Defines a stack factory that creates a stack of resources based on the provided input.
  *
@@ -9,18 +14,18 @@ import type { StackFactory } from "./types.js";
 export function defineStackTemplate<I, R extends Record<string, unknown>>(
   name: string,
   factory: (input: I) => R
-): StackFactory<I, R> {
+): StackTemplate<I, R> {
   return {
     name,
     create: factory,
   };
 }
 
-export type AnyClass = new (...args: any[]) => any;
+// export type AnyClass = new (...args: any[]) => any;
 
-export function configClass<T extends AnyClass>(
-  type: T,
-  config: ConstructorParameters<T>[0]
-): ConstructorParameters<T>[0] {
-  return config;
-}
+// export function configClass<T extends AnyClass>(
+//   type: T,
+//   config: ConstructorParameters<T>[0]
+// ): ConstructorParameters<T>[0] {
+//   return config;
+// }
