@@ -41,16 +41,19 @@
     "package.json",
     "README.md"
   ],
-  "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
+  "description": "Extension utilities for working with kubernetes-models in Kubricate. Enables defining typed Kubernetes resources with clean plain-object output for deployment.",
   "keywords": [
-    "kubernetes",
     "kubricate",
+    "kubernetes",
+    "kubernetes-models",
+    "yaml",
+    "manifest",
+    "resource-composer",
+    "typed-kubernetes",
+    "infrastructure-as-code",
+    "iac",
     "cli",
-    "typescript",
-    "framework",
-    "typesafe",
-    "secret-management",
-    "infrastructure-as-code"
+    "devops"
   ],
   "license": "Apache-2.0"
 }
