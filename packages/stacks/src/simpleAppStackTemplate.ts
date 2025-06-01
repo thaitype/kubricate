@@ -4,6 +4,7 @@ import { Service } from 'kubernetes-models/v1/Service';
 import { defineStackTemplate } from '@kubricate/core';
 import { kubeModel } from '@kubricate/kubernetes-models';
 import { joinPath } from '@kubricate/toolkit';
+import type { IContainer } from 'kubernetes-models/v1';
 
 export interface ISimpleAppStack {
   name: string;
@@ -12,6 +13,7 @@ export interface ISimpleAppStack {
   replicas?: number;
   imageRegistry?: string;
   port?: number;
+  env?: IContainer['env'];
 }
 
 export const simpleAppStackTemplate = defineStackTemplate('SimpleAppStack', (data: ISimpleAppStack) => {
@@ -40,6 +42,7 @@ export const simpleAppStackTemplate = defineStackTemplate('SimpleAppStack', (dat
                 image: joinPath(imageRegistry, data.imageName),
                 name: data.name,
                 ports: [{ containerPort: port }],
+                env: data.env,
               },
             ],
           },
