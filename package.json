@@ -17,6 +17,7 @@
     "test:view-report": "turbo run view-report",
     "test:coverage": "turbo run report",
     "release": "run-s all && changeset version && changeset publish",
+    "changeset": "changeset",
     "graph": "npx nx graph"
   },
   "engines": {
