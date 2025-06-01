@@ -256,6 +256,24 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
 
+  packages/kubernetes-models:
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
+
   packages/kubricate:
     dependencies:
       '@kubricate/core':
