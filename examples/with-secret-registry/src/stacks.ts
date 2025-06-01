@@ -1,14 +1,15 @@
-import { NamespaceStack } from '@kubricate/stacks';
+import { Stack } from 'kubricate';
 
-import { secretRegistry } from './setup-secret';
+import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
+
+import { secretRegistry } from './setup-secrets';
 import { config } from './shared-config';
-import { AppStack } from './stacks/AppStack';
 
-const namespace = new NamespaceStack().from({
+const namespace = Stack.fromTemplate(namespaceTemplate, {
   name: config.namespace,
 });
 
-const frontend = AppStack.from({
+const frontend = Stack.fromTemplate(simpleAppTemplate, {
   namespace: config.namespace,
   imageName: 'nginx',
   name: 'my-frontend',
@@ -18,13 +19,15 @@ const frontend = AppStack.from({
   })
   .override({
     service: {
+      apiVersion: 'v1',
+      kind: 'Service',
       spec: {
         type: 'LoadBalancer',
       },
     },
   });
 
-const backend = AppStack.from({
+const backend = Stack.fromTemplate(simpleAppTemplate, {
   namespace: config.namespace,
   imageName: 'nginx',
   name: 'my-backend',
