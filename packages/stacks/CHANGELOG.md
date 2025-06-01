@@ -1,5 +1,18 @@
 # @kubricate/stacks
 
+## 0.20.0
+
+### Minor Changes
+
+- a981d96: Refactor Architecture — Extract @kubricate/core and Introduce Stack Templates
+
+### Patch Changes
+
+- Updated dependencies [a981d96]
+  - @kubricate/kubernetes-models@0.1.0
+  - kubricate@0.20.0
+  - @kubricate/core@0.20.0
+
 ## 0.19.1
 
 ### Patch Changes
