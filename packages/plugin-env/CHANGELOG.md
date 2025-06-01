@@ -1,5 +1,16 @@
 # @kubricate/plugin-env
 
+## 0.20.0
+
+### Minor Changes
+
+- a981d96: Refactor Architecture — Extract @kubricate/core and Introduce Stack Templates
+
+### Patch Changes
+
+- Updated dependencies [a981d96]
+  - @kubricate/core@0.20.0
+
 ## 0.19.0
 
 ### Minor Changes

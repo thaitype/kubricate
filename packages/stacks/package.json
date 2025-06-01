@@ -1,6 +1,6 @@
 {
   "name": "@kubricate/stacks",
-  "version": "0.19.1",
+  "version": "0.20.0",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
