@@ -33,10 +33,8 @@ describe('CLI Integration (Generate with Secret Manager)', () => {
     expect(stdout).toContain('name: API_KEY');
     expect(stdout).toContain('key: my_app_key_2');
     expect(stdout).toContain('name: API_KEY_2');
-
   });
 });
-
 
 describe('CLI Integration (Generate with Secret Registry)', () => {
   const fixturesDir = path.join(fixturesRoot, 'generate-with-secret-registry');

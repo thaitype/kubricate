@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import { SimpleAppStack } from './SimpleAppStack.js'; // adjust the import path
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
+import { describe, it, expect } from 'vitest';
+
+import { SimpleAppStack } from './SimpleAppStack.js'; // adjust the import path
 
 describe('SimpleAppStack', () => {
   it('should generate Deployment and Service with defaults', () => {
@@ -12,7 +13,7 @@ describe('SimpleAppStack', () => {
       imageName: 'my-app',
     });
 
-    const resources = Object.values(stack.build())
+    const resources = Object.values(stack.build());
 
     // Should return 2 resources: Deployment + Service
     expect(resources).toHaveLength(2);

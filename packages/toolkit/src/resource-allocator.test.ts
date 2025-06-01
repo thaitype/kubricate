@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+
 import { ResourceAllocator } from './resource-allocator.js'; // Adjust the path as needed
 
 describe('ResourceAllocator', () => {

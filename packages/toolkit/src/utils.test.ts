@@ -1,4 +1,5 @@
 import { test, expect, describe, it } from 'vitest';
+
 import { joinPath, mergeMetadata } from './utils.js';
 
 describe('joinPath', () => {

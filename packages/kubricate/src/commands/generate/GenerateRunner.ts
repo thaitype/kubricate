@@ -1,8 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { BaseLogger, ProjectGenerateOptions } from '@kubricate/core';
-import { MARK_BULLET, MARK_CHECK } from '../../internal/constant.js';
+
+import type { BaseLogger } from '@kubricate/core';
+
 import type { GenerateCommandOptions } from './GenerateCommand.js';
+import type { ProjectGenerateOptions } from './types.js';
+
+import { MARK_BULLET, MARK_CHECK } from '../../internal/constant.js';
 
 export interface RenderedFile {
   filePath: string;
@@ -11,13 +15,12 @@ export interface RenderedFile {
 }
 
 export class GenerateRunner {
-
   constructor(
     public readonly options: GenerateCommandOptions,
     public readonly generateOptions: Required<ProjectGenerateOptions>,
     private readonly renderedFiles: RenderedFile[],
-    protected readonly logger: BaseLogger,
-  ) { }
+    protected readonly logger: BaseLogger
+  ) {}
 
   async run() {
     if (this.generateOptions.cleanOutputDir) {
@@ -35,11 +38,13 @@ export class GenerateRunner {
       this.processOutput(file, stats);
     }
 
-    if(stats.written === 0) {
+    if (stats.written === 0) {
       this.logger.warn(`No files generated.`);
       return;
     }
-    this.logger.log(`\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateOptions.outputDir}/"`);
+    this.logger.log(
+      `\n${MARK_CHECK} Generated ${stats.written} file${stats.written > 1 ? 's' : ''} into "${this.generateOptions.outputDir}/"`
+    );
   }
 
   private cleanOutputDir(dir: string) {

@@ -1,5 +1,6 @@
-import { createHash } from 'node:crypto';
 import { cloneDeep } from 'lodash-es';
+import { createHash } from 'node:crypto';
+
 import { LABELS } from './constants.js';
 
 export interface MetadataInjectorOptions {
@@ -23,11 +24,11 @@ export interface MetadataInjectorOptions {
     managedAt?: boolean;
     resourceHash?: boolean;
     version?: boolean;
-  }
+  };
 }
 
 export class MetadataInjector {
-  constructor(private readonly options: MetadataInjectorOptions) { }
+  constructor(private readonly options: MetadataInjectorOptions) {}
 
   inject(resource: Record<string, unknown>): Record<string, unknown> {
     if (typeof resource !== 'object' || resource == null) {
@@ -100,7 +101,7 @@ export class MetadataInjector {
 
   private sortKeysRecursively(obj: unknown): unknown {
     if (Array.isArray(obj)) {
-      return obj.map((item) => this.sortKeysRecursively(item));
+      return obj.map(item => this.sortKeysRecursively(item));
     }
     if (obj && typeof obj === 'object') {
       return Object.keys(obj)

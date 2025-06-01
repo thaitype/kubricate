@@ -1,6 +1,7 @@
 import type { CommandModule } from 'yargs';
-import { secretValidateCommand } from './validate.js';
+
 import { secretApplyCommand } from './apply.js';
+import { secretValidateCommand } from './validate.js';
 
 export const secretCommand: CommandModule = {
   command: 'secret [command]',

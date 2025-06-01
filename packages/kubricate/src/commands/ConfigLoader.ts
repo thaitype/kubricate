@@ -1,22 +1,26 @@
-import { SecretsOrchestrator, validateId, type BaseLogger, type KubricateConfig } from "@kubricate/core";
-import type { GlobalConfigOptions } from "../internal/types.js";
-import { getConfig, getMatchConfigFile } from "../internal/load-config.js";
-import path from "node:path";
 import c from 'ansis';
-import { verboseCliConfig, type Subcommand } from "../internal/utils.js";
+import path from 'node:path';
+
+import { type BaseLogger } from '@kubricate/core';
+
+import type { GlobalConfigOptions } from '../internal/types.js';
+import type { KubricateConfig } from '../types.js';
+
+import { getConfig, getMatchConfigFile } from '../internal/load-config.js';
+import { validateId, verboseCliConfig, type Subcommand } from '../internal/utils.js';
+import { SecretsOrchestrator } from '../secret/index.js';
 
 interface InitializeOptions<CommandOptions> {
-  subject: Subcommand,
-  commandOptions: CommandOptions,
-  processConfig?: (config: KubricateConfig, commandOptions: CommandOptions, logger: BaseLogger) => BaseLogger,
+  subject: Subcommand;
+  commandOptions: CommandOptions;
+  processConfig?: (config: KubricateConfig, commandOptions: CommandOptions, logger: BaseLogger) => BaseLogger;
 }
 
 export class ConfigLoader {
-
   constructor(
     protected options: GlobalConfigOptions,
     protected logger: BaseLogger
-  ) { }
+  ) {}
 
   /**
    * Initialize everything needed to run the command
@@ -51,7 +55,7 @@ export class ConfigLoader {
     return {
       config,
       orchestrator,
-    }
+    };
   }
 
   public showVersion() {
@@ -86,9 +90,7 @@ export class ConfigLoader {
     }
 
     if (secret.manager || secret.registry) {
-      this.logger.warn(
-        `[config.secret] 'manager' and 'registry' are deprecated. Please use 'secretSpec' instead.`
-      );
+      this.logger.warn(`[config.secret] 'manager' and 'registry' are deprecated. Please use 'secretSpec' instead.`);
     }
 
     if (secret.manager) {
@@ -140,5 +142,4 @@ export class ConfigLoader {
 
     return orchestrator;
   }
-
 }

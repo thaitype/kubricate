@@ -1,11 +1,16 @@
-import type { BaseLogger, KubricateConfig, ProjectGenerateOptions, ProjectMetadataOptions } from "@kubricate/core";
-import path from "node:path";
-import { stringify as yamlStringify } from 'yaml';
-import { MetadataInjector } from "../MetadataInjector.js";
-import { version } from "../../version.js";
 import c from 'ansis';
-import { cloneDeep, merge } from "lodash-es";
-import { getClassName } from "../../internal/utils.js";
+import { cloneDeep, merge } from 'lodash-es';
+import path from 'node:path';
+import { stringify as yamlStringify } from 'yaml';
+
+import type { BaseLogger } from '@kubricate/core';
+
+import type { KubricateConfig, ProjectMetadataOptions } from '../../types.js';
+import type { ProjectGenerateOptions } from './types.js';
+
+import { getClassName } from '../../internal/utils.js';
+import { version } from '../../version.js';
+import { MetadataInjector } from '../MetadataInjector.js';
 
 export interface RenderedResource {
   id: string;
@@ -24,18 +29,24 @@ const defaultMetadata: Required<ProjectMetadataOptions> = {
 };
 
 interface KubernetesMetadata {
-  kind?: string; metadata?: { name?: string }
+  kind?: string;
+  metadata?: { name?: string };
 }
 
 export class Renderer {
-
   public readonly metadata: Required<ProjectMetadataOptions>;
 
-  constructor(globalOptions: KubricateConfig, private readonly logger: BaseLogger,) {
+  constructor(
+    globalOptions: KubricateConfig,
+    private readonly logger: BaseLogger
+  ) {
     this.metadata = merge({}, defaultMetadata, globalOptions.metadata);
   }
 
-  injectMetadata(resources: Record<string, unknown>, options: { stackId?: string, stackName?: string }): Record<string, unknown> {
+  injectMetadata(
+    resources: Record<string, unknown>,
+    options: { stackId?: string; stackName?: string }
+  ): Record<string, unknown> {
     const createInjector = (resourceId: string) =>
       new MetadataInjector({
         type: 'stack',
@@ -48,8 +59,8 @@ export class Renderer {
           managedAt: this.metadata.injectManagedAt,
           resourceHash: this.metadata.injectResourceHash,
           version: this.metadata.injectVersion,
-        }
-      })
+        },
+      });
 
     const output: Record<string, unknown> = {};
     for (const [resourceId, resource] of Object.entries(resources)) {
@@ -112,5 +123,4 @@ export class Renderer {
     }
     throw new Error(`Unknown output mode: ${mode}`);
   }
-
 }

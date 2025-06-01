@@ -17,17 +17,19 @@ const scenarios = [
 async function snapshotDirectory(dir: string, fixturePrefix: string) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
 
-  await Promise.all(entries.map(async (entry) => {
-    const fullPath = path.join(dir, entry.name);
-    const relativePath = path.join(fixturePrefix, entry.name);
+  await Promise.all(
+    entries.map(async entry => {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = path.join(fixturePrefix, entry.name);
 
-    if (entry.isDirectory()) {
-      await snapshotDirectory(fullPath, relativePath);
-    } else {
-      const content = await fs.readFile(fullPath, 'utf-8');
-      expect(content).toMatchSnapshot(relativePath);
-    }
-  }));
+      if (entry.isDirectory()) {
+        await snapshotDirectory(fullPath, relativePath);
+      } else {
+        const content = await fs.readFile(fullPath, 'utf-8');
+        expect(content).toMatchSnapshot(relativePath);
+      }
+    })
+  );
 }
 
 describe.each(scenarios)('CLI Integration ($name)', ({ fixture }) => {

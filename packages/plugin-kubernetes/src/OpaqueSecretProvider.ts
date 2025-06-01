@@ -1,6 +1,8 @@
+import { Base64 } from 'js-base64';
+
 import type { BaseLogger, SecretInjectionStrategy, ProviderInjection } from '@kubricate/core';
 import type { BaseProvider, PreparedEffect } from '@kubricate/core';
-import { Base64 } from 'js-base64';
+
 import { createKubernetesMergeHandler } from './merge-utils.js';
 
 export interface OpaqueSecretProviderConfig {
@@ -65,7 +67,6 @@ type SupportedStrategies = 'env';
  * @see https://kubernetes.io/docs/concepts/configuration/secret/
  */
 export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderConfig, SupportedStrategies> {
-
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.Opaque';
 
@@ -74,7 +75,7 @@ export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderCo
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env'];
 
-  constructor(public config: OpaqueSecretProviderConfig) { }
+  constructor(public config: OpaqueSecretProviderConfig) {}
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'env') {
@@ -94,7 +95,7 @@ export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderCo
   }
 
   getInjectionPayload(injectes: ProviderInjection[]): EnvVar[] {
-    return injectes.map((inject) => {
+    return injectes.map(inject => {
       const name = inject.meta?.targetName ?? inject.meta?.secretName;
       const key = inject.meta?.secretName;
 
@@ -113,7 +114,6 @@ export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderCo
       };
     });
   }
-
 
   /**
    * Merge provider-level effects into final applyable resources.
@@ -147,5 +147,3 @@ export class OpaqueSecretProvider implements BaseProvider<OpaqueSecretProviderCo
     ];
   }
 }
-
-

@@ -1,6 +1,8 @@
-import { type BaseConnector, type BaseLogger, type SecretValue } from '@kubricate/core';
 import { config as loadDotenv } from 'dotenv';
 import path from 'node:path';
+
+import { type BaseConnector, type BaseLogger, type SecretValue } from '@kubricate/core';
+
 import { maskingValue } from './utilts.js';
 
 export interface EnvConnectorConfig {
@@ -26,7 +28,7 @@ export interface EnvConnectorConfig {
   /**
    * The working directory to load the .env file from.
    * This is useful for loading .env files from different directories.
-   * 
+   *
    * @default `process.cwd()`
    */
   workingDir?: string;

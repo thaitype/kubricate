@@ -1,9 +1,11 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
+
 import type { GlobalConfigOptions } from '../internal/types.js';
-import { ConsoleLogger } from '../internal/logger.js';
-import { handlerError } from '../internal/error.js';
-import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate/index.js';
+
 import { ConfigLoader } from '../commands/ConfigLoader.js';
+import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate/index.js';
+import { handlerError } from '../internal/error.js';
+import { ConsoleLogger } from '../internal/logger.js';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',
@@ -35,7 +37,7 @@ export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommand
       const configLoader = new ConfigLoader(argv, logger);
       const { config } = await configLoader.initialize({
         commandOptions: argv,
-        subject: 'generate'
+        subject: 'generate',
       });
 
       await new GenerateCommand(argv, logger).execute(config);

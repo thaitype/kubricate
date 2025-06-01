@@ -1,12 +1,13 @@
+import c from 'ansis';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
+import type { LogLevel } from '@kubricate/core';
+
+import { MARK_INFO } from '../internal/constant.js';
+import { ConsoleLogger } from '../internal/logger.js';
 import { generateCommand } from './generate.js';
 import { secretCommand } from './secret/index.js';
-import { ConsoleLogger } from '../internal/logger.js';
-import type { LogLevel } from '@kubricate/core';
-import c from 'ansis'
-import { MARK_INFO } from '../internal/constant.js';
 
 export interface CliEntryPointOptions {
   version: string;
@@ -15,10 +16,9 @@ export interface CliEntryPointOptions {
 
 type YargsWithHelper = {
   showHelp: () => void;
-}
+};
 
 const errorHelper = (msg: string | undefined, yargs: YargsWithHelper) => {
-
   if (msg?.includes('Unknown argument')) {
     const unknownArg = msg.match(/Unknown argument: (.+)/)?.[1];
     console.error(c.red(`\n✖ Error: Unknown option "${unknownArg}".\n`));
@@ -35,7 +35,7 @@ const errorHelper = (msg: string | undefined, yargs: YargsWithHelper) => {
     console.error('Unknown error occurred');
   }
   console.log('\n');
-}
+};
 
 export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -63,7 +63,6 @@ export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Pr
       .alias('v', 'version')
       .demandCommand(1, '')
       .fail((msg, err, yargs) => {
-
         if (!msg && !err) {
           errorHelper(msg, yargs);
           return resolve();

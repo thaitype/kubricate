@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { createMetadata, resourceSuffix } from './resource-metadata.js';
 
 describe('createMetadata', () => {
