@@ -11,9 +11,6 @@ describe('simpleAppStackTemplate', () => {
       imageName: 'my-app',
     });
 
-    expect(result.deployment).toBeInstanceOf(Deployment);
-    expect(result.service).toBeInstanceOf(Service);
-
     const { deployment, service } = result;
 
     expect(deployment.metadata?.name).toBe('my-app');

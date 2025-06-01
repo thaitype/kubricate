@@ -10,8 +10,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: NamespaceStack
-    kubricate.thaitype.dev/resource-hash: defd4c342aba95d18a5e0ed81ab55ed132770c5945f11b39c927c4b6d003a6a2
+    kubricate.thaitype.dev/stack-name: Namespace
+    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
 ---
 
 apiVersion: apps/v1
@@ -24,8 +24,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: c9325f337dfc06f0a2245d994a63be2f0b13900d0bb41fa19a4a642451cd5c59
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: e0e99dc895c6a6cd20e9facbb6974b2ebfdcc78b6ec65f34125e9477367a41ee
 spec:
   replicas: 1
   selector:
@@ -66,8 +66,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: fa9a081478553a38803e92417d6542fb29906a284784ece83aa6c5e5f87138d4
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
 spec:
   selector:
     app: my-app
@@ -89,8 +89,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: NamespaceStack
-    kubricate.thaitype.dev/resource-hash: defd4c342aba95d18a5e0ed81ab55ed132770c5945f11b39c927c4b6d003a6a2
+    kubricate.thaitype.dev/stack-name: Namespace
+    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
 ---
 
 apiVersion: apps/v1
@@ -103,8 +103,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 956f8bab85981ce685e2cce42949131bad2f92accf4832a66f56e9da81d4a8a0
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
 spec:
   replicas: 1
   selector:
@@ -132,8 +132,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: fa9a081478553a38803e92417d6542fb29906a284784ece83aa6c5e5f87138d4
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
 spec:
   selector:
     app: my-app
@@ -156,8 +156,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 956f8bab85981ce685e2cce42949131bad2f92accf4832a66f56e9da81d4a8a0
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
 spec:
   replicas: 1
   selector:
@@ -188,8 +188,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: fa9a081478553a38803e92417d6542fb29906a284784ece83aa6c5e5f87138d4
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
 spec:
   selector:
     app: my-app
@@ -211,8 +211,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: NamespaceStack
-    kubricate.thaitype.dev/resource-hash: defd4c342aba95d18a5e0ed81ab55ed132770c5945f11b39c927c4b6d003a6a2
+    kubricate.thaitype.dev/stack-name: Namespace
+    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
 ---
 "
 `;
@@ -228,8 +228,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: 956f8bab85981ce685e2cce42949131bad2f92accf4832a66f56e9da81d4a8a0
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
 spec:
   replicas: 1
   selector:
@@ -257,8 +257,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleAppStack
-    kubricate.thaitype.dev/resource-hash: fa9a081478553a38803e92417d6542fb29906a284784ece83aa6c5e5f87138d4
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
 spec:
   selector:
     app: my-app
@@ -280,8 +280,8 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: NamespaceStack
-    kubricate.thaitype.dev/resource-hash: defd4c342aba95d18a5e0ed81ab55ed132770c5945f11b39c927c4b6d003a6a2
+    kubricate.thaitype.dev/stack-name: Namespace
+    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
 ---
 "
 `;
