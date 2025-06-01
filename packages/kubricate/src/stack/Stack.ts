@@ -2,6 +2,7 @@ import type { StackTemplate } from '@kubricate/core';
 
 import { BaseStack } from './BaseStack.js';
 import { ResourceComposer } from './ResourceComposer.js';
+import { buildComposerFromObject, type ResourceManifest } from './utils.js';
 
 /**
  * A function that takes input data and returns a `ResourceComposer` with resource entries.
@@ -50,25 +51,13 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
    *   image: 'nginx:latest',
    * });
    *
-   * appStack.useSecrets(...).deploy();
    * ```
    */
   static fromTemplate<TInput, TResourceMap extends Record<string, unknown>>(
     factory: StackTemplate<TInput, TResourceMap>,
     input: TInput
   ): Stack<TInput, TResourceMap> {
-    const builder = (data: TInput) => {
-      const resources = factory.create(data);
-      const composer = new ResourceComposer<TResourceMap>();
-      for (const [id, resource] of Object.entries(resources)) {
-        composer.addObject({
-          id,
-          config: resource as object,
-        });
-      }
-      return composer;
-    };
-
+    const builder = (data: TInput) => buildComposerFromObject(factory.create(data) as Record<string, ResourceManifest>);
     const stack = new Stack(builder);
     stack.setName(factory.name);
     stack.from(input);
@@ -76,45 +65,36 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
   }
 
   /**
-    * Creates a `Stack` from a plain static resource map.
-    *
-    * This is useful for simple, fixed configurations—like defining a namespace or
-    * other declarative resources—without the need for a separate template or logic.
-    *
-    * Unlike `fromTemplate`, this method does not require an input schema
-    * and is suited for fully static definitions.
-    *
-    * @template TResources - The resource structure of the static resource map
-    *
-    * @param name - The name of the stack (used for identification and CLI metadata)
-    * @param resources - A plain object representing Kubernetes resources (not instances)
-    * @returns A `Stack` instance populated with the given resources
-    *
-    * @example
-    * ```ts
-    * const stack = Stack.fromStatic('DefaultNS', {
-    *   namespace: {
-    *     metadata: { name: 'default' },
-    *   },
-    * });
-    * 
-    * stack.deploy();
-    * ```
-    */
+   * Creates a `Stack` from a plain static resource map.
+   *
+   * This is useful for simple, fixed configurations—like defining a namespace or
+   * other declarative resources—without the need for a separate template or logic.
+   *
+   * Unlike `fromTemplate`, this method does not require an input schema
+   * and is suited for fully static definitions.
+   *
+   * @template TResources - The resource structure of the static resource map
+   *
+   * @param name - The name of the stack (used for identification and CLI metadata)
+   * @param resources - A plain object representing Kubernetes resources (not instances)
+   * @returns A `Stack` instance populated with the given resources
+   *
+   * @example
+   * ```ts
+   * const stack = Stack.fromStatic('DefaultNS', {
+   *   namespace: {
+   *     metadata: { name: 'default' },
+   *   },
+   * });
+   *
+   * stack.deploy();
+   * ```
+   */
   static fromStatic<TResources extends Record<string, Record<string, unknown>>>(
     name: string,
     resources: TResources
   ): Stack<undefined, TResources> {
-    const builder = () => {
-      const composer = new ResourceComposer<TResources>();
-      for (const [id, config] of Object.entries(resources)) {
-        composer.addObject({
-          id,
-          config,
-        });
-      }
-      return composer;
-    };
+    const builder = () => buildComposerFromObject(resources);
     const stack = new Stack(builder);
     stack.setName(name);
     return stack.from(undefined) as Stack<undefined, TResources>;

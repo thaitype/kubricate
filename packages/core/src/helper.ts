@@ -1,4 +1,4 @@
-export type StackTemplate<TInput, TResourceMap> = {
+export type StackTemplate<TInput, TResourceMap extends Record<string, unknown>> = {
   name: string;
   create: (input: TInput) => TResourceMap;
 };

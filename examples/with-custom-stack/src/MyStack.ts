@@ -16,6 +16,12 @@ const namespaceStackTemplate = defineStackTemplate('MyStack', (data: MyInput) =>
   };
 });
 
+Stack.fromStatic('myNamespace', {
+  namespace: {
+    metadata: { name: 'default' },
+  },
+});
+
 export const frontend = Stack.fromTemplate(namespaceStackTemplate, {
   name: 'frontend-namespace',
 });
