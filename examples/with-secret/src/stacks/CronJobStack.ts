@@ -1,19 +1,20 @@
 import { CronJob } from 'kubernetes-models/batch/v1';
-import { createStack, ResourceComposer } from 'kubricate';
+import { defineStackTemplate } from '@kubricate/core';
+import { kubeModel } from '@kubricate/kubernetes-models';
 
 export interface MyInput {
   name: string;
 }
 
 /**
- * This cannot be used in real world, because the cronjob is not configured
+ * This cannot be used in real world, because the cronjob is not configured.
  */
-export const CronJobStack = createStack('CronJob', (data: MyInput) => {
-  return new ResourceComposer().addClass({
-    id: 'cronJob',
-    type: CronJob,
-    config: {
-      metadata: { name: data.name },
-    },
-  });
+export const cronJobTemplate = defineStackTemplate('CronJob', (data: MyInput) => {
+  return {
+    cronJob: kubeModel(CronJob, {
+      metadata: {
+        name: data.name,
+      },
+    }),
+  };
 });
