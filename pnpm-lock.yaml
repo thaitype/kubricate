@@ -13,7 +13,7 @@ importers:
         version: 2.28.1
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
-        version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))
+        version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))
       eslint:
         specifier: ^9.22.0
         version: 9.23.0(jiti@2.4.2)
@@ -84,7 +84,7 @@ importers:
         version: link:../config-typescript
       '@vitest/coverage-istanbul':
         specifier: ^3.0.9
-        version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))
+        version: 3.1.1(vitest@3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))
       '@vitest/ui':
         specifier: 3.0.9
         version: 3.0.9(vitest@3.1.1)
@@ -101,38 +101,7 @@ importers:
         specifier: ^3.0.9
         version: 3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1)
 
-  examples/with-custom-stack:
-    dependencies:
-      '@kubricate/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@kubricate/kubernetes-models':
-        specifier: workspace:*
-        version: link:../../packages/kubernetes-models
-      kubernetes-models:
-        specifier: ^4.4.2
-        version: 4.4.2
-      kubricate:
-        specifier: workspace:*
-        version: link:../../packages/kubricate
-    devDependencies:
-      '@kubernetes-models/base':
-        specifier: ^5.0.1
-        version: 5.0.1
-      '@kubricate/config-eslint':
-        specifier: workspace:*
-        version: link:../../configs/config-eslint
-      '@kubricate/config-typescript':
-        specifier: workspace:*
-        version: link:../../configs/config-typescript
-      '@kubricate/config-vitest':
-        specifier: workspace:*
-        version: link:../../configs/config-vitest
-      '@kubricate/mono':
-        specifier: workspace:*
-        version: link:../../tools/mono
-
-  examples/with-secret:
+  examples/with-secret-manager:
     dependencies:
       '@kubricate/core':
         specifier: workspace:*
@@ -189,6 +158,9 @@ importers:
       kubernetes-models:
         specifier: ^4.4.2
         version: 4.4.2
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
     devDependencies:
       '@kubernetes-models/base':
         specifier: ^5.0.1
@@ -205,9 +177,37 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
+
+  examples/with-stack-template:
+    dependencies:
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@kubricate/kubernetes-models':
+        specifier: workspace:*
+        version: link:../../packages/kubernetes-models
+      kubernetes-models:
+        specifier: ^4.4.2
+        version: 4.4.2
       kubricate:
         specifier: workspace:*
         version: link:../../packages/kubricate
+    devDependencies:
+      '@kubernetes-models/base':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
 
   examples/with-stacks:
     dependencies:
@@ -4242,7 +4242,7 @@ snapshots:
       '@typescript-eslint/types': 8.33.0
       eslint-visitor-keys: 4.2.0
 
-  '@vitest/coverage-istanbul@3.1.1(vitest@3.1.1(@types/node@22.13.14)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))':
+  '@vitest/coverage-istanbul@3.1.1(vitest@3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1))':
     dependencies:
       '@istanbuljs/schema': 0.1.3
       debug: 4.4.0
