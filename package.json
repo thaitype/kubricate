@@ -26,6 +26,7 @@
   "packageManager": "pnpm@10.5.2",
   "devDependencies": {
     "@changesets/cli": "^2.28.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
     "@manypkg/cli": "^0.24.0",
     "@vitest/coverage-istanbul": "^3.0.9",
     "eslint": "^9.22.0",
@@ -35,14 +36,5 @@
     "turbo": "^2.4.4",
     "typescript": "^5.8.2",
     "vitest": "^3.0.9"
-  },
-  "prettier": {
-    "trailingComma": "es5",
-    "tabWidth": 2,
-    "useTabs": false,
-    "semi": true,
-    "singleQuote": true,
-    "printWidth": 120,
-    "arrowParens": "avoid"
   }
 }
