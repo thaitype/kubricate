@@ -1,4 +1,4 @@
-import type { SecretInjectionStrategy, BaseProvider } from '@kubricate/core';
+import type { BaseProvider, SecretInjectionStrategy } from '@kubricate/core';
 
 import type { BaseStack } from '../stack/BaseStack.js';
 import type { FallbackIfNever } from '../types.js';

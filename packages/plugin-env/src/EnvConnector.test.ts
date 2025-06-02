@@ -1,6 +1,7 @@
-import { writeFileSync, unlinkSync } from 'node:fs';
+import { unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { describe, it, expect, beforeEach } from 'vitest';
+
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { EnvConnector } from './EnvConnector.js';
 

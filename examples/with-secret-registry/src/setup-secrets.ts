@@ -1,7 +1,6 @@
-import { SecretManager, SecretRegistry } from 'kubricate';
-
 import { EnvConnector } from '@kubricate/plugin-env';
 import { OpaqueSecretProvider } from '@kubricate/plugin-kubernetes';
+import { SecretManager, SecretRegistry } from 'kubricate';
 
 const frontendSecretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())

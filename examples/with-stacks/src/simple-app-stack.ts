@@ -1,6 +1,5 @@
-import { Stack } from 'kubricate';
-
 import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
+import { Stack } from 'kubricate';
 
 const namespace = Stack.fromTemplate(namespaceTemplate, {
   name: 'my-namespace',

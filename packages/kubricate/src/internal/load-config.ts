@@ -4,10 +4,9 @@ import { loadConfig } from 'unconfig';
 import { type BaseLogger } from '@kubricate/core';
 
 import type { KubricateConfig } from '../types.js';
-import type { GlobalConfigOptions } from './types.js';
-
 import { MARK_CHECK } from './constant.js';
 import { SilentLogger } from './logger.js';
+import type { GlobalConfigOptions } from './types.js';
 
 export const DEFAULT_CONFIG_NAME = 'kubricate.config';
 // Allow all JS/TS file extensions except JSON

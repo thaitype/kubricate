@@ -3,10 +3,9 @@ import c from 'ansis';
 import { type BaseLogger } from '@kubricate/core';
 
 import type { KubectlExecutor } from '../executor/kubectl-executor.js';
+import { MARK_CHECK } from '../internal/constant.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
 import type { SecretsOrchestrator } from '../secret/index.js';
-
-import { MARK_CHECK } from '../internal/constant.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SecretCommandOptions extends GlobalConfigOptions {}

@@ -1,9 +1,8 @@
-import type { BaseLogger, BaseProvider, ProviderInjection, BaseConnector } from '@kubricate/core';
-
-import type { AnySecretManager, EnvOptions } from '../secret/types.js';
-import type { AnyKey, FunctionLike, InferConfigureComposerFunc } from '../types.js';
+import type { BaseConnector, BaseLogger, BaseProvider, ProviderInjection } from '@kubricate/core';
 
 import { SecretsInjectionContext } from '../secret/index.js';
+import type { AnySecretManager, EnvOptions } from '../secret/types.js';
+import type { AnyKey, FunctionLike, InferConfigureComposerFunc } from '../types.js';
 import { ResourceComposer } from './ResourceComposer.js';
 
 export interface UseSecretsOptions<Key extends AnyKey> {

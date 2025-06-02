@@ -1,8 +1,8 @@
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
 import { Service } from 'kubernetes-models/v1/Service';
-import { ResourceComposer, BaseStack } from 'kubricate';
 
 import { joinPath } from '@kubricate/toolkit';
+import { BaseStack, ResourceComposer } from 'kubricate';
 
 interface ISimpleAppStack {
   name: string;

@@ -1,6 +1,5 @@
-import type { IContainer } from 'kubernetes-models/v1';
-
 import { Deployment } from 'kubernetes-models/apps/v1/Deployment';
+import type { IContainer } from 'kubernetes-models/v1';
 import { Service } from 'kubernetes-models/v1/Service';
 
 import { defineStackTemplate } from '@kubricate/core';

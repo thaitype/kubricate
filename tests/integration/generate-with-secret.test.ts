@@ -1,5 +1,7 @@
 import path from 'node:path';
+
 import { describe, expect, it } from 'vitest';
+
 import { runGenerate } from '../helpers/execute-kubricate';
 
 const rootDir = path.resolve(__dirname, '..');
