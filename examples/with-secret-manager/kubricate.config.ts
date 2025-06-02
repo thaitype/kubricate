@@ -1,7 +1,7 @@
 import { defineConfig } from 'kubricate';
 
-import simpleAppStack from './src/stacks';
 import { secretManager } from './src/setup-secrets';
+import simpleAppStack from './src/stacks';
 
 export default defineConfig({
   stacks: {
