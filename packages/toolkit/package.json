@@ -35,10 +35,10 @@
     "check-types": "mono check-types"
   },
   "devDependencies": {
-    "@kubricate/mono": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
-    "@kubricate/config-vitest": "workspace:*"
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*"
   },
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
   "keywords": [

@@ -1,5 +1,6 @@
-import { config as loadDotenv } from 'dotenv';
 import path from 'node:path';
+
+import { config as loadDotenv } from 'dotenv';
 
 import { type BaseConnector, type BaseLogger, type SecretValue } from '@kubricate/core';
 

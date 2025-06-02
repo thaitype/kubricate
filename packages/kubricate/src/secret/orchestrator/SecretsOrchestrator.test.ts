@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { PreparedEffect } from '@kubricate/core';
-
-import type { SecretsOrchestratorOptions } from './types.js';
 
 import { InMemoryConnector } from '../connectors/InMemoryConnector.js';
 import { InMemoryProvider } from '../providers/InMemoryProvider.js';
 import { SecretManager } from '../SecretManager.js';
 import { SecretRegistry } from '../SecretRegistry.js';
 import { SecretsOrchestrator } from './SecretsOrchestrator.js';
+import type { SecretsOrchestratorOptions } from './types.js';
 
 describe('SecretsOrchestrator', () => {
   let mockSecretManager: SecretManager;

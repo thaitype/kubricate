@@ -1,7 +1,7 @@
+import { EnvConnector } from '@kubricate/plugin-env';
+import { DockerConfigSecretProvider, OpaqueSecretProvider } from '@kubricate/plugin-kubernetes';
 import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
 import { SecretManager, SecretRegistry, Stack } from 'kubricate';
-import { OpaqueSecretProvider, DockerConfigSecretProvider } from '@kubricate/plugin-kubernetes';
-import { EnvConnector } from '@kubricate/plugin-env';
 
 export const frontendSecretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())

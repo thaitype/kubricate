@@ -1,10 +1,10 @@
 import type {
   BaseProvider,
-  ProviderInjection,
   CustomEffect,
   PreparedEffect,
-  SecretValue,
+  ProviderInjection,
   SecretInjectionStrategy,
+  SecretValue,
 } from '@kubricate/core';
 
 import { createMergeHandler } from './merge-utils.js';

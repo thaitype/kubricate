@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { validateString, getClassName } from './utils.js'; // adjust the import path if needed
+import { getClassName, validateString } from './utils.js'; // adjust the import path if needed
 
 describe('validateString', () => {
   it('should not throw for string values', () => {

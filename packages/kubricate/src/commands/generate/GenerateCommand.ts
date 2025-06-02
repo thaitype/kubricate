@@ -1,17 +1,17 @@
+import path from 'node:path';
+
 import c from 'ansis';
 import { merge } from 'lodash-es';
-import path from 'node:path';
 
 import type { BaseLogger } from '@kubricate/core';
 
-import type { GlobalConfigOptions } from '../../internal/types.js';
-import type { KubricateConfig } from '../../types.js';
-import type { ProjectGenerateOptions } from './types.js';
-
 import { MARK_CHECK, MARK_NODE, MARK_TREE_END, MARK_TREE_LEAF } from '../../internal/constant.js';
+import type { GlobalConfigOptions } from '../../internal/types.js';
 import { extractStackInfoFromConfig, type StackInfo } from '../../internal/utils.js';
+import type { KubricateConfig } from '../../types.js';
 import { GenerateRunner, type RenderedFile } from './GenerateRunner.js';
 import { Renderer } from './Renderer.js';
+import type { ProjectGenerateOptions } from './types.js';
 
 export interface GenerateCommandOptions extends GlobalConfigOptions {
   outDir: string;

@@ -1,8 +1,10 @@
-import path from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
-import { rimraf } from 'rimraf';
-import { executeKubricate } from '../helpers/execute-kubricate';
 import fs from 'node:fs/promises';
+import path from 'node:path';
+
+import { rimraf } from 'rimraf';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import { executeKubricate } from '../helpers/execute-kubricate';
 
 const rootDir = path.resolve(__dirname, '..');
 const fixturesRoot = path.join(rootDir, 'fixtures');

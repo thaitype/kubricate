@@ -1,11 +1,10 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 
-import type { GlobalConfigOptions } from '../internal/types.js';
-
 import { ConfigLoader } from '../commands/ConfigLoader.js';
 import { GenerateCommand, type GenerateCommandOptions } from '../commands/generate/index.js';
 import { handlerError } from '../internal/error.js';
 import { ConsoleLogger } from '../internal/logger.js';
+import type { GlobalConfigOptions } from '../internal/types.js';
 
 export const generateCommand: CommandModule<GlobalConfigOptions, GenerateCommandOptions> = {
   command: 'generate',

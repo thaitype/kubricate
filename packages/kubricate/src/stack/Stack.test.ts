@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { defineStackTemplate } from '@kubricate/core';
 
 import type { ResourceComposer } from './ResourceComposer.js';
-
-import { Stack, createStack } from './Stack.js';
+import { createStack, Stack } from './Stack.js';
 
 describe('Stack', () => {
   it('should call builder and set composer on .from()', () => {

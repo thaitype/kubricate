@@ -41,15 +41,15 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+    "@kubernetes-models/base": "^5.0.1"
   },
   "dependencies": {
-    "kubricate": "workspace:*",
     "@kubernetes-models/base": "^5.0.1",
-    "kubernetes-models": "^4.4.2",
+    "@kubricate/core": "workspace:*",
     "@kubricate/kubernetes-models": "workspace:*",
     "@kubricate/toolkit": "workspace:*",
-    "@kubricate/core": "workspace:*"
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
   },
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
   "keywords": [

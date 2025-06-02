@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 import { SecretsInjectionContext } from './SecretsInjectionContext.js';

@@ -1,6 +1,5 @@
-import { Stack } from 'kubricate';
-
 import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
+import { Stack } from 'kubricate';
 
 import { secretManager } from './setup-secrets';
 import { config } from './shared-config';

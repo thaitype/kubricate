@@ -1,5 +1,6 @@
-import { cloneDeep } from 'lodash-es';
 import { createHash } from 'node:crypto';
+
+import { cloneDeep } from 'lodash-es';
 
 import { LABELS } from './constants.js';
 

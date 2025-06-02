@@ -1,4 +1,5 @@
 import { defineConfig } from 'kubricate';
+
 import { metadata, secretRegistry, sharedStacks } from '../shared-configs';
 
 export default defineConfig({
