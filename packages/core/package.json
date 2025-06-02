@@ -23,17 +23,11 @@
     "lint:fix": "mono lint:fix",
     "check-types": "mono check-types"
   },
-  "dependencies": {
-    "hotscript": "^1.0.13",
-    "lodash-es": "^4.17.21",
-    "zod": "^3.24.2"
-  },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*",
-    "@types/lodash-es": "^4.17.12"
+    "@kubricate/mono": "workspace:*"
   },
   "repository": {
     "type": "git",

@@ -28,6 +28,7 @@
 </p>
 
 > Kubricate is preparing to release its first stable version as v1 release soon. API will be not changed
+> Checkout v1 Milestone for more details: [v1 Milestone](https://github.com/thaitype/kubricate/milestone/1)
 
 ## ✨ Features
 

@@ -235,16 +235,6 @@ importers:
         version: link:../../packages/kubricate
 
   packages/core:
-    dependencies:
-      hotscript:
-        specifier: ^1.0.13
-        version: 1.0.13
-      lodash-es:
-        specifier: ^4.17.21
-        version: 4.17.21
-      zod:
-        specifier: ^3.24.2
-        version: 3.24.2
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*
@@ -258,9 +248,6 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
-      '@types/lodash-es':
-        specifier: ^4.17.12
-        version: 4.17.12
 
   packages/kubernetes-models:
     devDependencies:
@@ -297,9 +284,6 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
-      type-fest:
-        specifier: ^4.41.0
-        version: 4.41.0
       unconfig:
         specifier: ^7.3.1
         version: 7.3.1
@@ -3185,10 +3169,6 @@ packages:
   type-fest@0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-
-  type-fest@4.41.0:
-    resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
-    engines: {node: '>=16'}
 
   typed-array-buffer@1.0.3:
     resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
@@ -6467,8 +6447,6 @@ snapshots:
       prelude-ls: 1.2.1
 
   type-fest@0.8.1: {}
-
-  type-fest@4.41.0: {}
 
   typed-array-buffer@1.0.3:
     dependencies:
