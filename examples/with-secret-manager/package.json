@@ -1,5 +1,5 @@
 {
-  "name": "@examples/with-secret",
+  "name": "@examples/with-secret-manager",
   "type": "module",
   "version": "0.0.5",
   "private": true,
