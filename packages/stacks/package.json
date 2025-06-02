@@ -41,7 +41,7 @@
     "README.md"
   ],
   "peerDependencies": {
-    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+    "@kubernetes-models/base": "^5.0.1"
   },
   "dependencies": {
     "kubricate": "workspace:*",
