@@ -105,45 +105,41 @@ Whether you're using ArgoCD, ESO, Vault, or no controller at all — Kubricate m
 
 ## Getting Started
 
-```bash
-npm install -D kubricate
-npm install @kubricate/core
-```
-
-If you want Kubernetes resource types in TypeScript, install `kubernetes-models`. It helps generate fully-typed resource objects.
+To begin, create a new project using Bun, which provides a fast setup with built-in TypeScript support:
 
 ```bash
-npm install -D kubernetes-models
+mkdir first-stack
+cd first-stack
+bun init -y
 ```
+
+Then, install the Kubricate CLI:
+
+```
+bun add -d kubricate
+```
+
+> Kubricate is designed to work with standard Node.js environments, but it works well with **Bun**, too.
+> You can also use it with any package manager — **npm**, **yarn**, or **pnpm** — depending on your workflow.
+> When using Bun, simply run CLI commands with `bun`.
 
 Then, create your first Kubricate Stack. Kubricate Stacks help you define, reuse, and manage Kubernetes resources in a clean, declarative way.
 
 ### 1. 🧱 Example: Creating a Namespace Stack
 
 ```ts
-// File: src/my-stack.ts
-import { createStack, ResourceComposer } from '@kubricate/core';
-import { Namespace } from 'kubernetes-models/v1';
+// @filename: src/stacks.ts
+import { Stack } from 'kubricate';
 
-// Step 1: declare data schema
-interface MyInput {
-  name: string;
-}
-
-// Step 2: define stack shape for reusable work
-const MyStack = createStack('MyStack', (data: MyInput) =>
-  new ResourceComposer().addClass({
-    id: 'namespace',
-    type: Namespace,
-    config: {
-      metadata: { name: data.name },
+export const myNamespace = Stack.fromStatic('Namespace', {
+  // you can write any name of the resource in the stack
+  namespace: {
+    apiVersion: 'v1',
+    kind: 'Namespace',
+    metadata: {
+      name: 'my-namespace',
     },
-  })
-);
-
-// Usage: configure the stack with your own input
-envexport const myStack = MyStack.from({
-  name: 'my-namespace',
+  },
 });
 ```
 
@@ -152,12 +148,13 @@ envexport const myStack = MyStack.from({
 Create a `kubricate.config.ts` file at the root of your project:
 
 ```ts
+// @filename: kubricate.config.ts
 import { defineConfig } from 'kubricate';
-import { myStack } from './src/MyStack';
+import { myNamespace } from './src/stacks';
 
 export default defineConfig({
   stacks: {
-    myStack,
+    myFirstStack: myNamespace,
   },
 });
 ```
@@ -165,19 +162,19 @@ export default defineConfig({
 ### 3. 🚀 Generate Kubernetes Resources
 
 ```bash
-npx kubricate generate
+bun kubricate generate
 ```
 
 This will generate Kubernetes YAML files in the `output` folder:
 
 ```bash
-✔ YAML file successfully written to:
-  ~/with-custom-stack/.kubricate/stacks.yml
+Generating stacks...
+• Written: output/myFirstStack.yml
+✔ Generated 1 file into "output/"
+✔ Done!
 ```
 
 See the full working example: [`with-stack-template`](https://github.com/thaitype/kubricate/tree/main/examples/with-stack-template)
-
-Kubricate offers a type-safe developer experience for building Kubernetes manifests. It works with your existing resources, supports secret injection through connectors like `EnvConnector`, and prevents exposing secrets in YAML.
 
 ---
 
@@ -193,7 +190,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Connect to external secret systems such as `.env`, Azure Key Vault, 1Password, or Vault.
 
    ```ts
-   // ./src/setup-secrets.ts
+   // @filename: src/setup-secrets.ts
    export const secretManager = new SecretManager()
      .addConnector('Env', new EnvConnector())
      .addConnector('AzureKV', new AzureKeyVaultConnector());
@@ -203,7 +200,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Providers define how secrets will be injected into Kubernetes (e.g., as `Secret`, `ConfigMap`, or annotations).
 
    ```ts
-   // ./src/setup-secrets.ts
+   // @filename: src/setup-secrets.ts
    secretManager.addProvider(
      'OpaqueSecretProvider',
      new OpaqueSecretProvider({ name: 'secret-application' })
@@ -214,7 +211,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    When multiple connectors are registered, you must set the default one to be used during hydration.
 
    ```ts
-   // ./src/setup-secrets.ts
+   // @filename: src/setup-secrets.ts
    secretManager.setDefaultConnector('AzureKV');
    ```
 
@@ -228,7 +225,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Centralize your secrets and optionally map them to a provider.
 
    ```ts
-   // ./src/setup-secrets.ts
+   // @filename: src/setup-secrets.ts
    secretManager.addSecret({ name: 'my_app_key' });
    ```
 
@@ -236,7 +233,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Describe how secrets should flow from one system to another (e.g. `.env` → Azure KV).
 
    ```ts
-   // ./src/setup-secrets.ts
+   // @filename: src/setup-secrets.ts
    secretManager.addHydrationPlan('EnvToKV', {
      from: 'Env',
      to: 'AzureKV',
@@ -250,15 +247,17 @@ It gives you full control of infrastructure and secrets **before deployment**, w
    Use existing reusable stacks like `AppStack`, and inject secrets from providers.
 
    ```ts
-   // ./src/compose-stacks.ts
-   export const myApp = new AppStack()
-     .from({
-       imageName: 'nginx',
-       name: 'my-app',
-     })
-     .useSecrets(secretManager, (c) => {
-       c.secrets('my_app_key').forName('ENV_APP_KEY').inject();
-     });
+   // @filename: src/stacks.ts
+   import { Stack } from 'kubricate';
+   import { simpleAppTemplate } from '@kubricate/stacks';
+
+   export const myApp = nStack.fromTemplate(simpleAppTemplate, {
+      imageName: 'nginx',
+      name: 'my-app',
+    })
+    .useSecrets(secretManager, (c) => {
+      c.secrets('my_app_key').forName('ENV_APP_KEY').inject();
+    });
    ```
 
 7. ### **Configure the Project**
@@ -266,7 +265,7 @@ It gives you full control of infrastructure and secrets **before deployment**, w
 
    ```ts
    import { defineConfig } from 'kubricate';
-   import { myApp } from './src/compose-stacks'; // import your stack
+   import { myApp } from './src/stacks'; // import your stack
    import { secretManager } from './src/setup-secrets'; // import your secret manager
 
    export default defineConfig({
@@ -408,7 +407,7 @@ This installs dependencies and starts TypeScript in watch mode.
 To run the examples run with
 
 ```sh
-pnpm --filter=@examples/with-custom-stack kubricate generate
+pnpm --filter=@examples/with-stack-template kubricate generate
 ```
 
 ## How to Publish

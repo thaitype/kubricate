@@ -1,5 +1,5 @@
 {
-  "name": "@examples/with-custom-stack",
+  "name": "@examples/with-stack-template",
   "type": "module",
   "version": "0.0.0",
   "private": true,
