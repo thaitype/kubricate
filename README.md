@@ -48,7 +48,7 @@ Define **hydration plans** to control where secrets come from and where they go 
   - Use **Connectors** to read/write secrets from systems, and **Providers** to convert secrets into Kubernetes-native resources (like `Secret`, `ConfigMap`, or `ExternalSecret`).
 
 - **🚀 CLI-Friendly & GitOps Ready**: 
-  - Run `kubricate generate` <!--,  `kubricate secrets hydrate`, --> and `kubricate secrets plan` to validate, sync, and render your infrastructure as YAML — without running anything in your cluster.
+  - Run `kubricate generate` <!--,  `kubricate secrets hydrate`, --> and `kubricate secrets apply` to validate, sync, and render your infrastructure as YAML — without running anything in your cluster.
 
 - **🧪 First-Class Dev Experience**: 
   - Enjoy full IDE autocomplete, refactor support, type checking, and linting across your entire platform configuration — all in TypeScript.
@@ -168,14 +168,14 @@ export default defineConfig({
 npx kubricate generate
 ```
 
-This will generate Kubernetes YAML files in the `.kubricate` folder:
+This will generate Kubernetes YAML files in the `output` folder:
 
 ```bash
 ✔ YAML file successfully written to:
   ~/with-custom-stack/.kubricate/stacks.yml
 ```
 
-See the full working example: [`with-custom-stack`](https://github.com/thaitype/kubricate/tree/main/examples/with-custom-stack)
+See the full working example: [`with-stack-template`](https://github.com/thaitype/kubricate/tree/main/examples/with-stack-template)
 
 Kubricate offers a type-safe developer experience for building Kubernetes manifests. It works with your existing resources, supports secret injection through connectors like `EnvConnector`, and prevents exposing secrets in YAML.
 
