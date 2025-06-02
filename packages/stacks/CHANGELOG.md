@@ -1,5 +1,16 @@
 # @kubricate/stacks
 
+## 0.20.1
+
+### Patch Changes
+
+- 71ba1c2: Update README docs & improve deps across packages
+- Updated dependencies [71ba1c2]
+  - @kubricate/kubernetes-models@0.1.1
+  - kubricate@0.20.1
+  - @kubricate/toolkit@0.6.2
+  - @kubricate/core@0.20.1
+
 ## 0.20.0
 
 ### Minor Changes

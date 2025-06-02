@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.20.1
+
+### Patch Changes
+
+- 71ba1c2: Update README docs & improve deps across packages
+
 ## 0.20.0
 
 ### Minor Changes

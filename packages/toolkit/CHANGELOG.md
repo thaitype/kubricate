@@ -1,5 +1,11 @@
 # @kubricate/toolkit
 
+## 0.6.2
+
+### Patch Changes
+
+- 71ba1c2: Update README docs & improve deps across packages
+
 ## 0.6.1
 
 ### Patch Changes
