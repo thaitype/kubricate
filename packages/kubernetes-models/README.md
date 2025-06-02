@@ -27,11 +27,6 @@
   </a>
 </p>
 
-> ⚠️ Evolving API: Kubricate has been tested in internal environments and many parts are stable with test coverage. However, the project is still evolving as we design use cases around real-world Kubernetes pain points.
->
-> Kubricate is not here to replace the great tools in the Kubernetes ecosystem—but to improve the developer experience around YAML templating, type safety, and reuse.
-> 
-> Expect frequent API changes. Please follow [issues](https://github.com/thaitype/kubricate/issues) for proposed features and [pull requests](https://github.com/thaitype/kubricate/pulls) for updates on documentation and migration plans.
+## Documentation
 
-## Note
-- Use `structureClone` for node 17 and above, and chrome 98 and above.
+For detailed documentation, please visit our [official documentation site](https://kubricate.thaitype.dev).
