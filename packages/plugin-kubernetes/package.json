@@ -35,7 +35,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "peerDependencies": {
-    "@kubricate/core": ">=0.20.0"
+    "@kubricate/core": "^0.20.0"
   },
   "devDependencies": {
     "@kubricate/core": "workspace:*",

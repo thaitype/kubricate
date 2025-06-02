@@ -33,7 +33,7 @@
     "dotenv": "^16.4.7"
   },
   "peerDependencies": {
-    "@kubricate/core": ">=0.20.0"
+    "@kubricate/core": "^0.20.0"
   },
   "devDependencies": {
     "@kubricate/core": "workspace:*",
