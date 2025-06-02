@@ -14,7 +14,4 @@ module.exports = {
   plugins: ['@ianvs/prettier-plugin-sort-imports'],
   // This plugin's options
   importOrder: ['<BUILTIN_MODULES>', '', '<THIRD_PARTY_MODULES>', '', 'kubricate', '^@kubricate/(.*)$', '', '^[./]'],
-  importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
-  importOrderTypeScriptVersion: '5.0.0',
-  importOrderCaseSensitive: false,
 };
