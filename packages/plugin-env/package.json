@@ -36,10 +36,10 @@
     "@kubricate/core": "^0.20.0"
   },
   "devDependencies": {
-    "@kubricate/core": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/core": "workspace:*",
     "@kubricate/mono": "workspace:*",
     "@types/node": "^22.13.9"
   },

@@ -29,9 +29,9 @@
     "@kubricate/mono": "workspace:*"
   },
   "dependencies": {
-    "kubricate": "workspace:*",
     "@kubricate/core": "workspace:*",
     "@kubricate/kubernetes-models": "workspace:*",
-    "kubernetes-models": "^4.4.2"
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
   }
 }

@@ -38,10 +38,10 @@
     "@kubricate/core": "^0.20.0"
   },
   "devDependencies": {
-    "@kubricate/core": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/core": "workspace:*",
     "@kubricate/mono": "workspace:*"
   },
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
