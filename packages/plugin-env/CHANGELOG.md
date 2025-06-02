@@ -1,5 +1,13 @@
 # @kubricate/plugin-env
 
+## 0.20.1
+
+### Patch Changes
+
+- 71ba1c2: Update README docs & improve deps across packages
+- Updated dependencies [71ba1c2]
+  - @kubricate/core@0.20.1
+
 ## 0.20.0
 
 ### Minor Changes

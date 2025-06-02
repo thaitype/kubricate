@@ -1,6 +1,6 @@
 {
   "name": "@kubricate/plugin-env",
-  "version": "0.20.0",
+  "version": "0.20.1",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -33,7 +33,7 @@
     "dotenv": "^16.4.7"
   },
   "peerDependencies": {
-    "@kubricate/core": "^0.20.0"
+    "@kubricate/core": "^0.20.1"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
