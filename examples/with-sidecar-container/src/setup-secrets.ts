@@ -15,4 +15,4 @@ export const secretManager = new SecretManager()
   })
   .addSecret({
     name: 'MONITORING_TOKEN',
-  })
+  });

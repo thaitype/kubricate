@@ -1,7 +1,9 @@
-import { Stack } from 'kubricate'
-import { secretManager } from './setup-secrets'
-import { kubeModel } from '@kubricate/kubernetes-models';
 import { Deployment } from 'kubernetes-models/apps/v1';
+
+import { kubeModel } from '@kubricate/kubernetes-models';
+import { Stack } from 'kubricate';
+
+import { secretManager } from './setup-secrets';
 
 export const multiContainerApp = Stack.fromStatic('ContainerWithSidecar', {
   deployment: kubeModel(Deployment, {
@@ -38,11 +40,10 @@ export const multiContainerApp = Stack.fromStatic('ContainerWithSidecar', {
     },
   }) as any,
   // Fix type later on https://github.com/thaitype/kubricate/issues/138
-})
-  .useSecrets(secretManager, c => {
-    // Inject into first container (index 0) - default behavior
-    c.secrets('DATABASE_URL').inject()
+}).useSecrets(secretManager, c => {
+  // Inject into first container (index 0) - default behavior
+  c.secrets('DATABASE_URL').inject();
 
-    // Inject into second container (index 1) or Sidecar Container
-    c.secrets('MONITORING_TOKEN').inject('env', { containerIndex: 1 })
-  })
+  // Inject into second container (index 1) or Sidecar Container
+  c.secrets('MONITORING_TOKEN').inject('env', { containerIndex: 1 });
+});

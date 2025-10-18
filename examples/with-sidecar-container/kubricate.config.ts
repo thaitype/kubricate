@@ -1,13 +1,13 @@
 import { defineConfig } from 'kubricate';
 
-import { multiContainerApp } from './src/stacks';
 import { secretManager } from './src/setup-secrets';
+import { multiContainerApp } from './src/stacks';
 
 export default defineConfig({
   stacks: {
-    multiContainerApp
+    multiContainerApp,
   },
   secret: {
     secretSpec: secretManager,
-  }
+  },
 });
