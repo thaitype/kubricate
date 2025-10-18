@@ -38,7 +38,7 @@ export const multiContainerApp = Stack.fromStatic('ContainerWithSidecar', {
         },
       },
     },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any,
   // Fix type later on https://github.com/thaitype/kubricate/issues/138
 }).useSecrets(secretManager, c => {
