@@ -97,7 +97,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: api-credentials
-  namespace: default
+  namespace: kubricate-with-basic-auth-secret
 type: kubernetes.io/basic-auth
 data:
   username: <base64-encoded-username>
@@ -143,7 +143,7 @@ spec:
         envFrom:
         - prefix: DB_
           secretRef:
-            name: api-credentials
+            name: db-credentials
 ```
 
 **Resulting Environment Variables**:
@@ -182,13 +182,64 @@ In this example, secrets are loaded from `.env` file using `EnvConnector`:
 ```typescript
 export const secretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())
-  .addProvider('BasicAuthSecretProvider', new BasicAuthSecretProvider({
+  // Provider for API credentials
+  .addProvider('ApiCredentialsProvider', new BasicAuthSecretProvider({
     name: 'api-credentials',
     namespace: 'default',
   }))
-  .addSecret({ name: 'API_CREDENTIALS' })
-  .addSecret({ name: 'DB_CREDENTIALS' });
+  // Provider for database credentials
+  .addProvider('DbCredentialsProvider', new BasicAuthSecretProvider({
+    name: 'db-credentials',
+    namespace: 'default',
+  }))
+  .setDefaultConnector('EnvConnector')
+  .setDefaultProvider('ApiCredentialsProvider')
+  .addSecret({
+    name: 'API_CREDENTIALS',
+    provider: 'ApiCredentialsProvider',
+  })
+  .addSecret({
+    name: 'DB_CREDENTIALS',
+    provider: 'DbCredentialsProvider',
+  });
 ```
+
+### Why Separate Providers?
+
+**Important**: Each `BasicAuthSecretProvider` instance manages a **single Kubernetes Secret resource**. When you need to create multiple secrets with different credentials, you must use separate provider instances.
+
+**❌ Incorrect - Using one provider for multiple secrets**:
+```typescript
+// This will cause a conflict!
+.addProvider('BasicAuthSecretProvider', new BasicAuthSecretProvider({
+  name: 'api-credentials',  // Single Secret resource
+}))
+.addSecret({ name: 'API_CREDENTIALS' })  // username + password
+.addSecret({ name: 'DB_CREDENTIALS' })   // username + password (CONFLICT!)
+```
+
+**Error**: `[conflict:k8s] Conflict detected: key "username" already exists in Secret "api-credentials"`
+
+**Why it fails**: Both secrets try to write `username` and `password` keys into the same Secret resource (`api-credentials`), causing a key collision.
+
+**✅ Correct - Separate provider for each secret**:
+```typescript
+// Each provider creates its own Secret resource
+.addProvider('ApiCredentialsProvider', new BasicAuthSecretProvider({
+  name: 'api-credentials',     // Secret 1
+}))
+.addProvider('DbCredentialsProvider', new BasicAuthSecretProvider({
+  name: 'db-credentials',      // Secret 2
+}))
+.addSecret({ name: 'API_CREDENTIALS', provider: 'ApiCredentialsProvider' })
+.addSecret({ name: 'DB_CREDENTIALS', provider: 'DbCredentialsProvider' })
+```
+
+**Result**: Two separate Kubernetes Secrets are created:
+- `api-credentials` with API username/password
+- `db-credentials` with DB username/password
+
+**Key Takeaway**: Unlike `OpaqueSecretProvider` which can merge multiple secrets into one resource, `BasicAuthSecretProvider` has a **fixed schema** (`username` + `password`), so you need one provider instance per secret credential pair.
 
 ### Validation
 
@@ -292,6 +343,37 @@ Error: [BasicAuthSecretProvider] 'key' is required for env injection.
 .inject('env', { key: 'username' })  // ✅ Correct
 .inject('env')                       // ❌ Missing key
 ```
+
+### Error: Conflict detected
+
+```
+Error: [conflict:k8s] Conflict detected: key "username" already exists in Secret "api-credentials" in namespace "default"
+```
+
+**Cause**: Multiple secrets are trying to use the same provider instance, which creates a single Kubernetes Secret resource. Since `kubernetes.io/basic-auth` secrets only have `username` and `password` keys, trying to merge multiple credential pairs into one Secret causes conflicts.
+
+**Solution**: Create separate provider instances for each secret:
+
+```typescript
+// ❌ Wrong - reusing same provider
+.addProvider('BasicAuthSecretProvider', new BasicAuthSecretProvider({
+  name: 'api-credentials'
+}))
+.addSecret({ name: 'API_CREDENTIALS' })
+.addSecret({ name: 'DB_CREDENTIALS' })  // Conflict!
+
+// ✅ Correct - separate providers
+.addProvider('ApiCredentialsProvider', new BasicAuthSecretProvider({
+  name: 'api-credentials'
+}))
+.addProvider('DbCredentialsProvider', new BasicAuthSecretProvider({
+  name: 'db-credentials'
+}))
+.addSecret({ name: 'API_CREDENTIALS', provider: 'ApiCredentialsProvider' })
+.addSecret({ name: 'DB_CREDENTIALS', provider: 'DbCredentialsProvider' })
+```
+
+See the [Why Separate Providers?](#why-separate-providers) section for more details.
 
 ## 📖 Documentation
 
