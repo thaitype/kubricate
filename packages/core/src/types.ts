@@ -63,9 +63,9 @@ export type SecretInjectionStrategy =
       prefix?: string;
     } & BaseSecretInjectionStrategy)
   | {
-      /** 
-       * Injection strategy type: custom plugin-defined injection 
-       * 
+      /**
+       * Injection strategy type: custom plugin-defined injection
+       *
        * Noted: This kind is not implemented yet, checkout the issue: https://github.com/thaitype/kubricate/issues/84
        **/
       kind: 'plugin';

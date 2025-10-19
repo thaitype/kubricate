@@ -6,10 +6,10 @@ import type { FallbackIfNever } from '../types.js';
 /**
  * Extract strategy options for a specific kind, enabling proper type narrowing
  */
-type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind']> = FallbackIfNever<Omit<
-  Extract<SecretInjectionStrategy, { kind: K }>,
-  'kind'
->, SecretInjectionStrategy>;
+type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind']> = FallbackIfNever<
+  Omit<Extract<SecretInjectionStrategy, { kind: K }>, 'kind'>,
+  SecretInjectionStrategy
+>;
 
 /**
  * SecretInjectionBuilder provides a fluent API to define how a secret should be injected into a resource.

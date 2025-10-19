@@ -24,14 +24,10 @@ const apiServiceApp = Stack.fromTemplate(simpleAppTemplate, {
 })
   .useSecrets(secretManager, c => {
     // Inject username from API_CREDENTIALS
-    c.secrets('API_CREDENTIALS')
-      .forName('API_USERNAME')
-      .inject('env', { key: 'username' });
+    c.secrets('API_CREDENTIALS').forName('API_USERNAME').inject('env', { key: 'username' });
 
     // Inject password from API_CREDENTIALS
-    c.secrets('API_CREDENTIALS')
-      .forName('API_PASSWORD')
-      .inject('env', { key: 'password' });
+    c.secrets('API_CREDENTIALS').forName('API_PASSWORD').inject('env', { key: 'password' });
   })
   .override({
     service: {

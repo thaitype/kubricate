@@ -1,6 +1,7 @@
 import { EnvConnector } from '@kubricate/plugin-env';
 import { BasicAuthSecretProvider } from '@kubricate/plugin-kubernetes';
 import { SecretManager } from 'kubricate';
+
 import { config } from './shared-config';
 
 /**
@@ -24,7 +25,7 @@ export const secretManager = new SecretManager()
     'DbCredentialsProvider',
     new BasicAuthSecretProvider({
       name: 'db-credentials',
-       namespace: config.namespace,
+      namespace: config.namespace,
     })
   )
   .setDefaultConnector('EnvConnector')
