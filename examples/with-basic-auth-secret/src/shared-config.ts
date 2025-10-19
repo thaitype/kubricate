@@ -1,3 +1,3 @@
 export const config = {
-  namespace: 'default',
+  namespace: 'kubricate-with-basic-auth-secret',
 };
