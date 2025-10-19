@@ -40,10 +40,14 @@ describe('SecretInjectionBuilder', () => {
 
     expect(stack.registerSecretInjection).toHaveBeenCalledWith(
       expect.objectContaining({
-        meta: {
+        meta: expect.objectContaining({
           secretName: 'MY_SECRET',
           targetName: 'MY_SECRET',
-        },
+          strategy: expect.objectContaining({
+            kind: 'env',
+            containerIndex: 0,
+          }),
+        }),
         path: ['spec.template.spec.containers[0].env'],
       })
     );

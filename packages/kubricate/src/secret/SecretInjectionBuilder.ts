@@ -127,6 +127,8 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
       strategy = { kind: 'imagePullSecret' };
     } else if (kind === 'annotation') {
       strategy = { kind: 'annotation' };
+    } else if (kind === 'envFrom') {
+      strategy = { kind: 'envFrom', containerIndex: 0 };
     } else {
       throw new Error(`[SecretInjectionBuilder] inject() with no args is not implemented for kind="${kind}" yet`);
     }
@@ -163,6 +165,7 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
       meta: {
         secretName: this.secretName,
         targetName: this.targetName ?? this.secretName,
+        strategy: this.strategy,
       },
     });
   }

@@ -117,5 +117,6 @@ export interface ProviderInjection<ResourceId extends string = string, Path exte
   meta?: {
     secretName: string;
     targetName: string;
+    strategy?: SecretInjectionStrategy;
   };
 }

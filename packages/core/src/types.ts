@@ -24,9 +24,9 @@ export interface BaseSecretInjectionStrategy {
 }
 
 export type SecretInjectionStrategy =
-  | ({ kind: 'env'; containerIndex?: number } & BaseSecretInjectionStrategy)
+  | ({ kind: 'env'; containerIndex?: number; key?: string } & BaseSecretInjectionStrategy)
   | ({ kind: 'volume'; mountPath: string; containerIndex?: number } & BaseSecretInjectionStrategy)
   | ({ kind: 'annotation' } & BaseSecretInjectionStrategy)
   | ({ kind: 'imagePullSecret' } & BaseSecretInjectionStrategy)
-  | ({ kind: 'envFrom'; containerIndex?: number } & BaseSecretInjectionStrategy)
+  | ({ kind: 'envFrom'; containerIndex?: number; prefix?: string } & BaseSecretInjectionStrategy)
   | { kind: 'plugin'; action?: string; args?: unknown[]; [key: string]: unknown };
