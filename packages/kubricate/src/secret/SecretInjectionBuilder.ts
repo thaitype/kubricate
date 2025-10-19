@@ -12,6 +12,14 @@ type ExtractAllowedKinds<Kinds extends SecretInjectionStrategy['kind'] = SecretI
 >;
 
 /**
+ * Extract strategy options for a specific kind, enabling proper type narrowing
+ */
+type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind']> = Omit<
+  Extract<SecretInjectionStrategy, { kind: K }>,
+  'kind'
+>;
+
+/**
  * SecretInjectionBuilder provides a fluent API to define how a secret should be injected into a resource.
  *
  * @example
@@ -79,15 +87,9 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
    *   injector.secrets('APP_SECRET').inject(); // uses first provider-supported default
    */
   inject(): this;
-  inject(
-    kind?: ExtractAllowedKinds<Kinds>['kind'],
-    strategyOptions?: Omit<FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>, 'kind'>
-  ): this;
+  inject<K extends Kinds>(kind: K, strategyOptions?: StrategyOptionsForKind<K>): this;
 
-  inject(
-    kind?: ExtractAllowedKinds<Kinds>['kind'],
-    strategyOptions?: Omit<FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>, 'kind'>
-  ): this {
+  inject<K extends Kinds>(kind?: K, strategyOptions?: StrategyOptionsForKind<K>): this {
     if (kind === undefined) {
       // no arguments provided
       if (this.provider.supportedStrategies.length !== 1) {
