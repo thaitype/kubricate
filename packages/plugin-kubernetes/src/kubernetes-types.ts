@@ -1,8 +1,6 @@
-
-
 /**
  * EnvVar represents an environment variable present in a Container.
- * 
+ *
  * Ported from import { IEnvVar } from 'kubernetes-models/v1/EnvVar';
  */
 export interface EnvVar {

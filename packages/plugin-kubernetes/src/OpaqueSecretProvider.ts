@@ -8,8 +8,8 @@ import type {
   SecretInjectionStrategy,
 } from '@kubricate/core';
 
-import { createKubernetesMergeHandler } from './merge-utils.js';
 import type { EnvVar } from './kubernetes-types.js';
+import { createKubernetesMergeHandler } from './merge-utils.js';
 
 export interface OpaqueSecretProviderConfig {
   /**

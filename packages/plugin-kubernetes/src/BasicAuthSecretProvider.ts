@@ -10,9 +10,9 @@ import type {
   SecretValue,
 } from '@kubricate/core';
 
+import type { EnvVar } from './kubernetes-types.js';
 import { createKubernetesMergeHandler } from './merge-utils.js';
 import { parseZodSchema } from './utils.js';
-import type { EnvVar } from './kubernetes-types.js';
 
 export const basicAuthSecretSchema = z.object({
   username: z.string(),
@@ -154,9 +154,7 @@ export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProv
       }
 
       if (key !== 'username' && key !== 'password') {
-        throw new Error(
-          `[BasicAuthSecretProvider] Invalid key '${key}'. Must be 'username' or 'password'.`
-        );
+        throw new Error(`[BasicAuthSecretProvider] Invalid key '${key}'. Must be 'username' or 'password'.`);
       }
 
       return {
