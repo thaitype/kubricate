@@ -1,6 +1,7 @@
 import { EnvConnector } from '@kubricate/plugin-env';
 import { BasicAuthSecretProvider } from '@kubricate/plugin-kubernetes';
 import { SecretManager } from 'kubricate';
+import { config } from './shared-config';
 
 /**
  * Setup SecretManager with BasicAuthSecretProvider
@@ -15,7 +16,7 @@ export const secretManager = new SecretManager()
     'ApiCredentialsProvider',
     new BasicAuthSecretProvider({
       name: 'api-credentials',
-      namespace: 'default',
+      namespace: config.namespace,
     })
   )
   // Provider for database credentials
@@ -23,7 +24,7 @@ export const secretManager = new SecretManager()
     'DbCredentialsProvider',
     new BasicAuthSecretProvider({
       name: 'db-credentials',
-      namespace: 'default',
+       namespace: config.namespace,
     })
   )
   .setDefaultConnector('EnvConnector')
