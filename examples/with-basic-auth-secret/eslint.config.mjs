@@ -1,3 +1,4 @@
-import base from '@kubricate/config-eslint/base.js';
+import { config } from "@kubricate/config-eslint/base";
 
-export default [...base];
+/** @type {import("eslint").Linter.Config} */
+export default config;

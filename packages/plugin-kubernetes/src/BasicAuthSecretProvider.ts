@@ -122,7 +122,7 @@ export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProv
 
   private extractStrategy(inject: ProviderInjection): SecretInjectionStrategy {
     // Extract strategy from meta if available
-    const strategy = (inject.meta as any)?.strategy;
+    const strategy = inject.meta?.strategy;
     if (strategy) {
       return strategy;
     }
