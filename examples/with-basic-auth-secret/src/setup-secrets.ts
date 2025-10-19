@@ -10,22 +10,31 @@ import { SecretManager } from 'kubricate';
  */
 export const secretManager = new SecretManager()
   .addConnector('EnvConnector', new EnvConnector())
+  // Provider for API credentials
   .addProvider(
-    'BasicAuthSecretProvider',
+    'ApiCredentialsProvider',
     new BasicAuthSecretProvider({
       name: 'api-credentials',
       namespace: 'default',
     })
   )
+  // Provider for database credentials
+  .addProvider(
+    'DbCredentialsProvider',
+    new BasicAuthSecretProvider({
+      name: 'db-credentials',
+      namespace: 'default',
+    })
+  )
   .setDefaultConnector('EnvConnector')
-  .setDefaultProvider('BasicAuthSecretProvider')
+  .setDefaultProvider('ApiCredentialsProvider')
   // Add basic auth credentials for API access
   .addSecret({
     name: 'API_CREDENTIALS',
-    provider: 'BasicAuthSecretProvider',
+    provider: 'ApiCredentialsProvider',
   })
   // Add basic auth credentials for database
   .addSecret({
     name: 'DB_CREDENTIALS',
-    provider: 'BasicAuthSecretProvider',
+    provider: 'DbCredentialsProvider',
   });
