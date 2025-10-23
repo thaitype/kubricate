@@ -1,6 +1,6 @@
 {
   "name": "@kubricate/plugin-kubernetes",
-  "version": "0.20.1",
+  "version": "0.21.0",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -35,7 +35,7 @@
     "zod-validation-error": "^3.4.0"
   },
   "peerDependencies": {
-    "@kubricate/core": "^0.20.1"
+    "@kubricate/core": "^0.21.0"
   },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",

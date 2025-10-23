@@ -1,5 +1,18 @@
 # @kubricate/plugin-kubernetes
 
+## 0.21.0
+
+### Minor Changes
+
+- 31074cc: feat: Add BasicAuthSecretProvider for Kubernetes basic-auth secrets
+- 0d42e09: feat: Add BasicAuthSecretProvider for Kubernetes basic-auth secrets
+
+### Patch Changes
+
+- Updated dependencies [31074cc]
+- Updated dependencies [0d42e09]
+  - @kubricate/core@0.21.0
+
 ## 0.20.1
 
 ### Patch Changes
