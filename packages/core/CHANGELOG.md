@@ -1,5 +1,11 @@
 # @kubricate/core
 
+## 0.21.0
+
+### Minor Changes
+
+- 0d42e09: feat: Add BasicAuthSecretProvider for Kubernetes basic-auth secrets
+
 ## 0.20.1
 
 ### Patch Changes

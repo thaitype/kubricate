@@ -1,5 +1,12 @@
 # @kubricate/plugin-env
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [0d42e09]
+  - @kubricate/core@0.21.0
+
 ## 0.20.1
 
 ### Patch Changes
