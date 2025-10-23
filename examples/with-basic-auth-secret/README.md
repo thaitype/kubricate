@@ -375,6 +375,60 @@ Error: [conflict:k8s] Conflict detected: key "username" already exists in Secret
 
 See the [Why Separate Providers?](#why-separate-providers) section for more details.
 
+### Error: Mixed injection strategies
+
+```
+Error: [BasicAuthSecretProvider] Mixed injection strategies are not allowed.
+Expected all injections to use 'env' but found: env, envFrom.
+```
+
+**Cause**: Attempting to use both `env` and `envFrom` strategies with the same provider and custom `targetPath` that causes them to be grouped together.
+
+**Solution**: Don't mix strategies. Use either `env` OR `envFrom`, not both:
+
+```typescript
+// ❌ Wrong - mixing strategies
+c.secrets('CREDS')
+  .forName('USER')
+  .inject('env', { key: 'username', targetPath: 'custom.path' });
+c.secrets('CREDS')
+  .inject('envFrom', { prefix: 'DB_', targetPath: 'custom.path' });
+
+// ✅ Correct - use only one strategy
+c.secrets('CREDS')
+  .forName('USER')
+  .inject('env', { key: 'username' });
+c.secrets('CREDS')
+  .forName('PASS')
+  .inject('env', { key: 'password' });
+```
+
+### Error: Multiple envFrom prefixes detected
+
+```
+Error: [BasicAuthSecretProvider] Multiple envFrom prefixes detected: API_, DB_.
+All envFrom injections for the same secret must use the same prefix.
+```
+
+**Cause**: Trying to use different prefixes for envFrom injections to the same provider instance.
+
+**Why this happens**: Each provider instance represents **one** Kubernetes Secret. That secret can only be injected with **one** prefix value.
+
+**Solution**: Use separate provider instances for different secrets:
+
+```typescript
+// ❌ Wrong - different prefixes for same provider
+.addProvider('BasicAuthProvider', new BasicAuthSecretProvider({ name: 'shared-creds' }))
+c.secrets('API_CREDS').inject('envFrom', { prefix: 'API_' });
+c.secrets('DB_CREDS').inject('envFrom', { prefix: 'DB_' });
+
+// ✅ Correct - separate providers for different secrets
+.addProvider('ApiProvider', new BasicAuthSecretProvider({ name: 'api-creds' }))
+.addProvider('DbProvider', new BasicAuthSecretProvider({ name: 'db-creds' }))
+c.secrets('API_CREDS', { provider: 'ApiProvider' }).inject('envFrom', { prefix: 'API_' });
+c.secrets('DB_CREDS', { provider: 'DbProvider' }).inject('envFrom', { prefix: 'DB_' });
+```
+
 ## 📖 Documentation
 
 For more information about secret management in Kubricate:

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from 'vitest';
 
+import type { ProviderInjection } from '@kubricate/core';
+
 import { BasicAuthSecretProvider } from './BasicAuthSecretProvider.js';
 
 describe('BasicAuthSecretProvider', () => {
@@ -545,6 +547,242 @@ describe('BasicAuthSecretProvider', () => {
       const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
 
       expect(provider.allowMerge).toBe(true);
+    });
+  });
+
+  describe('Strategy Validation', () => {
+    describe('Mixed Strategy Validation', () => {
+      it('should throw error when env and envFrom strategies are mixed', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'test-auth', namespace: 'default' });
+
+        const mixedInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].customPath',
+            meta: {
+              secretName: 'CRED1',
+              targetName: 'USERNAME',
+              strategy: { kind: 'env', key: 'username' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].customPath',
+            meta: {
+              secretName: 'CRED2',
+              targetName: 'CRED2',
+              strategy: { kind: 'envFrom', prefix: 'DB_' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(mixedInjections)).toThrow(
+          /mixed injection strategies are not allowed/i
+        );
+        expect(() => provider.getInjectionPayload(mixedInjections)).toThrow(/env, envFrom/);
+      });
+
+      it('should include helpful context in error message', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'test-auth', namespace: 'default' });
+
+        const mixedInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].env',
+            meta: {
+              secretName: 'CRED1',
+              targetName: 'USERNAME',
+              strategy: { kind: 'env', key: 'username' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].env',
+            meta: {
+              secretName: 'CRED2',
+              targetName: 'CRED2',
+              strategy: { kind: 'envFrom' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(mixedInjections)).toThrow(/framework bug or incorrect targetPath/i);
+      });
+    });
+
+    describe('envFrom Prefix Validation', () => {
+      it('should throw error when multiple different prefixes are used', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'shared-auth', namespace: 'default' });
+
+        const conflictingInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'API_CREDS',
+              targetName: 'API_CREDS',
+              strategy: { kind: 'envFrom', prefix: 'API_' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'DB_CREDS',
+              targetName: 'DB_CREDS',
+              strategy: { kind: 'envFrom', prefix: 'DB_' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(conflictingInjections)).toThrow(
+          /multiple envFrom prefixes detected/i
+        );
+        expect(() => provider.getInjectionPayload(conflictingInjections)).toThrow(/API_, DB_/);
+      });
+
+      it('should throw error when mixing prefixed and non-prefixed envFrom', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'shared-auth', namespace: 'default' });
+
+        const conflictingInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'CRED1',
+              targetName: 'CRED1',
+              strategy: { kind: 'envFrom', prefix: 'API_' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'CRED2',
+              targetName: 'CRED2',
+              strategy: { kind: 'envFrom' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(conflictingInjections)).toThrow(
+          /multiple envFrom prefixes detected/i
+        );
+        expect(() => provider.getInjectionPayload(conflictingInjections)).toThrow(/\(none\)/);
+      });
+
+      it('should accept multiple envFrom injections with same prefix', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'test-auth', namespace: 'default' });
+
+        const validInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'CRED1',
+              targetName: 'CRED1',
+              strategy: { kind: 'envFrom', prefix: 'DB_' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'CRED2',
+              targetName: 'CRED2',
+              strategy: { kind: 'envFrom', prefix: 'DB_' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(validInjections)).not.toThrow();
+      });
+
+      it('should accept multiple envFrom injections with no prefix (undefined)', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'test-auth', namespace: 'default' });
+
+        const validInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'CRED1',
+              targetName: 'CRED1',
+              strategy: { kind: 'envFrom' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].envFrom',
+            meta: {
+              secretName: 'CRED2',
+              targetName: 'CRED2',
+              strategy: { kind: 'envFrom' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(validInjections)).not.toThrow();
+      });
+    });
+
+    describe('env Strategy Validation', () => {
+      it('should accept multiple env injections with different keys', () => {
+        const provider = new BasicAuthSecretProvider({ name: 'test-auth', namespace: 'default' });
+
+        const validInjections: ProviderInjection[] = [
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].env',
+            meta: {
+              secretName: 'BASIC_AUTH',
+              targetName: 'API_USER',
+              strategy: { kind: 'env', key: 'username' },
+            },
+          },
+          {
+            providerId: 'basicAuth',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].env',
+            meta: {
+              secretName: 'BASIC_AUTH',
+              targetName: 'API_PASSWORD',
+              strategy: { kind: 'env', key: 'password' },
+            },
+          },
+        ];
+
+        expect(() => provider.getInjectionPayload(validInjections)).not.toThrow();
+        const payload = provider.getInjectionPayload(validInjections);
+        expect(payload).toHaveLength(2);
+      });
     });
   });
 });

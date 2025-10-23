@@ -101,13 +101,61 @@ export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProv
     return `${meta.namespace ?? 'default'}/${meta.name}`;
   }
 
+  /**
+   * Get injection payload for Kubernetes manifests.
+   *
+   * This method routes to the appropriate handler based on the injection strategy kind.
+   * All injections in the array MUST use the same strategy kind (homogeneity requirement).
+   *
+   * @param injectes Array of provider injections. Must all use the same strategy kind.
+   * @returns Array of environment variables (for 'env' strategy) or envFrom sources (for 'envFrom' strategy)
+   *
+   * @throws {Error} If mixed injection strategies are detected (e.g., both 'env' and 'envFrom')
+   * @throws {Error} If multiple envFrom prefixes are detected for the same provider
+   * @throws {Error} If an unsupported strategy kind is encountered
+   *
+   * @example
+   * // Valid: All env strategy
+   * const envPayload = provider.getInjectionPayload([
+   *   { meta: { strategy: { kind: 'env', key: 'username' } } },
+   *   { meta: { strategy: { kind: 'env', key: 'password' } } }
+   * ]);
+   *
+   * @example
+   * // Valid: All envFrom with same prefix
+   * const envFromPayload = provider.getInjectionPayload([
+   *   { meta: { strategy: { kind: 'envFrom', prefix: 'DB_' } } },
+   *   { meta: { strategy: { kind: 'envFrom', prefix: 'DB_' } } }
+   * ]);
+   *
+   * @example
+   * // Invalid: Mixed strategies (throws error)
+   * provider.getInjectionPayload([
+   *   { meta: { strategy: { kind: 'env' } } },
+   *   { meta: { strategy: { kind: 'envFrom' } } }
+   * ]); // Throws error
+   */
   getInjectionPayload(injectes: ProviderInjection[]): EnvVar[] | EnvFromSource[] {
     if (injectes.length === 0) {
       return [];
     }
 
-    // Determine strategy from first injection (all should be same kind per provider call)
+    // VALIDATION: Ensure all injections use the same strategy kind
     const firstStrategy = this.extractStrategy(injectes[0]);
+    const mixedStrategies = injectes.filter(inject => {
+      const strategy = this.extractStrategy(inject);
+      return strategy.kind !== firstStrategy.kind;
+    });
+
+    if (mixedStrategies.length > 0) {
+      const kinds = injectes.map(i => this.extractStrategy(i).kind);
+      const uniqueKinds = [...new Set(kinds)].join(', ');
+      throw new Error(
+        `[BasicAuthSecretProvider] Mixed injection strategies are not allowed. ` +
+          `Expected all injections to use '${firstStrategy.kind}' but found: ${uniqueKinds}. ` +
+          `This is likely a framework bug or incorrect targetPath configuration.`
+      );
+    }
 
     if (firstStrategy.kind === 'env') {
       return this.getEnvInjectionPayload(injectes);
@@ -170,8 +218,39 @@ export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProv
   }
 
   private getEnvFromInjectionPayload(injectes: ProviderInjection[]): EnvFromSource[] {
-    // For envFrom, we typically only need one entry per secret
-    // Get prefix from the first injection's strategy if available
+    // VALIDATION: Ensure all injections use envFrom strategy
+    const invalidInjections = injectes.filter(inject => {
+      const strategy = this.extractStrategy(inject);
+      return strategy.kind !== 'envFrom';
+    });
+
+    if (invalidInjections.length > 0) {
+      throw new Error(
+        `[BasicAuthSecretProvider] Mixed injection strategies detected in envFrom handler. ` +
+          `All injections must use 'envFrom' strategy. ` +
+          `Found ${invalidInjections.length} injection(s) with different strategy.`
+      );
+    }
+
+    // VALIDATION: Check for conflicting prefixes
+    const prefixes = new Set<string | undefined>();
+    injectes.forEach(inject => {
+      const strategy = this.extractStrategy(inject);
+      if (strategy.kind === 'envFrom') {
+        prefixes.add(strategy.prefix);
+      }
+    });
+
+    if (prefixes.size > 1) {
+      const prefixList = Array.from(prefixes)
+        .map(p => p || '(none)')
+        .join(', ');
+      throw new Error(
+        `[BasicAuthSecretProvider] Multiple envFrom prefixes detected: ${prefixList}. ` +
+          `All envFrom injections for the same secret must use the same prefix.`
+      );
+    }
+
     const firstStrategy = this.extractStrategy(injectes[0]);
     const prefix = firstStrategy.kind === 'envFrom' ? firstStrategy.prefix : undefined;
 
