@@ -98,6 +98,46 @@ importers:
         specifier: ^3.0.9
         version: 3.1.1(@types/node@22.13.14)(@vitest/ui@3.0.9)(jiti@2.4.2)(jsdom@26.0.0)(yaml@2.7.1)
 
+  examples/with-basic-auth-secret:
+    dependencies:
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@kubricate/kubernetes-models':
+        specifier: workspace:*
+        version: link:../../packages/kubernetes-models
+      '@kubricate/plugin-env':
+        specifier: workspace:*
+        version: link:../../packages/plugin-env
+      '@kubricate/plugin-kubernetes':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kubernetes
+      '@kubricate/stacks':
+        specifier: workspace:*
+        version: link:../../packages/stacks
+      kubernetes-models:
+        specifier: ^4.4.2
+        version: 4.4.2
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
+    devDependencies:
+      '@kubernetes-models/base':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+
   examples/with-secret-manager:
     dependencies:
       '@kubricate/core':
@@ -1522,7 +1562,7 @@ packages:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
   concat-map@0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   config-chain@1.1.13:
     resolution: {integrity: sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ==}

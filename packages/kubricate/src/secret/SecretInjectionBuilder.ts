@@ -4,11 +4,11 @@ import type { BaseStack } from '../stack/BaseStack.js';
 import type { FallbackIfNever } from '../types.js';
 
 /**
- * Extract only the strategy types allowed for this provider
+ * Extract strategy options for a specific kind, enabling proper type narrowing
  */
-type ExtractAllowedKinds<Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind']> = Extract<
-  SecretInjectionStrategy,
-  { kind: Kinds }
+type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind']> = FallbackIfNever<
+  Omit<Extract<SecretInjectionStrategy, { kind: K }>, 'kind'>,
+  SecretInjectionStrategy
 >;
 
 /**
@@ -79,15 +79,9 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
    *   injector.secrets('APP_SECRET').inject(); // uses first provider-supported default
    */
   inject(): this;
-  inject(
-    kind?: ExtractAllowedKinds<Kinds>['kind'],
-    strategyOptions?: Omit<FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>, 'kind'>
-  ): this;
+  inject<K extends Kinds>(kind: K, strategyOptions?: StrategyOptionsForKind<K>): this;
 
-  inject(
-    kind?: ExtractAllowedKinds<Kinds>['kind'],
-    strategyOptions?: Omit<FallbackIfNever<ExtractAllowedKinds<Kinds>, SecretInjectionStrategy>, 'kind'>
-  ): this {
+  inject<K extends Kinds>(kind?: K, strategyOptions?: StrategyOptionsForKind<K>): this {
     if (kind === undefined) {
       // no arguments provided
       if (this.provider.supportedStrategies.length !== 1) {
@@ -127,6 +121,8 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
       strategy = { kind: 'imagePullSecret' };
     } else if (kind === 'annotation') {
       strategy = { kind: 'annotation' };
+    } else if (kind === 'envFrom') {
+      strategy = { kind: 'envFrom', containerIndex: 0 };
     } else {
       throw new Error(`[SecretInjectionBuilder] inject() with no args is not implemented for kind="${kind}" yet`);
     }
@@ -163,6 +159,7 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
       meta: {
         secretName: this.secretName,
         targetName: this.targetName ?? this.secretName,
+        strategy: this.strategy,
       },
     });
   }
