@@ -348,7 +348,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/kubricate
 
-  examples/with-tls-auth-secret:
+  examples/with-tls-secret:
     dependencies:
       '@kubricate/core':
         specifier: workspace:*
