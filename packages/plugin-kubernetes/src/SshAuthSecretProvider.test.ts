@@ -583,7 +583,9 @@ describe('SshAuthSecretProvider', () => {
         },
       ];
 
-      expect(() => provider.getInjectionPayload(mixedInjections)).toThrow(/mixed injection strategies are not allowed/i);
+      expect(() => provider.getInjectionPayload(mixedInjections)).toThrow(
+        /mixed injection strategies are not allowed/i
+      );
       expect(() => provider.getInjectionPayload(mixedInjections)).toThrow(/env, envFrom/);
     });
 

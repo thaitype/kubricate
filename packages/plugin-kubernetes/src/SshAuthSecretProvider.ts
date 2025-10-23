@@ -10,8 +10,8 @@ import type {
   SecretValue,
 } from '@kubricate/core';
 
-import type { EnvVar } from './kubernetes-types.js';
 import type { EnvFromSource } from './BasicAuthSecretProvider.js';
+import type { EnvVar } from './kubernetes-types.js';
 import { createKubernetesMergeHandler } from './merge-utils.js';
 import { parseZodSchema } from './utils.js';
 
