@@ -1,6 +1,6 @@
 # @kubricate/plugin-kubernetes
 
-## 1.0.0
+## 0.21.0
 
 ### Minor Changes
 
