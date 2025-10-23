@@ -14,33 +14,33 @@ const namespace = Stack.fromTemplate(namespaceTemplate, {
 /**
  * Example 1: Using env injection with individual keys
  *
- * This demonstrates injecting username and password as separate
+ * This demonstrates injecting TLS certificate and key as separate
  * environment variables using the 'key' parameter.
  */
-const apiServiceApp = Stack.fromTemplate(simpleAppTemplate, {
+const ingressControllerApp = Stack.fromTemplate(simpleAppTemplate, {
   namespace: config.namespace,
   imageName: 'nginx',
-  name: 'api-service',
+  name: 'ingress-controller',
 })
   .useSecrets(secretManager, c => {
-    // Inject username from API_CREDENTIALS
-    c.secrets('API_CREDENTIALS').forName('API_USERNAME').inject('env', { key: 'username' });
+    // Inject certificate from INGRESS_TLS
+    c.secrets('INGRESS_TLS').forName('TLS_CERT').inject('env', { key: 'tls.crt' });
 
-    // Inject password from API_CREDENTIALS
-    c.secrets('API_CREDENTIALS').forName('API_PASSWORD').inject('env', { key: 'password' });
+    // Inject private key from INGRESS_TLS
+    c.secrets('INGRESS_TLS').forName('TLS_KEY').inject('env', { key: 'tls.key' });
   })
   .override({
     service: {
       apiVersion: 'v1',
       kind: 'Service',
       spec: {
-        type: 'ClusterIP',
+        type: 'LoadBalancer',
         ports: [
           {
-            port: 80,
-            targetPort: 80,
+            port: 443,
+            targetPort: 443,
             protocol: 'TCP',
-            name: 'http',
+            name: 'https',
           },
         ],
       },
@@ -50,18 +50,18 @@ const apiServiceApp = Stack.fromTemplate(simpleAppTemplate, {
 /**
  * Example 2: Using envFrom injection with prefix
  *
- * This demonstrates bulk injection of all credentials using envFrom.
+ * This demonstrates bulk injection of TLS material using envFrom.
  * The prefix ensures no naming conflicts with other environment variables.
  */
-const dbClientApp = Stack.fromTemplate(simpleAppTemplate, {
+const apiGatewayApp = Stack.fromTemplate(simpleAppTemplate, {
   namespace: config.namespace,
-  imageName: 'mysql-client',
-  name: 'db-client',
+  imageName: 'api-gateway',
+  name: 'api-gateway',
 })
   .useSecrets(secretManager, c => {
-    // Inject all credentials with DB_ prefix
-    // Results in: DB_username and DB_password
-    c.secrets('DB_CREDENTIALS').inject('envFrom', { prefix: 'DB_' });
+    // Inject all TLS material with TLS_ prefix
+    // Results in: TLS_tls.crt and TLS_tls.key
+    c.secrets('API_TLS').inject('envFrom', { prefix: 'TLS_' });
   })
   .override({
     service: {
@@ -71,10 +71,10 @@ const dbClientApp = Stack.fromTemplate(simpleAppTemplate, {
         type: 'ClusterIP',
         ports: [
           {
-            port: 3306,
-            targetPort: 3306,
+            port: 8443,
+            targetPort: 8443,
             protocol: 'TCP',
-            name: 'mysql',
+            name: 'https',
           },
         ],
       },
@@ -85,25 +85,25 @@ const dbClientApp = Stack.fromTemplate(simpleAppTemplate, {
  * Example 3: Using envFrom without prefix
  *
  * Demonstrates bulk injection without prefix.
- * Results in environment variables: username and password
+ * Results in environment variables: tls.crt and tls.key
  */
-const workerApp = Stack.fromTemplate(simpleAppTemplate, {
+const sidecarProxyApp = Stack.fromTemplate(simpleAppTemplate, {
   namespace: config.namespace,
-  imageName: 'worker',
-  name: 'background-worker',
+  imageName: 'envoy-proxy',
+  name: 'sidecar-proxy',
 })
   .useSecrets(secretManager, c => {
-    // Inject all credentials without prefix
-    c.secrets('API_CREDENTIALS').inject('envFrom');
+    // Inject all TLS material without prefix
+    c.secrets('INGRESS_TLS').inject('envFrom');
   })
   .override({
-    // Remove service from worker (not needed)
+    // Remove service from sidecar proxy (not needed)
     service: undefined,
   });
 
 export default {
   namespace,
-  apiServiceApp,
-  dbClientApp,
-  workerApp,
+  ingressControllerApp,
+  apiGatewayApp,
+  sidecarProxyApp,
 };

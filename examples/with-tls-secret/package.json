@@ -1,5 +1,5 @@
 {
-  "name": "@examples/with-basic-auth-secret",
+  "name": "@examples/with-tls-secret",
   "type": "module",
   "version": "0.0.1",
   "private": true,
