@@ -29,14 +29,14 @@ export interface BaseSecretInjectionStrategy {
  * This is a discriminated union type based on the `kind` field, where each variant represents
  * a different injection method supported by Kubernetes and Kubricate providers.
  */
-export type SecretInjectionStrategy =
+export type SecretInjectionStrategy<Key extends string = string> =
   | ({
       /** Injection strategy type: individual environment variable injection */
       kind: 'env';
       /** Zero-based index of the container to inject into (default: 0) */
       containerIndex?: number;
       /** Specific key from the secret to inject (e.g., 'username', 'password'). Required by some providers like BasicAuthSecretProvider */
-      key?: string;
+      key?: Key;
     } & BaseSecretInjectionStrategy)
   | ({
       /** Injection strategy type: volume mount injection */

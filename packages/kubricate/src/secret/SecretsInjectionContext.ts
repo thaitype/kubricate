@@ -1,9 +1,11 @@
-import type { BaseProvider } from '@kubricate/core';
+import type { BaseProvider, SecretInjectionStrategy } from '@kubricate/core';
 
 import type { BaseStack } from '../stack/BaseStack.js';
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 import type { SecretManager } from './SecretManager.js';
 import type { AnySecretManager, ExtractSecretManager } from './types.js';
+
+export type MockEnvKey = 'xxx' | 'username';
 
 export type ExtractProviderKeyFromSecretManager<
   SM extends AnySecretManager,
@@ -24,7 +26,7 @@ export type GetProviderKinds<
 
 export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager> {
   private defaultResourceId: string | undefined;
-  private builders: SecretInjectionBuilder[] = [];
+  private builders: SecretInjectionBuilder<SecretInjectionStrategy['kind'], MockEnvKey>[] = [];
 
   constructor(
     private stack: BaseStack,
@@ -49,7 +51,7 @@ export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager
   secrets<
     NewKey extends keyof ExtractSecretManager<SM>['secretEntries'] = keyof ExtractSecretManager<SM>['secretEntries'],
     ProviderKinds extends GetProviderKinds<SM, NewKey> = GetProviderKinds<SM, NewKey>,
-  >(secretName: NewKey): SecretInjectionBuilder<ProviderKinds> {
+  >(secretName: NewKey): SecretInjectionBuilder<ProviderKinds, MockEnvKey> {
     const { providerInstance, providerId } = this.manager.resolveProviderFor(String(secretName));
 
     const builder = new SecretInjectionBuilder(this.stack, String(secretName), providerInstance, {
@@ -59,7 +61,7 @@ export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager
     });
 
     this.builders.push(builder);
-    return builder as unknown as SecretInjectionBuilder<ProviderKinds>;
+    return builder as unknown as SecretInjectionBuilder<ProviderKinds, MockEnvKey>;
   }
 
   resolveAll(): void {
