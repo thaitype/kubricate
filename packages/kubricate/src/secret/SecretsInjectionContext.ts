@@ -5,7 +5,7 @@ import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 import type { SecretManager } from './SecretManager.js';
 import type { AnySecretManager, ExtractSecretManager } from './types.js';
 
-export type ExtractProviderKeyFromSecretManager<
+export type InferSecretProviderKey<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
 > = ExtractSecretManager<SM>['secretEntries'][Key] extends { provider: infer P } ? P : never;
@@ -17,10 +17,10 @@ export type ExtractProviderStrategies<SM extends AnySecretManager, ProviderKey> 
     : never
   : never;
 
-export type GetProviderKinds<
+export type InferSecretStrategies<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
-> = ExtractProviderStrategies<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
+> = ExtractProviderStrategies<SM, InferSecretProviderKey<SM, Key>>;
 
 export type ExtractProviderEnvKeys<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,10 +29,10 @@ export type ExtractProviderEnvKeys<SM extends AnySecretManager, ProviderKey> = P
     : never
   : never;
 
-export type GetProviderEnvKeys<
+export type InferSecretEnvKeys<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
-> = ExtractProviderEnvKeys<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
+> = ExtractProviderEnvKeys<SM, InferSecretProviderKey<SM, Key>>;
 
 /**
  * SecretsInjectionContext manages the context for injecting secrets into resources within a stack.
@@ -63,8 +63,8 @@ export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager
    */
   secrets<
     NewKey extends keyof ExtractSecretManager<SM>['secretEntries'] = keyof ExtractSecretManager<SM>['secretEntries'],
-    ProviderKinds extends GetProviderKinds<SM, NewKey> = GetProviderKinds<SM, NewKey>,
-    ProviderEnvKeys extends GetProviderEnvKeys<SM, NewKey> = GetProviderEnvKeys<SM, NewKey>,
+    ProviderKinds extends InferSecretStrategies<SM, NewKey> = InferSecretStrategies<SM, NewKey>,
+    ProviderEnvKeys extends InferSecretEnvKeys<SM, NewKey> = InferSecretEnvKeys<SM, NewKey>,
   >(secretName: NewKey): SecretInjectionBuilder<ProviderKinds, ProviderEnvKeys> {
     const { providerInstance, providerId } = this.manager.resolveProviderFor(String(secretName));
 
