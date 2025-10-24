@@ -142,11 +142,46 @@ export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager
   }
 
   /**
-   * Start defining how a secret will be injected into a resource.
-   * This only resolves the provider, not the actual secret value.
+   * Start defining how a secret should be injected into a Kubernetes resource.
+   * This method resolves the provider for the secret and returns a fluent builder
+   * for specifying the injection strategy and target.
    *
-   * @param secretName - The name of the secret to inject.
-   * @returns A SecretInjectionBuilder for chaining inject behavior.
+   * The method is **type-safe** and infers:
+   * - Available injection strategies (e.g., 'env', 'imagePullSecret') from the provider
+   * - Available environment keys (e.g., 'username', 'password') for 'env' strategy
+   * - Secret names from the registered secrets in the SecretManager
+   *
+   * @template NewKey - The secret name key from registered secrets (autocompleted)
+   * @template ProviderKinds - Inferred supported injection strategies from the provider
+   * @template ProviderEnvKeys - Inferred supported env keys from the provider
+   *
+   * @param secretName - The name of the secret to inject (must be registered in SecretManager)
+   * @returns A SecretInjectionBuilder for chaining injection configuration
+   *
+   * @example
+   * ```typescript
+   * // Basic environment variable injection
+   * injector.secrets('databasePassword')
+   *   .inject('env', { containerIndex: 0 });
+   *
+   * // With custom target name
+   * injector.secrets('apiToken')
+   *   .forName('API_KEY')
+   *   .inject('env');
+   *
+   * // Auto-detect strategy (when provider supports only one kind)
+   * injector.secrets('dockerCredentials')
+   *   .inject(); // automatically uses 'imagePullSecret'
+   *
+   * // Explicit resource targeting
+   * injector.secrets('secret')
+   *   .inject('env')
+   *   .intoResource('my-deployment');
+   *
+   * // Using specific env keys (type-safe with BasicAuthSecretProvider)
+   * injector.secrets('basicAuth')
+   *   .inject('env', { key: 'username' }); // autocomplete: 'username' | 'password'
+   * ```
    */
   secrets<
     NewKey extends keyof ExtractSecretManager<SM>['secretEntries'] = keyof ExtractSecretManager<SM>['secretEntries'],
