@@ -23,7 +23,7 @@ type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind'], Key exten
 export class SecretInjectionBuilder<
   Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
   EnvKey extends string = string,
-  > {
+> {
   private strategy?: SecretInjectionStrategy;
   private resourceIdOverride?: string;
   /**

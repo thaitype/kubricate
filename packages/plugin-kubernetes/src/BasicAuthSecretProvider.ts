@@ -66,7 +66,9 @@ type SupportedEnvKeys = 'username' | 'password';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/#basic-authentication-secret
  */
-export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProviderConfig, SupportedStrategies, SupportedEnvKeys> {
+export class BasicAuthSecretProvider
+  implements BaseProvider<BasicAuthSecretProviderConfig, SupportedStrategies, SupportedEnvKeys>
+{
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.BasicAuth';
 
