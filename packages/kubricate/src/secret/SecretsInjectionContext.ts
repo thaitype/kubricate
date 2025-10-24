@@ -1,4 +1,4 @@
-import type { BaseProvider, SecretInjectionStrategy } from '@kubricate/core';
+import type { BaseProvider } from '@kubricate/core';
 
 import type { BaseStack } from '../stack/BaseStack.js';
 import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
@@ -10,7 +10,7 @@ export type ExtractProviderKeyFromSecretManager<
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
 > = ExtractSecretManager<SM>['secretEntries'][Key] extends { provider: infer P } ? P : never;
 
-export type GetProviderKindFromConnector<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
+export type ExtractProviderStrategies<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ExtractSecretManager<SM>['providerInstances'][ProviderKey] extends BaseProvider<any, infer Instance>
     ? Instance
@@ -20,9 +20,9 @@ export type GetProviderKindFromConnector<SM extends AnySecretManager, ProviderKe
 export type GetProviderKinds<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
-> = GetProviderKindFromConnector<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
+> = ExtractProviderStrategies<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
 
-export type GetProviderEnvKeysFromConnector<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
+export type ExtractProviderEnvKeys<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
   ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ExtractSecretManager<SM>['providerInstances'][ProviderKey] extends BaseProvider<any, any, infer EnvKeys>
     ? EnvKeys
@@ -32,7 +32,7 @@ export type GetProviderEnvKeysFromConnector<SM extends AnySecretManager, Provide
 export type GetProviderEnvKeys<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
-> = GetProviderEnvKeysFromConnector<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
+> = ExtractProviderEnvKeys<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
 
 /**
  * SecretsInjectionContext manages the context for injecting secrets into resources within a stack.
