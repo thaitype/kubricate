@@ -5,8 +5,6 @@ import { SecretInjectionBuilder } from './SecretInjectionBuilder.js';
 import type { SecretManager } from './SecretManager.js';
 import type { AnySecretManager, ExtractSecretManager } from './types.js';
 
-export type MockEnvKey = 'xxx' | 'username';
-
 export type ExtractProviderKeyFromSecretManager<
   SM extends AnySecretManager,
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
@@ -24,9 +22,24 @@ export type GetProviderKinds<
   Key extends keyof ExtractSecretManager<SM>['secretEntries'],
 > = GetProviderKindFromConnector<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
 
+export type GetProviderEnvKeysFromConnector<SM extends AnySecretManager, ProviderKey> = ProviderKey extends string
+  ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ExtractSecretManager<SM>['providerInstances'][ProviderKey] extends BaseProvider<any, any, infer EnvKeys>
+    ? EnvKeys
+    : never
+  : never;
+
+export type GetProviderEnvKeys<
+  SM extends AnySecretManager,
+  Key extends keyof ExtractSecretManager<SM>['secretEntries'],
+> = GetProviderEnvKeysFromConnector<SM, ExtractProviderKeyFromSecretManager<SM, Key>>;
+
+/**
+ * SecretsInjectionContext manages the context for injecting secrets into resources within a stack.
+ */
 export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager> {
   private defaultResourceId: string | undefined;
-  private builders: SecretInjectionBuilder<SecretInjectionStrategy['kind'], MockEnvKey>[] = [];
+  private builders: SecretInjectionBuilder[] = [];
 
   constructor(
     private stack: BaseStack,
@@ -51,7 +64,8 @@ export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager
   secrets<
     NewKey extends keyof ExtractSecretManager<SM>['secretEntries'] = keyof ExtractSecretManager<SM>['secretEntries'],
     ProviderKinds extends GetProviderKinds<SM, NewKey> = GetProviderKinds<SM, NewKey>,
-  >(secretName: NewKey): SecretInjectionBuilder<ProviderKinds, MockEnvKey> {
+    ProviderEnvKeys extends GetProviderEnvKeys<SM, NewKey> = GetProviderEnvKeys<SM, NewKey>,
+  >(secretName: NewKey): SecretInjectionBuilder<ProviderKinds, ProviderEnvKeys> {
     const { providerInstance, providerId } = this.manager.resolveProviderFor(String(secretName));
 
     const builder = new SecretInjectionBuilder(this.stack, String(secretName), providerInstance, {
@@ -61,7 +75,7 @@ export class SecretsInjectionContext<SM extends SecretManager = AnySecretManager
     });
 
     this.builders.push(builder);
-    return builder as unknown as SecretInjectionBuilder<ProviderKinds, MockEnvKey>;
+    return builder as unknown as SecretInjectionBuilder<ProviderKinds, ProviderEnvKeys>;
   }
 
   resolveAll(): void {

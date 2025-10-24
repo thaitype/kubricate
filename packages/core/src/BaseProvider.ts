@@ -4,6 +4,7 @@ import type { SecretInjectionStrategy, SecretValue } from './types.js';
 export interface BaseProvider<
   Config extends object = object,
   SupportedStrategies extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
+  SupportedEnvKeys extends string = string,
 > {
   /**
    * The name of the provider.
@@ -41,6 +42,7 @@ export interface BaseProvider<
   readonly targetKind: string;
 
   readonly supportedStrategies: SupportedStrategies[];
+  readonly supportedEnvKeys?: SupportedEnvKeys[];
 
   mergeSecrets?(effects: PreparedEffect[]): PreparedEffect[];
 
