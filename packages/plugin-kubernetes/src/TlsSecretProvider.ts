@@ -44,7 +44,9 @@ type SuppoertedEnvKeys = 'tls.crt' | 'tls.key';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
  */
-export class TlsSecretProvider implements BaseProvider<TlsSecretProviderConfig, SupportedStrategies, SuppoertedEnvKeys> {
+export class TlsSecretProvider
+  implements BaseProvider<TlsSecretProviderConfig, SupportedStrategies, SuppoertedEnvKeys>
+{
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.Tls';
 

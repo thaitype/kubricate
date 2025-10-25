@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from 'vitest';
 
 import { OpaqueSecretProvider } from './OpaqueSecretProvider.js';
@@ -118,7 +119,7 @@ describe('OpaqueSecretProvider', () => {
         },
       ];
 
-      const payload = provider.getInjectionPayload(injections);
+      const payload = provider.getInjectionPayload(injections as any);
 
       expect(payload[0].name).toBe('DATABASE_URL');
     });
@@ -137,7 +138,7 @@ describe('OpaqueSecretProvider', () => {
       ];
 
       expect(() => {
-        provider.getInjectionPayload(injections);
+        provider.getInjectionPayload(injections as any);
       }).toThrow(/Invalid injection metadata/);
     });
   });
