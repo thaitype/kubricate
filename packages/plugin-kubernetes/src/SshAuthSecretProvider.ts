@@ -45,7 +45,9 @@ type SupportedEnvKeys = 'ssh-privatekey' | 'known_hosts';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/#ssh-authentication-secrets
  */
-export class SshAuthSecretProvider implements BaseProvider<SshAuthSecretProviderConfig, SupportedStrategies, SupportedEnvKeys> {
+export class SshAuthSecretProvider
+  implements BaseProvider<SshAuthSecretProviderConfig, SupportedStrategies, SupportedEnvKeys>
+{
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.SshAuth';
 
