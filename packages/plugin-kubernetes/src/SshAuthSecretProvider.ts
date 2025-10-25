@@ -34,6 +34,7 @@ export interface SshAuthSecretProviderConfig {
 }
 
 type SupportedStrategies = 'env' | 'envFrom';
+type SupportedEnvKeys = 'ssh-privatekey' | 'known_hosts';
 
 /**
  * SshAuthSecretProvider is a provider that uses Kubernetes ssh-auth secrets.
@@ -44,7 +45,7 @@ type SupportedStrategies = 'env' | 'envFrom';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/#ssh-authentication-secrets
  */
-export class SshAuthSecretProvider implements BaseProvider<SshAuthSecretProviderConfig, SupportedStrategies> {
+export class SshAuthSecretProvider implements BaseProvider<SshAuthSecretProviderConfig, SupportedStrategies, SupportedEnvKeys> {
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.SshAuth';
 
@@ -52,6 +53,7 @@ export class SshAuthSecretProvider implements BaseProvider<SshAuthSecretProvider
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env', 'envFrom'];
+  readonly supportedEnvKeys: SupportedEnvKeys[] = ['ssh-privatekey', 'known_hosts'];
 
   constructor(public config: SshAuthSecretProviderConfig) {}
 
