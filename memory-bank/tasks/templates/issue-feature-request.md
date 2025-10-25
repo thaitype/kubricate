@@ -22,14 +22,6 @@
 ### Design Overview
 <!-- Describe the main idea or architecture -->
 
-### Flow Diagram (optional)
-```mermaid
-flowchart TD
-A[] --> B[]
-B --> C[]
-C --> D[]
-````
-
 ### Configuration Example
 
 ```ts
@@ -49,17 +41,6 @@ C --> D[]
 
 <!-- Technical considerations, dependencies, or internal design details -->
 
-## 🔄 Alternatives Considered
-
-<!-- Other approaches or designs considered, and why they were not chosen -->
-
-## ⚠️ Risks / Considerations
-
-<!-- Potential issues, performance or security concerns -->
-
-## 📘 References
-
-<!-- Related issues, specs, or documentation links -->
 
 ## ✅ Checklist
 
