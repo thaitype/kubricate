@@ -174,9 +174,7 @@ export class TlsSecretProvider implements BaseProvider<TlsSecretProviderConfig, 
       const key = strategy.kind === 'env' ? strategy.key : undefined;
 
       if (!key) {
-        throw new Error(
-          `[TlsSecretProvider] 'key' is required for env injection. Must be 'tls.crt' or 'tls.key'.`
-        );
+        throw new Error(`[TlsSecretProvider] 'key' is required for env injection. Must be 'tls.crt' or 'tls.key'.`);
       }
 
       if (key !== 'tls.crt' && key !== 'tls.key') {
