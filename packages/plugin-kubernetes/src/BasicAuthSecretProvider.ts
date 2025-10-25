@@ -56,6 +56,7 @@ export interface EnvFromSource {
 }
 
 type SupportedStrategies = 'env' | 'envFrom';
+type SupportedEnvKeys = 'username' | 'password';
 
 /**
  * BasicAuthSecretProvider is a provider that uses Kubernetes basic-auth secrets.
@@ -65,7 +66,9 @@ type SupportedStrategies = 'env' | 'envFrom';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/#basic-authentication-secret
  */
-export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProviderConfig, SupportedStrategies> {
+export class BasicAuthSecretProvider
+  implements BaseProvider<BasicAuthSecretProviderConfig, SupportedStrategies, SupportedEnvKeys>
+{
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.BasicAuth';
 
@@ -73,6 +76,7 @@ export class BasicAuthSecretProvider implements BaseProvider<BasicAuthSecretProv
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env', 'envFrom'];
+  readonly supportedEnvKeys: SupportedEnvKeys[] = ['username', 'password'];
 
   constructor(public config: BasicAuthSecretProviderConfig) {}
 

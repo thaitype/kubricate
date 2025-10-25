@@ -1,17 +1,46 @@
 import type { BaseLogger } from './logger.js';
 import type { SecretInjectionStrategy, SecretValue } from './types.js';
 
+/**
+ * Base interface for secret providers that convert secret values into Kubernetes resources
+ * or inject them into existing resources.
+ *
+ * @template Config - Configuration object type for the provider
+ * @template SupportedStrategies - Union of injection strategy kinds this provider supports (e.g., 'env', 'imagePullSecret')
+ * @template SupportedEnvKeys - Union of environment key names this provider supports
+ *
+ * @example
+ * ```typescript
+ * class OpaqueSecretProvider implements BaseProvider<
+ *   OpaqueSecretConfig,
+ *   'env' | 'volume',
+ *   'username' | 'password'
+ * > {
+ *   // ... implementation
+ * }
+ * ```
+ */
 export interface BaseProvider<
   Config extends object = object,
   SupportedStrategies extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
+  SupportedEnvKeys extends string = string,
 > {
   /**
    * The name of the provider.
    * This is used to identify the provider in the config and logs.
    */
   name: string | undefined;
+
+  /**
+   * Configuration object for the provider.
+   * Contains provider-specific settings like namespace, labels, etc.
+   */
   config: Config;
 
+  /**
+   * Optional logger instance for provider operations.
+   * Used for debugging and diagnostic output.
+   */
   logger?: BaseLogger;
 
   /**
@@ -40,8 +69,30 @@ export interface BaseProvider<
    */
   readonly targetKind: string;
 
+  /**
+   * List of injection strategy kinds supported by this provider.
+   * Must match the SupportedStrategies type parameter.
+   *
+   * @example ['env', 'volume']
+   */
   readonly supportedStrategies: SupportedStrategies[];
 
+  /**
+   * Optional list of keys available for the 'env' injection strategy.
+   * These keys define what fields can be injected when using the 'env' strategy kind.
+   * For example, a BasicAuthSecretProvider might support 'username' and 'password' keys.
+   *
+   * @example ['username', 'password']
+   */
+  readonly supportedEnvKeys?: SupportedEnvKeys[];
+
+  /**
+   * Optional method to merge multiple prepared effects into a single effect.
+   * Used when multiple secrets target the same resource and can be combined.
+   *
+   * @param effects - Array of effects to merge
+   * @returns Merged array of effects
+   */
   mergeSecrets?(effects: PreparedEffect[]): PreparedEffect[];
 
   /**
@@ -67,26 +118,68 @@ export interface BaseProvider<
   readonly allowMerge?: boolean;
 }
 
+/**
+ * Union type of all possible effects that can be prepared by a provider.
+ * Effects represent actions to be taken during `kubricate secret apply`.
+ */
 export type PreparedEffect = CustomEffect | KubectlEffect;
 
+/**
+ * Base interface for all provider effects.
+ * Effects encapsulate actions that provision secrets into the cluster or backend.
+ *
+ * @template Type - String literal type identifying the effect type
+ * @template T - The value payload type for this effect
+ */
 export interface BaseEffect<Type extends string, T = unknown> {
+  /**
+   * Discriminator field identifying the effect type.
+   */
   type: Type;
+
+  /**
+   * The effect payload/value to be applied.
+   */
   value: T;
 
-  // Metadata for the effect, refactor later
+  /**
+   * Name of the provider that created this effect.
+   * Used for diagnostics and conflict detection.
+   */
   providerName: string | undefined;
-  secretName?: string; // Use for diagnostics
+
+  /**
+   * Name of the secret this effect is associated with.
+   * Used for diagnostics and error reporting.
+   */
+  secretName?: string;
 }
+
+/**
+ * Custom effect type for provider-specific actions.
+ * Used for effects that don't map directly to kubectl apply.
+ *
+ * @template T - The custom value payload type
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-explicit-any
 export interface CustomEffect<T extends object = any> extends BaseEffect<'custom', T> {}
 
 /**
  * KubectlEffect is used to apply a value to a resource using kubectl.
  * This will apply automatically to the resource when it is created.
+ *
+ * @template T - The Kubernetes resource object type
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type
 export interface KubectlEffect<T extends object = any> extends BaseEffect<'kubectl', T> {}
 
+/**
+ * Represents a single secret injection from a provider into a Kubernetes resource.
+ * Used during manifest generation to apply secrets at the correct paths.
+ *
+ * @template ResourceId - Type of the resource identifier
+ * @template Path - Type of the target path string
+ */
 export interface ProviderInjection<ResourceId extends string = string, Path extends string = string> {
   /**
    * A stable identifier for the provider instance.
@@ -94,7 +187,8 @@ export interface ProviderInjection<ResourceId extends string = string, Path exte
   providerId: string;
 
   /**
-   * Provider Instance use for get injectionPayload
+   * Provider instance used to get injection payload.
+   * Must implement getInjectionPayload() method.
    */
   provider: BaseProvider;
   /**

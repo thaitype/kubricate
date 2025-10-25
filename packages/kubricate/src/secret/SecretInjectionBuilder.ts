@@ -6,9 +6,9 @@ import type { FallbackIfNever } from '../types.js';
 /**
  * Extract strategy options for a specific kind, enabling proper type narrowing
  */
-type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind']> = FallbackIfNever<
-  Omit<Extract<SecretInjectionStrategy, { kind: K }>, 'kind'>,
-  SecretInjectionStrategy
+type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind'], Key extends string> = FallbackIfNever<
+  Omit<Extract<SecretInjectionStrategy<Key>, { kind: K }>, 'kind'>,
+  SecretInjectionStrategy<Key>
 >;
 
 /**
@@ -20,7 +20,10 @@ type StrategyOptionsForKind<K extends SecretInjectionStrategy['kind']> = Fallbac
  *     .intoResource('my-deployment'); // Optional
  */
 
-export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind']> {
+export class SecretInjectionBuilder<
+  Kinds extends SecretInjectionStrategy['kind'] = SecretInjectionStrategy['kind'],
+  EnvKey extends string = string,
+> {
   private strategy?: SecretInjectionStrategy;
   private resourceIdOverride?: string;
   /**
@@ -79,9 +82,9 @@ export class SecretInjectionBuilder<Kinds extends SecretInjectionStrategy['kind'
    *   injector.secrets('APP_SECRET').inject(); // uses first provider-supported default
    */
   inject(): this;
-  inject<K extends Kinds>(kind: K, strategyOptions?: StrategyOptionsForKind<K>): this;
+  inject<K extends Kinds>(kind: K, strategyOptions?: StrategyOptionsForKind<K, EnvKey>): this;
 
-  inject<K extends Kinds>(kind?: K, strategyOptions?: StrategyOptionsForKind<K>): this {
+  inject<K extends Kinds>(kind?: K, strategyOptions?: StrategyOptionsForKind<K, EnvKey>): this {
     if (kind === undefined) {
       // no arguments provided
       if (this.provider.supportedStrategies.length !== 1) {
