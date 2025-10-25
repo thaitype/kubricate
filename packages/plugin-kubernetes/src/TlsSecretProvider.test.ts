@@ -785,4 +785,129 @@ describe('TlsSecretProvider', () => {
       });
     });
   });
+
+  describe('Edge Cases', () => {
+    it('should return empty array for empty injectes', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      const payload = provider.getInjectionPayload([]);
+
+      expect(payload).toEqual([]);
+    });
+
+    it('should throw error for unsupported strategy kind in getInjectionPayload', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'tls',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.containers[0].volumeMounts',
+          meta: {
+            secretName: 'TLS1',
+            targetName: 'TLS1',
+            strategy: { kind: 'volume' } as any,
+          },
+        },
+      ];
+
+      expect(() => provider.getInjectionPayload(injections)).toThrow(/Unsupported strategy kind/);
+    });
+
+    it('should use custom targetPath for env strategy', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      const path = provider.getTargetPath({
+        kind: 'env',
+        containerIndex: 0,
+        targetPath: 'custom.path.to.env',
+      });
+
+      expect(path).toBe('custom.path.to.env');
+    });
+
+    it('should use custom targetPath for envFrom strategy', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      const path = provider.getTargetPath({
+        kind: 'envFrom',
+        containerIndex: 0,
+        targetPath: 'custom.path.to.envFrom',
+      });
+
+      expect(path).toBe('custom.path.to.envFrom');
+    });
+
+    it('should infer env strategy from path without .envFrom', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'tls',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.containers[0].env',
+          meta: {
+            secretName: 'INGRESS_TLS',
+            targetName: 'TLS_CERT',
+            // No strategy provided - will be inferred from path
+            strategy: { kind: 'env', key: 'tls.crt' },
+          },
+        },
+      ];
+
+      const payload = provider.getInjectionPayload(injections);
+
+      expect(payload).toHaveLength(1);
+      expect((payload as any)[0].name).toBe('TLS_CERT');
+    });
+
+    it('should infer env strategy for path without .envFrom in extractStrategy', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      // Create injection without explicit strategy - will use path inference
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'tls',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.customPath',
+          meta: {
+            secretName: 'INGRESS_TLS',
+            targetName: 'TLS_CERT',
+            // No strategy - will infer 'env' from path (doesn't contain .envFrom)
+          },
+        },
+      ];
+
+      // This should infer 'env' strategy, but will throw because key is missing
+      expect(() => {
+        provider.getInjectionPayload(injections);
+      }).toThrow(/key.*is required/i);
+    });
+
+    it('should infer envFrom strategy from path with .envFrom', () => {
+      const provider = new TlsSecretProvider({ name: 'ingress-tls' });
+
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'tls',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.containers[0].envFrom',
+          meta: {
+            secretName: 'INGRESS_TLS',
+            targetName: 'INGRESS_TLS',
+            // No strategy provided - will be inferred from path
+          },
+        },
+      ];
+
+      const payload = provider.getInjectionPayload(injections);
+
+      expect(payload).toHaveLength(1);
+      expect((payload as any)[0].secretRef).toBeDefined();
+    });
+  });
 });

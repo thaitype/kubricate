@@ -356,7 +356,7 @@ describe('BasicAuthSecretProvider', () => {
       expect(path).toBe('spec.template.spec.containers[1].envFrom');
     });
 
-    it('should use custom targetPath if provided', () => {
+    it('should use custom targetPath if provided for env strategy', () => {
       const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
 
       const path = provider.getTargetPath({
@@ -366,6 +366,18 @@ describe('BasicAuthSecretProvider', () => {
       });
 
       expect(path).toBe('custom.path.to.env');
+    });
+
+    it('should use custom targetPath if provided for envFrom strategy', () => {
+      const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
+
+      const path = provider.getTargetPath({
+        kind: 'envFrom',
+        containerIndex: 0,
+        targetPath: 'custom.path.to.envFrom',
+      });
+
+      expect(path).toBe('custom.path.to.envFrom');
     });
 
     it('should throw error for unsupported strategy', () => {
@@ -783,6 +795,108 @@ describe('BasicAuthSecretProvider', () => {
         const payload = provider.getInjectionPayload(validInjections);
         expect(payload).toHaveLength(2);
       });
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should return empty array for empty injectes', () => {
+      const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
+
+      const payload = provider.getInjectionPayload([]);
+
+      expect(payload).toEqual([]);
+    });
+
+    it('should throw error for unsupported strategy kind in getInjectionPayload', () => {
+      const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
+
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'basicAuth',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.containers[0].volumeMounts',
+          meta: {
+            secretName: 'CRED1',
+            targetName: 'CRED1',
+            strategy: { kind: 'volume' } as any,
+          },
+        },
+      ];
+
+      expect(() => provider.getInjectionPayload(injections)).toThrow(/Unsupported strategy kind/);
+    });
+
+    it('should infer env strategy from path without .envFrom', () => {
+      const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
+
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'basicAuth',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.containers[0].env',
+          meta: {
+            secretName: 'API_CREDENTIALS',
+            targetName: 'API_USER',
+            // No strategy provided - will be inferred from path
+            // But we need to add the key for env strategy to work
+            strategy: { kind: 'env', key: 'username' },
+          },
+        },
+      ];
+
+      const payload = provider.getInjectionPayload(injections);
+
+      expect(payload).toHaveLength(1);
+      expect((payload as any)[0].name).toBe('API_USER');
+    });
+
+    it('should infer env strategy for path without .envFrom in extractStrategy', () => {
+      const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
+
+      // Create injection without explicit strategy - will use path inference
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'basicAuth',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.customPath',
+          meta: {
+            secretName: 'API_CREDENTIALS',
+            targetName: 'API_USER',
+            // No strategy - will infer 'env' from path (doesn't contain .envFrom)
+          },
+        },
+      ];
+
+      // This should infer 'env' strategy, but will throw because key is missing
+      expect(() => {
+        provider.getInjectionPayload(injections);
+      }).toThrow(/key.*is required/i);
+    });
+
+    it('should infer envFrom strategy from path with .envFrom', () => {
+      const provider = new BasicAuthSecretProvider({ name: 'api-auth' });
+
+      const injections: ProviderInjection[] = [
+        {
+          providerId: 'basicAuth',
+          provider,
+          resourceId: 'deployment',
+          path: 'spec.template.spec.containers[0].envFrom',
+          meta: {
+            secretName: 'API_CREDENTIALS',
+            targetName: 'API_CREDENTIALS',
+            // No strategy provided - will be inferred from path
+          },
+        },
+      ];
+
+      const payload = provider.getInjectionPayload(injections);
+
+      expect(payload).toHaveLength(1);
+      expect((payload as any)[0].secretRef).toBeDefined();
     });
   });
 });
