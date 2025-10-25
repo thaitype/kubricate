@@ -555,6 +555,67 @@ describe('SshAuthSecretProvider', () => {
   });
 
   describe('Strategy Validation', () => {
+    it('should return empty array when no injections provided', () => {
+      const provider = new SshAuthSecretProvider({ name: 'test' });
+      const payload = provider.getInjectionPayload([]);
+      expect(payload).toEqual([]);
+    });
+
+    it('should infer strategy from path when meta.strategy is missing (envFrom)', () => {
+      const provider = new SshAuthSecretProvider({ name: 'test' });
+      const injectionWithoutMeta = {
+        providerId: 'ssh',
+        provider,
+        resourceId: 'dep',
+        path: 'spec.template.spec.containers[0].envFrom',
+        meta: {
+          secretName: 'KEY',
+          targetName: 'KEY',
+          // No strategy property
+        },
+      } as any;
+
+      // Should infer 'envFrom' from path
+      const payload = provider.getInjectionPayload([injectionWithoutMeta]);
+      expect(payload).toHaveLength(1);
+      expect(payload[0]).toHaveProperty('secretRef');
+    });
+
+    it('should infer env strategy from path when meta.strategy is missing and path does not contain envFrom', () => {
+      const provider = new SshAuthSecretProvider({ name: 'test' });
+      const injectionWithoutMeta = {
+        providerId: 'ssh',
+        provider,
+        resourceId: 'dep',
+        path: 'spec.template.spec.containers[0].env',
+        meta: {
+          secretName: 'KEY',
+          targetName: 'SSH_KEY',
+          // No strategy property, and path doesn't have '.envFrom'
+        },
+      } as any;
+
+      // Should infer 'env' from path (fallback)
+      expect(() => provider.getInjectionPayload([injectionWithoutMeta])).toThrow(/key.*is required/i);
+    });
+
+    it('should throw for unsupported strategy kind', () => {
+      const provider = new SshAuthSecretProvider({ name: 'test' });
+      const invalidInjection = {
+        providerId: 'ssh',
+        provider,
+        resourceId: 'dep',
+        path: 'custom.path',
+        meta: {
+          secretName: 'KEY',
+          targetName: 'KEY',
+          strategy: { kind: 'volume' }, // Not supported
+        },
+      } as any;
+
+      expect(() => provider.getInjectionPayload([invalidInjection])).toThrow(/Unsupported strategy kind: volume/);
+    });
+
     it('should throw error when env and envFrom strategies are mixed', () => {
       const provider = new SshAuthSecretProvider({ name: 'git-ssh', namespace: 'default' });
 
@@ -750,7 +811,7 @@ describe('SshAuthSecretProvider', () => {
       expect(path).toBe('spec.template.spec.containers[1].envFrom');
     });
 
-    it('should honor custom targetPath', () => {
+    it('should honor custom targetPath for env strategy', () => {
       const provider = new SshAuthSecretProvider({ name: 'git-ssh' });
 
       const path = provider.getTargetPath({
@@ -760,6 +821,18 @@ describe('SshAuthSecretProvider', () => {
       });
 
       expect(path).toBe('custom.path.to.env');
+    });
+
+    it('should honor custom targetPath for envFrom strategy', () => {
+      const provider = new SshAuthSecretProvider({ name: 'git-ssh' });
+
+      const path = provider.getTargetPath({
+        kind: 'envFrom',
+        containerIndex: 0,
+        targetPath: 'custom.path.to.envFrom',
+      });
+
+      expect(path).toBe('custom.path.to.envFrom');
     });
 
     it('should throw error for unsupported strategy kind', () => {
@@ -809,6 +882,18 @@ describe('SshAuthSecretProvider', () => {
       const id = provider.getEffectIdentifier(effect);
 
       expect(id).toBe('default/git-ssh');
+    });
+
+    it('should handle missing metadata in getEffectIdentifier', () => {
+      const provider = new SshAuthSecretProvider({ name: 'test' });
+      const effect = {
+        type: 'kubectl' as const,
+        secretName: 'KEY',
+        providerName: 'ssh',
+        value: {}, // Empty value - no metadata
+      };
+      const id = provider.getEffectIdentifier(effect);
+      expect(id).toBe('default/undefined');
     });
   });
 
