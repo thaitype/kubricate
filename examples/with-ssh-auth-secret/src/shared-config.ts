@@ -1,3 +1,3 @@
 export const config = {
-  namespace: 'default',
+  namespace: 'kbr-with-ssh-auth-secret',
 } as const;
