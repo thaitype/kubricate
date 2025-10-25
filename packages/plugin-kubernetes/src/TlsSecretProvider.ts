@@ -34,6 +34,7 @@ export interface TlsSecretProviderConfig {
 }
 
 type SupportedStrategies = 'env' | 'envFrom';
+type SuppoertedEnvKeys = 'tls.crt' | 'tls.key';
 
 /**
  * TlsSecretProvider is a provider that uses Kubernetes TLS secrets.
@@ -43,7 +44,7 @@ type SupportedStrategies = 'env' | 'envFrom';
  *
  * @see https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets
  */
-export class TlsSecretProvider implements BaseProvider<TlsSecretProviderConfig, SupportedStrategies> {
+export class TlsSecretProvider implements BaseProvider<TlsSecretProviderConfig, SupportedStrategies, SuppoertedEnvKeys> {
   readonly allowMerge = true;
   readonly secretType = 'Kubernetes.Secret.Tls';
 
@@ -51,6 +52,7 @@ export class TlsSecretProvider implements BaseProvider<TlsSecretProviderConfig, 
   logger?: BaseLogger;
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env', 'envFrom'];
+  readonly supportedEnvKeys: SuppoertedEnvKeys[] = ['tls.crt', 'tls.key'];
 
   constructor(public config: TlsSecretProviderConfig) {}
 
