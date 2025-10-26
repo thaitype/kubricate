@@ -41,10 +41,6 @@ export function kubeModel<T extends AnyClass>(
 ): NonNullable<WithTypeMeta<ConstructorParameters<T>[0]>> {
   const instance = new type(config);
 
-  if (instance === undefined) {
-    throw new Error(`[kubeModel] ${type.name} returned undefined. Ensure the constructor is correctly implemented.`);
-  }
-
   if (typeof instance.toJSON !== 'function') {
     throw new Error(
       `[kubeModel] ${type.name} does not implement .toJSON(). This function only supports kubernetes-models.`

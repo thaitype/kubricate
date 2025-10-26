@@ -79,4 +79,46 @@ describe('EnvConnector', () => {
     connector.setWorkingDir('/custom/dir');
     expect(connector.getEnvFilePath()).toBe(path.join('/custom/dir', '.env'));
   });
+
+  it('returns undefined for getWorkingDir() when not set', () => {
+    const connector = new EnvConnector();
+    expect(connector.getWorkingDir()).toBeUndefined();
+  });
+
+  it('returns the working directory when set', () => {
+    const connector = new EnvConnector({ workingDir: '/test/dir' });
+    expect(connector.getWorkingDir()).toBe('/test/dir');
+  });
+
+  it('parses valid flat object JSON from environment variable', async () => {
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    process.env['KUBRICATE_SECRET_JSON_OBJ'] = '{"key1":"value1","key2":"value2","key3":123}';
+    const connector = new EnvConnector();
+    await connector.load(['JSON_OBJ']);
+    expect(connector.get('JSON_OBJ')).toEqual({ key1: 'value1', key2: 'value2', key3: 123 });
+  });
+
+  it('parses flat object with boolean and null values', async () => {
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    process.env['KUBRICATE_SECRET_COMPLEX'] = '{"enabled":true,"count":42,"name":"test","empty":null}';
+    const connector = new EnvConnector();
+    await connector.load(['COMPLEX']);
+    expect(connector.get('COMPLEX')).toEqual({ enabled: true, count: 42, name: 'test', empty: null });
+  });
+
+  it('keeps array as string fallback', async () => {
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    process.env['KUBRICATE_SECRET_ARRAY'] = '["item1","item2"]';
+    const connector = new EnvConnector();
+    await connector.load(['ARRAY']);
+    expect(connector.get('ARRAY')).toBe('["item1","item2"]');
+  });
+
+  it('keeps nested object as string fallback', async () => {
+    // eslint-disable-next-line turbo/no-undeclared-env-vars
+    process.env['KUBRICATE_SECRET_NESTED'] = '{"outer":{"inner":"value"}}';
+    const connector = new EnvConnector();
+    await connector.load(['NESTED']);
+    expect(connector.get('NESTED')).toBe('{"outer":{"inner":"value"}}');
+  });
 });
