@@ -1,6 +1,7 @@
 # 💡 Feature Request / Enhancement Proposal
 
 > Use this template for proposing new features, improvements, or architectural changes.
+# Issue Title: [Short, descriptive title of the feature]
 
 ## 🧠 Summary
 <!-- Short summary of the feature or enhancement -->
