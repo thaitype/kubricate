@@ -25,11 +25,13 @@ describe('defineConfig', () => {
   it('should preserve all config properties', () => {
     const config = {
       stacks: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         myStack: {} as any,
       },
       secret: {
         secretSpec: {
           addSecret: () => {},
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
       },
       generate: {

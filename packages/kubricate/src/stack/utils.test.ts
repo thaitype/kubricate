@@ -93,6 +93,7 @@ describe('buildComposerFromObject', () => {
 
     const composer = buildComposerFromObject(resources);
     const built = composer.build();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const resource = built.statefulSet as any;
 
     expect(resource).toEqual(resources.statefulSet);
