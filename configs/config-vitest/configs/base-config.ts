@@ -7,6 +7,11 @@ export const baseConfig = defineConfig({
     passWithNoTests: true,
     coverage: {
       provider: 'istanbul',
+      exclude: [
+        '**/tests/**',
+        '**/configs/**',
+        '**/tools/**',
+      ],
       reporter: [
         [
           'json',
