@@ -15,6 +15,17 @@ class NoToJSONModel {
   constructor(public config: any) {}
 }
 
+class ModelWithValidate {
+  validateCalled = false;
+  constructor(public config: any) {}
+  toJSON() {
+    return { ...this.config, kind: 'ModelWithValidate', validateCalled: this.validateCalled };
+  }
+  validate() {
+    this.validateCalled = true;
+  }
+}
+
 describe('kubeModel', () => {
   it('should convert class instance to plain object using toJSON()', () => {
     const result = kubeModel(MockModel, {
@@ -44,5 +55,13 @@ describe('kubeModel', () => {
     result.metadata.name = 'mutated';
 
     expect(input.metadata.name).toBe('original');
+  });
+
+  it('should call validate() method if it exists on the instance', () => {
+    const result = kubeModel(ModelWithValidate, {
+      metadata: { name: 'test' },
+    });
+
+    expect(result.validateCalled).toBe(true);
   });
 });
