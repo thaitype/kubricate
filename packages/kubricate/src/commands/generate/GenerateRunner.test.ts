@@ -33,9 +33,7 @@ describe('GenerateRunner', () => {
     ...overrides,
   });
 
-  const createGenerateOptions = (
-    overrides?: Partial<ProjectGenerateOptions>
-  ): Required<ProjectGenerateOptions> => ({
+  const createGenerateOptions = (overrides?: Partial<ProjectGenerateOptions>): Required<ProjectGenerateOptions> => ({
     outputDir: 'output',
     outputMode: 'stack',
     cleanOutputDir: true,
@@ -55,13 +53,7 @@ describe('GenerateRunner', () => {
         createFile('output/db.yml', 'db.statefulset', 'kind: StatefulSet\n---\n'),
       ];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -73,13 +65,7 @@ describe('GenerateRunner', () => {
     it('should create necessary directories', async () => {
       const files = [createFile('output/nested/dir/file.yml', 'app.deployment', 'content')];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -133,13 +119,7 @@ describe('GenerateRunner', () => {
     });
 
     it('should handle empty file list', async () => {
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        [],
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), [], mockLogger, fileSystem);
 
       await runner.run();
 
@@ -153,13 +133,7 @@ describe('GenerateRunner', () => {
         createFile('output/db.yml', 'db.statefulset', 'content2'),
       ];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -279,13 +253,7 @@ describe('GenerateRunner', () => {
     it('should create parent directories recursively', async () => {
       const files = [createFile('output/a/b/c/file.yml', 'app.deployment', 'content')];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -298,9 +266,17 @@ describe('GenerateRunner', () => {
   describe('integration scenarios', () => {
     it('should handle complete Kubernetes manifest generation workflow', async () => {
       const files = [
-        createFile('output/app/Deployment_deployment.yml', 'app.deployment', 'apiVersion: apps/v1\nkind: Deployment\n---\n'),
+        createFile(
+          'output/app/Deployment_deployment.yml',
+          'app.deployment',
+          'apiVersion: apps/v1\nkind: Deployment\n---\n'
+        ),
         createFile('output/app/Service_service.yml', 'app.service', 'apiVersion: v1\nkind: Service\n---\n'),
-        createFile('output/db/StatefulSet_statefulset.yml', 'db.statefulset', 'apiVersion: apps/v1\nkind: StatefulSet\n---\n'),
+        createFile(
+          'output/db/StatefulSet_statefulset.yml',
+          'db.statefulset',
+          'apiVersion: apps/v1\nkind: StatefulSet\n---\n'
+        ),
       ];
 
       const runner = new GenerateRunner(
@@ -385,13 +361,7 @@ describe('GenerateRunner', () => {
         createFile('output/db/file.yml', 'db.statefulset', 'db content'),
       ];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -402,13 +372,7 @@ describe('GenerateRunner', () => {
     it('should handle empty content', async () => {
       const files = [createFile('output/empty.yml', 'app.deployment', '')];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -419,13 +383,7 @@ describe('GenerateRunner', () => {
       const longPath = 'output/' + 'a/'.repeat(10) + 'file.yml';
       const files = [createFile(longPath, 'app.deployment', 'content')];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -435,13 +393,7 @@ describe('GenerateRunner', () => {
     it('should show singular form for one file', async () => {
       const files = [createFile('output/app.yml', 'app.deployment', 'content')];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 
@@ -454,13 +406,7 @@ describe('GenerateRunner', () => {
         createFile('db.yml', 'db.statefulset', 'content2'),
       ];
 
-      const runner = new GenerateRunner(
-        createOptions(),
-        createGenerateOptions(),
-        files,
-        mockLogger,
-        fileSystem
-      );
+      const runner = new GenerateRunner(createOptions(), createGenerateOptions(), files, mockLogger, fileSystem);
 
       await runner.run();
 

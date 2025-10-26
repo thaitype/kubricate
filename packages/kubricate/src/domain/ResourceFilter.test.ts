@@ -44,11 +44,7 @@ describe('ResourceFilter', () => {
 
     it('should filter by multiple stack IDs', () => {
       const filter = new ResourceFilter();
-      const files = [
-        createFile('app.deployment'),
-        createFile('db.statefulset'),
-        createFile('cache.deployment'),
-      ];
+      const files = [createFile('app.deployment'), createFile('db.statefulset'), createFile('cache.deployment')];
 
       const result = filter.filter(files, ['app', 'cache']);
 
@@ -242,11 +238,7 @@ describe('ResourceFilter', () => {
 
     it('should track multiple matched filters', () => {
       const filter = new ResourceFilter();
-      const files = [
-        createFile('app.deployment'),
-        createFile('app.service'),
-        createFile('db.statefulset'),
-      ];
+      const files = [createFile('app.deployment'), createFile('app.service'), createFile('db.statefulset')];
 
       const result = filter.getFilterInfo(files, ['app', 'db.statefulset']);
 

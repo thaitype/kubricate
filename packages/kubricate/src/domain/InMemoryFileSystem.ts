@@ -110,7 +110,8 @@ export class InMemoryFileSystem implements IFileSystem {
     // If it's a directory
     if (this.directories.has(normalized)) {
       // Check if recursive is required
-      const hasChildren = Array.from(this.files.keys()).some(f => f.startsWith(normalized + '/')) ||
+      const hasChildren =
+        Array.from(this.files.keys()).some(f => f.startsWith(normalized + '/')) ||
         Array.from(this.directories).some(d => d.startsWith(normalized + '/') && d !== normalized);
 
       if (hasChildren && !options?.recursive) {

@@ -122,11 +122,7 @@ export class ResourceFilter {
    * @param resourceIds - All available resource IDs
    * @returns Error with detailed message
    */
-  private createFilterError(
-    unmatchedFilters: string[],
-    stackIds: Set<string>,
-    resourceIds: Set<string>
-  ): Error {
+  private createFilterError(unmatchedFilters: string[], stackIds: Set<string>, resourceIds: Set<string>): Error {
     const stacksList = Array.from(stackIds).sort().join('\n     - ');
     const resourcesList = Array.from(resourceIds).sort().join('\n     - ');
 

@@ -141,12 +141,7 @@ describe('YamlRenderer', () => {
 
     it('should always append document separator', () => {
       const renderer = new YamlRenderer();
-      const resources = [
-        { kind: 'Service' },
-        { kind: 'Deployment' },
-        { kind: 'ConfigMap' },
-        {},
-      ];
+      const resources = [{ kind: 'Service' }, { kind: 'Deployment' }, { kind: 'ConfigMap' }, {}];
 
       for (const resource of resources) {
         const result = renderer.renderToYaml(resource);
@@ -229,18 +224,18 @@ describe('YamlRenderer', () => {
         );
         expect(result1).toContain('app/');
 
-        const result2 = renderer.resolveOutputPath(createResource('db', 'statefulset', 'StatefulSet'), 'resource', false);
+        const result2 = renderer.resolveOutputPath(
+          createResource('db', 'statefulset', 'StatefulSet'),
+          'resource',
+          false
+        );
         expect(result2).toContain('db/');
       });
 
       it('should include kind and resource ID in filename', () => {
         const renderer = new YamlRenderer();
 
-        const result = renderer.resolveOutputPath(
-          createResource('mystack', 'myresource', 'MyKind'),
-          'resource',
-          false
-        );
+        const result = renderer.resolveOutputPath(createResource('mystack', 'myresource', 'MyKind'), 'resource', false);
         expect(result).toBe('mystack/MyKind_myresource.yml');
       });
     });
@@ -297,7 +292,11 @@ describe('YamlRenderer', () => {
       it('should handle stack IDs with special characters', () => {
         const renderer = new YamlRenderer();
 
-        const result = renderer.resolveOutputPath(createResource('my-app-v2', 'deployment', 'Deployment'), 'stack', false);
+        const result = renderer.resolveOutputPath(
+          createResource('my-app-v2', 'deployment', 'Deployment'),
+          'stack',
+          false
+        );
         expect(result).toBe('my-app-v2.yml');
       });
 
