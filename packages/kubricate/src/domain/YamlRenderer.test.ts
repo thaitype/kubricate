@@ -282,6 +282,7 @@ describe('YamlRenderer', () => {
         const renderer = new YamlRenderer();
         const resource = createResource('app', 'deployment', 'Deployment');
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(() => renderer.resolveOutputPath(resource, 'invalid' as any, false)).toThrow(
           'Unknown output mode: invalid'
         );
