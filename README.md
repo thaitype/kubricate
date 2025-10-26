@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/thaitype/kubricate">
-    <img src="https://i.ibb.co/hJTg9vhs/kubricate-logo.png" alt="kubricate-logo" width="120" />
+    <img src="https://www.thadaw.com/images/kubricate-logo.png" alt="kubricate-logo" width="120" />
   </a>
 </p>
 
