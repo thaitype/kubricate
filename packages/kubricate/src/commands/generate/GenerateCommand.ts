@@ -5,6 +5,7 @@ import { merge } from 'lodash-es';
 
 import type { BaseLogger } from '@kubricate/core';
 
+import { ResourceFilter } from '../../domain/ResourceFilter.js';
 import { MARK_CHECK, MARK_NODE, MARK_TREE_END, MARK_TREE_LEAF } from '../../internal/constant.js';
 import type { GlobalConfigOptions } from '../../internal/types.js';
 import { extractStackInfoFromConfig, type StackInfo } from '../../internal/utils.js';
@@ -86,49 +87,8 @@ export class GenerateCommand {
   }
 
   filterResources(renderedFiles: RenderedFile[], filters: string[]): RenderedFile[] {
-    if (filters.length === 0) return renderedFiles;
-
-    const filterSet = new Set(filters);
-    const matchedFilters = new Set<string>();
-
-    const stackIds = new Set<string>();
-    const fullResourceIds = new Set<string>();
-
-    const filtered = renderedFiles.filter(file => {
-      const originalPath = file.originalPath; // e.g., myApp.deployment
-      const [stackId] = originalPath.split('.');
-
-      stackIds.add(stackId);
-      fullResourceIds.add(originalPath);
-
-      const matched = filterSet.has(stackId) || filterSet.has(originalPath);
-
-      if (matched) {
-        if (filterSet.has(stackId)) matchedFilters.add(stackId);
-        if (filterSet.has(originalPath)) matchedFilters.add(originalPath);
-      }
-
-      return matched;
-    });
-
-    const unmatchedFilters = filters.filter(f => !matchedFilters.has(f));
-
-    if (unmatchedFilters.length > 0) {
-      const stacksList = Array.from(stackIds).sort().join('\n     - ');
-      const resourcesList = Array.from(fullResourceIds).sort().join('\n     - ');
-      const stacksSection = stackIds.size > 0 ? `  • Stacks: \n` + `     - ${stacksList}\n` : '';
-      const resourcesSection = fullResourceIds.size > 0 ? `  • Resources: \n` + `     - ${resourcesList}\n` : '';
-
-      throw new Error(
-        `The following filters did not match any resource: ${unmatchedFilters.join(', ')}.\n\n` +
-          `Available filters:\n` +
-          stacksSection +
-          resourcesSection +
-          `\nPlease check your --filter values and try again.`
-      );
-    }
-
-    return filtered;
+    const resourceFilter = new ResourceFilter();
+    return resourceFilter.filter(renderedFiles, filters);
   }
 
   showStacks(config: KubricateConfig) {
