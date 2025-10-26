@@ -7,9 +7,6 @@ export default defineConfig({
   stacks: {
     ...simpleAppStack,
   },
-  generate: {
-    outputMode: 'resource',
-  },
   secret: {
     secretSpec: secretManager,
     conflict: {

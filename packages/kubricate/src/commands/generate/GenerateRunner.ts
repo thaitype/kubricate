@@ -1,8 +1,9 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import type { BaseLogger } from '@kubricate/core';
 
+import type { IFileSystem } from '../../domain/IFileSystem.js';
+import { NodeFileSystem } from '../../domain/NodeFileSystem.js';
 import { MARK_BULLET, MARK_CHECK } from '../../internal/constant.js';
 import type { GenerateCommandOptions } from './GenerateCommand.js';
 import type { ProjectGenerateOptions } from './types.js';
@@ -14,12 +15,17 @@ export interface RenderedFile {
 }
 
 export class GenerateRunner {
+  private readonly fileSystem: IFileSystem;
+
   constructor(
     public readonly options: GenerateCommandOptions,
     public readonly generateOptions: Required<ProjectGenerateOptions>,
     private readonly renderedFiles: RenderedFile[],
-    protected readonly logger: BaseLogger
-  ) {}
+    protected readonly logger: BaseLogger,
+    fileSystem?: IFileSystem
+  ) {
+    this.fileSystem = fileSystem ?? new NodeFileSystem();
+  }
 
   async run() {
     if (this.generateOptions.cleanOutputDir) {
@@ -47,14 +53,14 @@ export class GenerateRunner {
   }
 
   private cleanOutputDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      fs.rmSync(dir, { recursive: true, force: true });
+    if (this.fileSystem.exists(dir)) {
+      this.fileSystem.remove(dir, { recursive: true, force: true });
     }
   }
 
   private ensureDir(filePath: string) {
     const dir = path.dirname(filePath);
-    fs.mkdirSync(dir, { recursive: true });
+    this.fileSystem.mkdir(dir, { recursive: true });
   }
 
   private processOutput(file: RenderedFile, stats: { written: number }) {
@@ -65,7 +71,7 @@ export class GenerateRunner {
 
     const outputPath = path.join(this.options.root ?? '', file.filePath);
     this.ensureDir(outputPath);
-    fs.writeFileSync(outputPath, file.content);
+    this.fileSystem.writeFile(outputPath, file.content);
     this.logger.log(`${MARK_BULLET} Written: ${outputPath}`);
     stats.written++;
   }
