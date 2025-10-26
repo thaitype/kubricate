@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from 'vitest';
 
 import type { BaseStack } from '../stack/BaseStack.js';
@@ -188,7 +189,7 @@ describe('extractStackInfo', () => {
           config: {},
         },
       },
-    } as ResourceComposer;
+    } as any;
 
     const mockStack = {
       getName: () => 'my-app',
@@ -212,12 +213,12 @@ describe('extractStackInfo', () => {
         service: { entryType: 'object', config: { kind: 'Service' } },
         configmap: { entryType: 'object', config: { kind: 'ConfigMap' } },
       },
-    } as ResourceComposer;
+    } as any;
 
     const mockStack = {
       getName: () => null,
       getComposer: () => mockComposer,
-    } as BaseStack;
+    } as any;
 
     class AppStack {}
     Object.setPrototypeOf(mockStack, AppStack.prototype);
@@ -268,7 +269,7 @@ describe('extractStackInfoFromConfig', () => {
       _entries: {
         deployment: { entryType: 'class', type: Deployment, config: {} },
       },
-    } as ResourceComposer;
+    } as any;
 
     const mockStack = {
       getName: () => 'my-app',
@@ -296,13 +297,13 @@ describe('extractStackInfoFromConfig', () => {
       _entries: {
         deployment: { entryType: 'class', type: Deployment, config: {} },
       },
-    } as ResourceComposer;
+    } as any;
 
     const dbComposer = {
       _entries: {
         statefulset: { entryType: 'class', type: StatefulSet, config: {} },
       },
-    } as ResourceComposer;
+    } as any;
 
     const appStack = {
       getName: () => 'AppStack',
