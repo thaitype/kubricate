@@ -245,7 +245,130 @@ graph LR
 
 ## Key Patterns
 
-### 1. **Base Classes for Extension**
+### 1. **Single Configuration File (`defineConfig`)**
+
+Inspired by **Vite** and **Vitest**, Kubricate uses `defineConfig()` to provide a **single source of truth** for all project configuration. This approach centralizes stacks, secrets, metadata, and generation options in one type-safe file.
+
+```typescript
+// kubricate.config.ts
+import { defineConfig } from 'kubricate';
+import { secretManager } from './src/setup-secrets';
+import { frontend, backend } from './src/stacks';
+
+export default defineConfig({
+  // All your stacks
+  stacks: {
+    frontend,
+    backend,
+  },
+
+  // Secret management configuration
+  secret: {
+    secretSpec: secretManager,
+    conflict: {
+      strategies: {
+        intraProvider: 'autoMerge',  // Merge secrets within same provider
+        crossProvider: 'error',       // Error on cross-provider conflicts
+        crossManager: 'error',        // Error on cross-manager conflicts
+      },
+    },
+  },
+
+  // Metadata injection settings
+  metadata: {
+    inject: true,                    // Auto-inject Kubricate metadata
+    injectManagedAt: true,           // Timestamp tracking
+    injectResourceHash: true,        // Content hash for drift detection
+    injectVersion: true,             // Kubricate version tracking
+  },
+
+  // Output generation settings
+  generate: {
+    outputType: 'stack',             // 'stack' | 'resource' | 'flat'
+    outputDir: './manifests',
+  },
+});
+```
+
+**Benefits:**
+
+1. **Type Safety**: Full TypeScript autocomplete and validation
+   ```typescript
+   defineConfig({
+     stacks: { myStack },           // ✓ Type-checked
+     unknownOption: true,            // ✗ Compile error
+   });
+   ```
+
+2. **Centralized Discovery**: All configuration in one place
+   - No scattered config files
+   - Easy to understand project structure
+   - Single file to review in code reviews
+
+3. **Framework Integration**: Loaded automatically by CLI
+   ```bash
+   kubricate generate    # Automatically finds kubricate.config.ts
+   kubricate secret apply
+   ```
+
+4. **Flexible Loading**: Uses `unconfig` library for multiple formats
+   - `kubricate.config.ts` (TypeScript, recommended)
+   - `kubricate.config.js` (JavaScript)
+   - `kubricate.config.mjs` (ESM)
+   - Support for `.mts`, `.cjs`, `.cts` variants
+
+5. **Environment-Specific Overrides**: Easy to create variants
+   ```typescript
+   // kubricate.config.prod.ts
+   import baseConfig from './kubricate.config';
+
+   export default defineConfig({
+     ...baseConfig,
+     metadata: {
+       ...baseConfig.metadata,
+       injectManagedAt: false,  // Override for production
+     },
+   });
+   ```
+
+**Design Philosophy:**
+
+Like Vite and Vitest, `defineConfig()` is a simple identity function that returns its input unchanged:
+
+```typescript
+export function defineConfig(config: KubricateConfig): KubricateConfig {
+  return config;
+}
+```
+
+Its purpose is **not** runtime transformation, but rather:
+- Providing TypeScript IntelliSense and type checking
+- Serving as a clear, documented API contract
+- Making configuration files self-documenting
+
+**CLI Integration:**
+
+The CLI automatically discovers and loads the config file:
+
+```mermaid
+graph LR
+    A[CLI Command] -->|unconfig| B[Load kubricate.config.ts]
+    B --> C[Validate Config]
+    C --> D[Extract Stacks]
+    C --> E[Extract Secret Managers]
+    C --> F[Extract Options]
+    D --> G[Execute Command]
+    E --> G
+    F --> G
+```
+
+This pattern ensures that:
+- Users have one place to configure everything
+- The framework has one source to read from
+- Configuration is type-safe and validated early
+- No magic globals or environment variables required
+
+### 2. **Base Classes for Extension**
 
 All plugins extend base classes from `@kubricate/core`:
 
@@ -266,7 +389,7 @@ export class CustomTypeSecretProvider
 }
 ```
 
-### 2. **Effect-Based Side Effects**
+### 3. **Effect-Based Side Effects**
 
 Side effects are represented as data structures (effects) that are executed later:
 
@@ -297,7 +420,7 @@ for (const effect of effects) {
 - Composable (merge, filter, transform effects)
 - Dry-run friendly (show what would happen)
 
-### 3. **Builder Pattern for Configuration**
+### 4. **Builder Pattern for Configuration**
 
 Fluent APIs make configuration readable:
 
@@ -316,7 +439,7 @@ const stack = Stack.fromTemplate(simpleAppTemplate, { name: 'my-app' })
   .override({ service: { spec: { type: 'LoadBalancer' } } });
 ```
 
-### 4. **Template Pattern for Stacks**
+### 5. **Template Pattern for Stacks**
 
 Stacks are created from reusable templates:
 
@@ -339,7 +462,7 @@ const stack = Stack.fromTemplate(simpleAppTemplate, {
 // Framework processes template → generates resources
 ```
 
-### 5. **Merge Strategies for Conflicts**
+### 6. **Merge Strategies for Conflicts**
 
 When multiple secrets target the same resource, merge strategies control behavior:
 
