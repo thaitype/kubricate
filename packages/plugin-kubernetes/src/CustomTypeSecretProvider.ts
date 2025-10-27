@@ -198,6 +198,17 @@ export class CustomTypeSecretProvider implements BaseProvider<CustomTypeSecretPr
         throw new Error(`[CustomTypeSecretProvider] 'key' is required for env injection.`);
       }
 
+      // VALIDATION: Check if key is in allowedKeys (if configured)
+      if (this.config.allowedKeys && this.config.allowedKeys.length > 0) {
+        const allowedKeysSet = new Set(this.config.allowedKeys);
+        if (!allowedKeysSet.has(key)) {
+          throw new Error(
+            `[CustomTypeSecretProvider] Key '${key}' is not allowed. ` +
+              `Allowed keys are: ${this.config.allowedKeys.join(', ')}.`
+          );
+        }
+      }
+
       return {
         name,
         valueFrom: {

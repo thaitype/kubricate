@@ -355,6 +355,32 @@ describe('CustomTypeSecretProvider', () => {
         provider.prepare('API', { api_key: 'abc', invalid1: 'x', invalid2: 'y' });
       }).toThrow(/Invalid keys provided.*invalid1.*invalid2/i);
     });
+
+    test('should throw error when injecting with key not in allowedKeys', () => {
+      const provider = new CustomTypeSecretProvider({
+        name: 'restricted-secret',
+        secretType: 'vendor.com/api',
+        allowedKeys: ['api_key', 'endpoint'],
+      });
+
+      provider.prepare('API', { api_key: 'abc', endpoint: 'https://api.com' });
+
+      expect(() => {
+        provider.getInjectionPayload([
+          {
+            providerId: 'custom',
+            provider,
+            resourceId: 'deployment',
+            path: 'spec.template.spec.containers[0].env',
+            meta: {
+              secretName: 'API',
+              targetName: 'INVALID_KEY',
+              strategy: { kind: 'env', key: 'invalid_key' },
+            },
+          },
+        ]);
+      }).toThrow(/Key 'invalid_key' is not allowed/i);
+    });
   });
 
   describe('Strategy Mixing Validation', () => {

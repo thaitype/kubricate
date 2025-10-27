@@ -35,7 +35,7 @@ const vendorIntegrationApp = Stack.fromTemplate(simpleAppTemplate, {
     c.secrets('VENDOR_API_CONFIG').forName('VENDOR_API_ENDPOINT').inject('env', { key: 'api_endpoint' });
 
     // Inject API timeout from VENDOR_API_CONFIG
-    c.secrets('VENDOR_API_CONFIG').forName('VENDOR_API_TIMEOUT').inject('env', { key: 'api_timeo' });
+    c.secrets('VENDOR_API_CONFIG').forName('VENDOR_API_TIMEOUT').inject('env', { key: 'api_timeout' });
   })
   .override({
     service: {
