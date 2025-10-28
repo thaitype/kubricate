@@ -5,6 +5,7 @@ This document provides an in-depth look at how Kubricate handles secrets from so
 ## Table of Contents
 
 - [Overview](#overview)
+- [Core Components Overview](#core-components-overview)
 - [Core Components](#core-components)
 - [Connector vs Provider](#connector-vs-provider)
 - [SecretManager Orchestration](#secretmanager-orchestration)
@@ -31,6 +32,151 @@ graph LR
 - **Providers** format and deliver secrets (Kubernetes-aware)
 - **SecretManager** orchestrates the flow
 - **SecretsOrchestrator** handles validation, merging, and conflict resolution
+
+## Core Components Overview
+
+Before diving into details, let's understand how the four main components work together in Kubricate's secret management system:
+
+```mermaid
+graph TB
+    subgraph "Plugin Layer (Extensible)"
+        EC[EnvConnector]
+        VC[VaultConnector]
+        AC[AWSConnector]
+        BC[BaseConnector<br/>Interface]
+
+        OP[OpaqueSecretProvider]
+        DP[DockerConfigProvider]
+        TP[TLSSecretProvider]
+        CP[CustomTypeProvider]
+        BP[BaseProvider<br/>Interface]
+
+        EC -.implements.-> BC
+        VC -.implements.-> BC
+        AC -.implements.-> BC
+
+        OP -.implements.-> BP
+        DP -.implements.-> BP
+        TP -.implements.-> BP
+        CP -.implements.-> BP
+    end
+
+    subgraph "Orchestration Layer"
+        SM[SecretManager<br/>Registry & Type Safety]
+        SO[SecretsOrchestrator<br/>Validation & Execution]
+
+        SM -->|1. Register| BC
+        SM -->|2. Register| BP
+        SM -->|3. Declare| Secrets[Secret Declarations]
+
+        SO -->|4. Collect| SM
+        SO -->|5. Validate| BC
+        SO -->|6. Prepare| BP
+        SO -->|7. Merge & Resolve| Effects[PreparedEffect[]]
+    end
+
+    subgraph "External Sources"
+        DotEnv[.env Files]
+        Vault[HashiCorp Vault]
+        AWS[AWS Secrets Manager]
+        Azure[Azure Key Vault]
+    end
+
+    subgraph "Kubernetes Resources"
+        K8sSecret[Secret<br/>kind: Secret]
+        Deployment[Deployment<br/>with env/volumes]
+        Pod[Pod Spec<br/>imagePullSecrets]
+    end
+
+    DotEnv --> EC
+    Vault --> VC
+    AWS --> AC
+    Azure --> AC
+
+    Effects -->|kubectl apply| K8sSecret
+    Effects -->|inject into| Deployment
+    Effects -->|inject into| Pod
+
+    style SM fill:#e1f5ff
+    style SO fill:#fff4e1
+    style BC fill:#f0f0f0
+    style BP fill:#f0f0f0
+    style Effects fill:#d4edda
+```
+
+### Brief Summary
+
+The secret management system is built on **four core components** that work together:
+
+1. **BaseConnector (Interface)** 📥
+   - **Role**: Abstract interface for loading secrets from external sources
+   - **Responsibility**: Define the contract for reading secret values
+   - **Implementations**: `EnvConnector`, `VaultConnector`, `AWSConnector`, etc.
+   - **Key Methods**: `load(names)`, `get(name)`
+
+2. **BaseProvider (Interface)** 📤
+   - **Role**: Abstract interface for formatting secrets as Kubernetes resources
+   - **Responsibility**: Define the contract for converting secret values to K8s manifests
+   - **Implementations**: `OpaqueSecretProvider`, `DockerConfigProvider`, `TLSSecretProvider`, etc.
+   - **Key Methods**: `prepare(name, value)`, `getInjectionPayload(injectes)`, `mergeSecrets(effects)`
+
+3. **SecretManager (Orchestrator)** 🎛️
+   - **Role**: Type-safe registry for connectors, providers, and secret declarations
+   - **Responsibility**:
+     - Register and track connectors/providers
+     - Declare which secrets to load
+     - Maintain default connector/provider
+     - Provide type-safe API
+   - **Key Methods**: `addConnector()`, `addProvider()`, `addSecret()`, `resolveConnector()`, `resolveProvider()`
+
+4. **SecretsOrchestrator (Execution Engine)** ⚙️
+   - **Role**: Central engine that executes the entire secret lifecycle
+   - **Responsibility**:
+     - Validate configuration
+     - Coordinate loading from connectors
+     - Coordinate preparation from providers
+     - Merge effects and resolve conflicts
+     - Return ready-to-execute effects
+   - **Key Methods**: `validate()`, `apply()`, `mergePreparedEffects()`
+
+### How They Work Together
+
+```
+Configuration Phase:
+  User → SecretManager → Register Connectors & Providers → Declare Secrets
+
+Validation Phase:
+  CLI → SecretsOrchestrator.validate() → Check all secrets exist
+
+Execution Phase:
+  CLI → SecretsOrchestrator.apply() → Load (Connectors) → Prepare (Providers) → Merge → Effects
+
+Deployment Phase:
+  Effects → kubectl apply (Secret resources)
+  Effects → Stack injection (env vars, volumes, imagePullSecrets)
+```
+
+### Component Interaction Example
+
+```typescript
+// 1. User configures SecretManager (Registry)
+const manager = new SecretManager()
+  .addConnector('env', new EnvConnector())           // Register connector
+  .addProvider('opaque', new OpaqueSecretProvider()) // Register provider
+  .addSecret({ name: 'DB_PASSWORD' });               // Declare secret
+
+// 2. CLI uses SecretsOrchestrator (Engine)
+const orchestrator = new SecretsOrchestrator({ managers: [manager] });
+
+// 3. Orchestrator coordinates the flow
+await orchestrator.validate();  // Load from EnvConnector
+const effects = await orchestrator.apply(); // Prepare via OpaqueSecretProvider
+
+// 4. Effects are ready for execution
+// effects = [{ type: 'kubectl', value: { kind: 'Secret', data: {...} } }]
+```
+
+Now let's dive into each component in detail:
 
 ## Core Components
 

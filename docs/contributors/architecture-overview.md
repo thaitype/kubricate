@@ -15,7 +15,7 @@ This document provides a comprehensive overview of Kubricate's architecture, exp
 Kubricate is organized as a **pnpm workspace monorepo** using **Turbo** for build orchestration.
 
 ```
-kubricate-3/
+kubricate/
 ├── packages/               # Core packages
 │   ├── kubricate/         # CLI + orchestration
 │   ├── core/              # Base classes & types
