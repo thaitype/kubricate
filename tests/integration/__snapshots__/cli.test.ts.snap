@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CLI output display ('Run no command with --h option') > should display expected output 1`] = `
+"kbr <command>
+
+Commands:
+  kbr generate          Generate a stack into yaml files
+  kbr secret [command]  Manage secrets with SecretManager
+
+Options:
+      --root     Root directory                                         [string]
+      --config   Config file path                                       [string]
+      --verbose  Enable verbose output                                 [boolean]
+      --silent   Suppress all output                                   [boolean]
+      --dry-run  Dry run mode (Not Stable Yet)                         [boolean]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  Show version number                                   [boolean]"
+`;
+
+exports[`CLI output display ('Run no command with --help option') > should display expected output 1`] = `
+"kbr <command>
+
+Commands:
+  kbr generate          Generate a stack into yaml files
+  kbr secret [command]  Manage secrets with SecretManager
+
+Options:
+      --root     Root directory                                         [string]
+      --config   Config file path                                       [string]
+      --verbose  Enable verbose output                                 [boolean]
+      --silent   Suppress all output                                   [boolean]
+      --dry-run  Dry run mode (Not Stable Yet)                         [boolean]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  Show version number                                   [boolean]"
+`;
+
+exports[`CLI output display ('Run no command') > should display expected output 1`] = `
+"Unknown error occurred
+
+"
+`;
