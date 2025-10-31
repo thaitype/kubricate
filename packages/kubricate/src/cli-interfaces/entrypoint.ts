@@ -37,10 +37,9 @@ const errorHelper = (msg: string | undefined, yargs: YargsWithHelper) => {
   if (msg) {
     logError(msg, yargs);
     return msg;
-  } else {
-    console.error('Unknown error occurred');
-    console.log('\n');
   }
+
+  return 'Unknown error occurred';
 };
 
 export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Promise<void> {
