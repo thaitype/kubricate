@@ -35,13 +35,12 @@ const errorHelper = (msg: string | undefined, yargs: YargsWithHelper) => {
 
   // Fallback to default error handling
   if (msg) {
-    console.error(msg);
+    logError(msg, yargs);
+    return msg;
   } else {
-    const errMsg = 'Require <command>';
-    logError(errMsg, yargs);
-    return errMsg;
+    console.error('Unknown error occurred');
+    console.log('\n');
   }
-  console.log('\n');
 };
 
 export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Promise<void> {
@@ -68,7 +67,7 @@ export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Pr
       .help()
       .alias('h', 'help')
       .alias('v', 'version')
-      .demandCommand(1, '')
+      .demandCommand(1, 'Require <command>')
       .fail((msg, err, yargs) => {
         if (err) {
           errorHelper(msg, yargs);
