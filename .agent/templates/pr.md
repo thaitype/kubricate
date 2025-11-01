@@ -1,7 +1,4 @@
-<!--
-Thank you for contributing! Keep the top section short for reviewers.
-Use draft PRs for WIP. Link issues with keywords: "Closes #123", "Fixes #456".
--->
+# Title: <!-- Short, descriptive title of the change -->
 
 ## Summary
 <!-- One or two sentences explaining the change and why it matters. -->
