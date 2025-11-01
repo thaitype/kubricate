@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 // kubectl-executor.ts
-import { writeFile } from 'node:fs/promises';
+import { unlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -26,6 +26,14 @@ export class KubectlExecutor {
     } catch (err) {
       this.logger.error(`❌ kubectl apply failed: ${(err as Error).message}`);
       throw err;
+    } finally {
+      // Clean up temp file for security - prevent unauthorized access to secrets
+      try {
+        await unlink(tempPath);
+        this.logger.debug(`Cleaned up temp file: ${tempPath}`);
+      } catch (cleanupErr) {
+        this.logger.warn(`Failed to clean up temp file ${tempPath}: ${(cleanupErr as Error).message}`);
+      }
     }
   }
 
