@@ -5,6 +5,7 @@ import type { BaseStack } from '../stack/BaseStack.js';
 import type { ResourceComposer, ResourceEntry } from '../stack/ResourceComposer.js';
 import type { KubricateConfig } from '../types.js';
 import {
+  censorSecretPayload,
   extractKindFromResourceEntry,
   extractStackInfo,
   extractStackInfoFromConfig,
@@ -347,5 +348,181 @@ describe('extractStackInfoFromConfig', () => {
     const infos = extractStackInfoFromConfig(config);
 
     expect(infos).toEqual([]);
+  });
+});
+
+describe('censorSecretPayload', () => {
+  it('should censor values in data field', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'my-secret',
+        namespace: 'default',
+      },
+      type: 'Opaque',
+      data: {
+        username: 'YWRtaW4=',
+        password: 'cGFzc3dvcmQxMjM=',
+      },
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.data.username).toBe('***');
+    expect(censored.data.password).toBe('***');
+    expect(censored.metadata.name).toBe('my-secret');
+    expect(censored.kind).toBe('Secret');
+  });
+
+  it('should censor values in stringData field', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'my-secret',
+        namespace: 'default',
+      },
+      type: 'Opaque',
+      stringData: {
+        username: 'admin',
+        password: 'password123',
+      },
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.stringData.username).toBe('***');
+    expect(censored.stringData.password).toBe('***');
+    expect(censored.metadata.name).toBe('my-secret');
+  });
+
+  it('should censor both data and stringData fields', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'my-secret',
+      },
+      data: {
+        key1: 'dmFsdWUx',
+      },
+      stringData: {
+        key2: 'value2',
+      },
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.data.key1).toBe('***');
+    expect(censored.stringData.key2).toBe('***');
+  });
+
+  it('should handle SSH auth secret type', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'deploy-ssh-credentials',
+        namespace: 'default',
+      },
+      type: 'kubernetes.io/ssh-auth',
+      data: {
+        'ssh-privatekey': 'LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0K...',
+        known_hosts: 'ZGVwbG95LXNlcnZlci5leGFtcGxlLmNvbSBzc2gtcnNhIEFBQUFCM056YUMx...',
+      },
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.data['ssh-privatekey']).toBe('***');
+    expect(censored.data['known_hosts']).toBe('***');
+    expect(censored.type).toBe('kubernetes.io/ssh-auth');
+  });
+
+  it('should handle payload without data or stringData fields', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'my-secret',
+      },
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.metadata.name).toBe('my-secret');
+    expect(censored.data).toBeUndefined();
+    expect(censored.stringData).toBeUndefined();
+  });
+
+  it('should not mutate the original payload', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'my-secret',
+      },
+      data: {
+        username: 'YWRtaW4=',
+      },
+    };
+
+    const original = JSON.stringify(payload);
+    censorSecretPayload(payload);
+
+    expect(JSON.stringify(payload)).toBe(original);
+    expect((payload as any).data.username).toBe('YWRtaW4=');
+  });
+
+  it('should handle null payload', () => {
+    const censored = censorSecretPayload(null);
+    expect(censored).toBeNull();
+  });
+
+  it('should handle undefined payload', () => {
+    const censored = censorSecretPayload(undefined);
+    expect(censored).toBeUndefined();
+  });
+
+  it('should handle non-object payload', () => {
+    expect(censorSecretPayload('string')).toBe('string');
+    expect(censorSecretPayload(123)).toBe(123);
+    expect(censorSecretPayload(true)).toBe(true);
+  });
+
+  it('should handle empty data field', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'my-secret',
+      },
+      data: {},
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.data).toEqual({});
+  });
+
+  it('should handle docker config secret type', () => {
+    const payload = {
+      apiVersion: 'v1',
+      kind: 'Secret',
+      metadata: {
+        name: 'docker-registry',
+        namespace: 'default',
+      },
+      type: 'kubernetes.io/dockerconfigjson',
+      data: {
+        '.dockerconfigjson': 'eyJhdXRocyI6eyJyZWdpc3RyeS5leGFtcGxlLmNvbSI6eyJ1c2VybmFtZSI6InVzZXIi...',
+      },
+    };
+
+    const censored = censorSecretPayload(payload) as any;
+
+    expect(censored.data['.dockerconfigjson']).toBe('***');
+    expect(censored.type).toBe('kubernetes.io/dockerconfigjson');
   });
 });
