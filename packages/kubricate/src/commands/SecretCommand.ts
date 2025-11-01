@@ -5,6 +5,7 @@ import { type BaseLogger } from '@kubricate/core';
 import type { KubectlExecutor } from '../executor/kubectl-executor.js';
 import { MARK_CHECK } from '../internal/constant.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
+import { censorSecretPayload } from '../internal/utils.js';
 import type { SecretsOrchestrator } from '../secret/index.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -36,8 +37,9 @@ export class SecretCommand {
         const name = effect.value?.metadata?.name ?? 'unnamed';
         this.logger.info(`Applying secret: ${name}`);
         if (this.options.dryRun) {
+          const censoredPayload = censorSecretPayload(effect.value);
           this.logger.log(
-            c.yellow`${MARK_CHECK} [DRY RUN] Would apply: ${name} with kubectl using payload: ${JSON.stringify(effect.value)}`
+            c.yellow`${MARK_CHECK} [DRY RUN] Would apply: ${name} with kubectl using payload: ${JSON.stringify(censoredPayload)}`
           );
         } else {
           await this.kubectl.apply(effect.value);
