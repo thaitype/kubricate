@@ -1,5 +1,11 @@
 # kubricate
 
+## 0.21.1
+
+### Patch Changes
+
+- b2e0450: fix: Show help when no command
+
 ## 0.21.0
 
 ### Minor Changes
