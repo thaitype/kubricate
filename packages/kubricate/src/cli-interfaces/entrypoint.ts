@@ -18,23 +18,28 @@ type YargsWithHelper = {
   showHelp: () => void;
 };
 
+const logError = (msg: string, yargs: YargsWithHelper) => {
+  console.error(c.red(`\n✖ Error: ${msg}.\n`));
+  console.info(c.cyan(`${MARK_INFO} Check the help for a list of available options.\n`));
+  yargs.showHelp();
+  console.log('\n');
+};
+
 const errorHelper = (msg: string | undefined, yargs: YargsWithHelper) => {
   if (msg?.includes('Unknown argument')) {
     const unknownArg = msg.match(/Unknown argument: (.+)/)?.[1];
-    console.error(c.red(`\n✖ Error: Unknown option "${unknownArg}".\n`));
-    console.info(c.cyan(`${MARK_INFO} Check the help for a list of available options.\n`));
-    yargs.showHelp();
-    console.log('\n');
-    return `Unknown option "${unknownArg}"`;
+    const errMsg = `Unknown option "${unknownArg}"`;
+    logError(errMsg, yargs);
+    return errMsg;
   }
 
   // Fallback to default error handling
   if (msg) {
-    console.error(msg);
-  } else {
-    console.error('Unknown error occurred');
+    logError(msg, yargs);
+    return msg;
   }
-  console.log('\n');
+
+  return 'Unknown error occurred';
 };
 
 export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Promise<void> {
@@ -61,21 +66,14 @@ export function cliEntryPoint(argv: string[], options: CliEntryPointOptions): Pr
       .help()
       .alias('h', 'help')
       .alias('v', 'version')
-      .demandCommand(1, '')
+      .demandCommand(1, 'Require <command>')
       .fail((msg, err, yargs) => {
-        if (!msg && !err) {
-          errorHelper(msg, yargs);
-          return resolve();
-        }
-
-        if (msg) {
-          return reject(new Error(errorHelper(msg, yargs)));
-        }
-
         if (err) {
           errorHelper(msg, yargs);
           return reject(err);
         }
+
+        return reject(new Error(errorHelper(msg, yargs)));
       })
       .strict()
       .parse();
