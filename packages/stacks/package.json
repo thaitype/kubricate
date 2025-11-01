@@ -48,8 +48,7 @@
     "@kubricate/core": "workspace:*",
     "@kubricate/kubernetes-models": "workspace:*",
     "@kubricate/toolkit": "workspace:*",
-    "kubernetes-models": "^4.4.2",
-    "kubricate": "workspace:*"
+    "kubernetes-models": "^4.4.2"
   },
   "description": "A TypeScript framework for building reusable, type-safe Kubernetes infrastructure — without the YAML mess.",
   "keywords": [

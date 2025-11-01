@@ -543,9 +543,6 @@ importers:
       kubernetes-models:
         specifier: ^4.4.2
         version: 4.4.2
-      kubricate:
-        specifier: workspace:*
-        version: link:../kubricate
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*
