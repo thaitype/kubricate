@@ -73,7 +73,12 @@ export class CustomTypeSecretProvider implements BaseProvider<CustomTypeSecretPr
   readonly targetKind = 'Deployment';
   readonly supportedStrategies: SupportedStrategies[] = ['env', 'envFrom'];
 
-  constructor(public config: CustomTypeSecretProviderConfig) {}
+  constructor(public config: CustomTypeSecretProviderConfig) {
+    // Validate secretType is not empty
+    if (!config.secretType || config.secretType.trim().length === 0) {
+      throw new Error('[CustomTypeSecretProvider] secretType cannot be empty');
+    }
+  }
 
   getTargetPath(strategy: SecretInjectionStrategy): string {
     if (strategy.kind === 'env') {

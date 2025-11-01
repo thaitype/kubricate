@@ -1,14 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, expect, test } from 'vitest';
 import { Base64 } from 'js-base64';
+import { describe, expect, test } from 'vitest';
 
 import type { ProviderInjection } from '@kubricate/core';
 
+import type { EnvFromSource } from './BasicAuthSecretProvider.js';
 import { CustomTypeSecretProvider } from './CustomTypeSecretProvider.js';
 import type { EnvVar } from './kubernetes-types.js';
-import type { EnvFromSource } from './BasicAuthSecretProvider.js';
 
 describe('CustomTypeSecretProvider', () => {
+  describe('Configuration Validation', () => {
+    test('should throw error when secretType is empty string', () => {
+      expect(() => {
+        new CustomTypeSecretProvider({
+          name: 'test-secret',
+          secretType: '',
+        });
+      }).toThrow('[CustomTypeSecretProvider] secretType cannot be empty');
+    });
+
+    test('should throw error when secretType is only whitespace', () => {
+      expect(() => {
+        new CustomTypeSecretProvider({
+          name: 'test-secret',
+          secretType: '   ',
+        });
+      }).toThrow('[CustomTypeSecretProvider] secretType cannot be empty');
+    });
+
+    test('should accept valid secretType', () => {
+      expect(() => {
+        new CustomTypeSecretProvider({
+          name: 'test-secret',
+          secretType: 'vendor.com/custom',
+        });
+      }).not.toThrow();
+    });
+  });
+
   describe('Basic Secret Creation', () => {
     test('should create Secret with custom type', () => {
       const provider = new CustomTypeSecretProvider({
