@@ -116,3 +116,35 @@ export function validateId(input: string, subject = 'id'): void {
     throw new Error(`Invalid ${subject} "${input}". Must not exceed 63 characters.`);
   }
 }
+
+/**
+ * Censors secret values in a Kubernetes Secret payload for safe logging.
+ * Replaces all values in the `data` and `stringData` fields with "***".
+ *
+ * @param payload - The Kubernetes Secret object to censor
+ * @returns A new object with censored secret values
+ */
+export function censorSecretPayload(payload: unknown): unknown {
+  if (!payload || typeof payload !== 'object') {
+    return payload;
+  }
+
+  // Create a deep copy to avoid mutating the original
+  const censored = JSON.parse(JSON.stringify(payload));
+
+  // Censor data field (base64-encoded secrets)
+  if (censored.data && typeof censored.data === 'object') {
+    for (const key of Object.keys(censored.data)) {
+      censored.data[key] = '***';
+    }
+  }
+
+  // Censor stringData field (plain-text secrets)
+  if (censored.stringData && typeof censored.stringData === 'object') {
+    for (const key of Object.keys(censored.stringData)) {
+      censored.stringData[key] = '***';
+    }
+  }
+
+  return censored;
+}
