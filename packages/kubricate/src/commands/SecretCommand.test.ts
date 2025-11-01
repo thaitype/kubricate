@@ -48,7 +48,7 @@ describe('SecretCommand', () => {
           type: 'kubernetes.io/ssh-auth',
           data: {
             'ssh-privatekey': 'LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0K...',
-            'known_hosts': 'ZGVwbG95LXNlcnZlci5leGFtcGxlLmNvbSBzc2gtcnNhIEFBQUFCM056YUMx...',
+            known_hosts: 'ZGVwbG95LXNlcnZlci5leGFtcGxlLmNvbSBzc2gtcnNhIEFBQUFCM056YUMx...',
           },
         },
       };
