@@ -1,0 +1,40 @@
+{
+  "name": "@examples/with-custom-type-secret",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "kbr": "kbr",
+    "lint:check": "mono lint:check",
+    "lint:fix": "mono lint:fix",
+    "check-types": "mono check-types"
+  },
+  "peerDependencies": {
+    "@kubernetes-models/base": ">=5.0.1 <6.0.0"
+  },
+  "devDependencies": {
+    "@kubernetes-models/base": "^5.0.1",
+    "@kubricate/config-eslint": "workspace:*",
+    "@kubricate/config-typescript": "workspace:*",
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*"
+  },
+  "dependencies": {
+    "@kubricate/core": "workspace:*",
+    "@kubricate/kubernetes-models": "workspace:*",
+    "@kubricate/plugin-env": "workspace:*",
+    "@kubricate/plugin-kubernetes": "workspace:*",
+    "@kubricate/stacks": "workspace:*",
+    "kubernetes-models": "^4.4.2",
+    "kubricate": "workspace:*"
+  }
+}

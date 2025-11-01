@@ -138,6 +138,46 @@ importers:
         specifier: workspace:*
         version: link:../../tools/mono
 
+  examples/with-custom-type-secret:
+    dependencies:
+      '@kubricate/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@kubricate/kubernetes-models':
+        specifier: workspace:*
+        version: link:../../packages/kubernetes-models
+      '@kubricate/plugin-env':
+        specifier: workspace:*
+        version: link:../../packages/plugin-env
+      '@kubricate/plugin-kubernetes':
+        specifier: workspace:*
+        version: link:../../packages/plugin-kubernetes
+      '@kubricate/stacks':
+        specifier: workspace:*
+        version: link:../../packages/stacks
+      kubernetes-models:
+        specifier: ^4.4.2
+        version: 4.4.2
+      kubricate:
+        specifier: workspace:*
+        version: link:../../packages/kubricate
+    devDependencies:
+      '@kubernetes-models/base':
+        specifier: ^5.0.1
+        version: 5.0.1
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../../tools/mono
+
   examples/with-secret-manager:
     dependencies:
       '@kubricate/core':
