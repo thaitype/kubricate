@@ -1,11 +1,9 @@
-import path from 'node:path';
-
 import c from 'ansis';
 import { cloneDeep, merge } from 'lodash-es';
-import { stringify as yamlStringify } from 'yaml';
 
 import type { BaseLogger } from '@kubricate/core';
 
+import { YamlRenderer } from '../../domain/YamlRenderer.js';
 import { getClassName } from '../../internal/utils.js';
 import type { KubricateConfig, ProjectMetadataOptions } from '../../types.js';
 import { version } from '../../version.js';
@@ -35,12 +33,14 @@ interface KubernetesMetadata {
 
 export class Renderer {
   public readonly metadata: Required<ProjectMetadataOptions>;
+  private readonly yamlRenderer: YamlRenderer;
 
   constructor(
     globalOptions: KubricateConfig,
     private readonly logger: BaseLogger
   ) {
     this.metadata = merge({}, defaultMetadata, globalOptions.metadata);
+    this.yamlRenderer = new YamlRenderer();
   }
 
   injectMetadata(
@@ -99,7 +99,7 @@ export class Renderer {
       for (const [resourceId, resource] of Object.entries(builtResources as Record<string, KubernetesMetadata>)) {
         const kind = resource?.kind || 'UnknownKind';
         const name = resource?.metadata?.name || 'unnamed';
-        const content = yamlStringify(resource) + '---\n';
+        const content = this.yamlRenderer.renderToYaml(resource);
         output.push({ stackName, kind, name, content, id: resourceId, stackId });
       }
     }
@@ -108,19 +108,14 @@ export class Renderer {
   }
 
   resolveOutputPath(resource: RenderedResource, mode: ProjectGenerateOptions['outputMode'], stdout: boolean): string {
-    if (stdout) {
-      // Create canonical name for the resource groped by stackId and resourceId
-      return `${resource.stackId}.${resource.id}`;
-    }
-
-    switch (mode) {
-      case 'flat':
-        return 'stacks.yml';
-      case 'stack':
-        return `${resource.stackId}.yml`;
-      case 'resource':
-        return path.join(resource.stackId, `${resource.kind}_${resource.id}.yml`);
-    }
-    throw new Error(`Unknown output mode: ${mode}`);
+    return this.yamlRenderer.resolveOutputPath(
+      {
+        stackId: resource.stackId,
+        id: resource.id,
+        kind: resource.kind,
+      },
+      mode,
+      stdout
+    );
   }
 }

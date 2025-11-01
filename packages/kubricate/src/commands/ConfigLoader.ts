@@ -4,6 +4,7 @@ import c from 'ansis';
 
 import { type BaseLogger } from '@kubricate/core';
 
+import { ConfigMigrator } from '../domain/ConfigMigrator.js';
 import { getConfig, getMatchConfigFile } from '../internal/load-config.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
 import { validateId, verboseCliConfig, type Subcommand } from '../internal/utils.js';
@@ -80,29 +81,13 @@ export class ConfigLoader {
   }
 
   protected handleDeprecatedOptions(config: KubricateConfig | undefined): KubricateConfig {
-    if (!config) return {};
-    if (!config.secret) return config;
+    const migrator = new ConfigMigrator();
+    const result = migrator.migrate(config);
 
-    const { secret } = config;
+    // Log any warnings from the migration
+    result.warnings.forEach(warning => this.logger.warn(warning));
 
-    if (secret.manager && secret.registry) {
-      throw new Error(`[config.secret] Cannot define both "manager" and "registry". Use "secretSpec" instead.`);
-    }
-
-    if (secret.manager || secret.registry) {
-      this.logger.warn(`[config.secret] 'manager' and 'registry' are deprecated. Please use 'secretSpec' instead.`);
-    }
-
-    if (secret.manager) {
-      config.secret = { ...secret, secretSpec: secret.manager };
-    } else if (secret.registry) {
-      config.secret = { ...secret, secretSpec: secret.registry };
-    }
-
-    delete config.secret.manager;
-    delete config.secret.registry;
-
-    return config;
+    return result.config;
   }
 
   public async load(): Promise<KubricateConfig> {
