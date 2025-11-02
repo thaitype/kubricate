@@ -3,12 +3,7 @@ import { DockerConfigSecretProvider, OpaqueSecretProvider } from '@kubricate/plu
 import { SecretManager } from 'kubricate';
 
 export const secretManager = new SecretManager()
-  .addConnector(
-    'EnvConnector',
-    new EnvConnector({
-      prefix: 'KUBRICATE_SECRET_',
-    })
-  )
+  .addConnector('EnvConnector', new EnvConnector())
   .addProvider(
     'OpaqueSecretProvider',
     new OpaqueSecretProvider({
