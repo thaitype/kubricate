@@ -56,7 +56,7 @@ describe('defineStackTemplate', () => {
       return resourceMap;
     };
 
-    const template = defineStackTemplate<Input, Record<string, unknown>>('complex-stack', factory);
+    const template = defineStackTemplate<Input, Record<string, unknown>, 'complex-stack'>('complex-stack', factory);
     const resources = template.create({
       namespace: 'prod',
       resources: [

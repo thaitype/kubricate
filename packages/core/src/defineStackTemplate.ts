@@ -1,3 +1,4 @@
+import type { StackTemplateName } from './StackTemplateName.type.js';
 import { version as coreVersion } from './version.js';
 
 /**
@@ -51,7 +52,7 @@ export interface StackTemplateMetadata extends StackTemplateMetadataInput {
  * Descriptor for rich stack template definition.
  * Allows specifying name and metadata in a structured way.
  */
-export interface StackTemplateDescriptor {
+export interface StackTemplateDescriptor<TName extends string = string> {
   /**
    * Stack template name. Must match one of these patterns:
    * - <templateName>
@@ -65,7 +66,7 @@ export interface StackTemplateDescriptor {
    * - "@acme/simple-app"
    * - "@acme/app-stacks/simple-app"
    */
-  name: string;
+  name: StackTemplateName<TName>;
 
   /**
    * Optional metadata following package.json conventions.
@@ -77,8 +78,8 @@ export interface StackTemplateDescriptor {
 /**
  * Stack template type that combines name, create function, and optional metadata.
  */
-export type StackTemplate<TInput, TResourceMap extends Record<string, unknown>> = {
-  name: string;
+export type StackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string = string> = {
+  name: StackTemplateName<TName>;
   create: (input: TInput) => TResourceMap;
   metadata?: StackTemplateMetadata;
 };
@@ -98,10 +99,10 @@ export type StackTemplate<TInput, TResourceMap extends Record<string, unknown>> 
  * }));
  * ```
  */
-export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>>(
-  name: string,
+export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
+  name: StackTemplateName<TName>,
   factory: (input: TInput) => TResourceMap
-): StackTemplate<TInput, TResourceMap>;
+): StackTemplate<TInput, TResourceMap, TName>;
 
 /**
  * Defines a stack factory with rich metadata.
@@ -129,20 +130,22 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
  * );
  * ```
  */
-export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>>(
-  descriptor: StackTemplateDescriptor,
+export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
+  descriptor: StackTemplateDescriptor<TName>,
   factory: (input: TInput) => TResourceMap
-): StackTemplate<TInput, TResourceMap>;
+): StackTemplate<TInput, TResourceMap, TName>;
 
 /**
  * Implementation of defineStackTemplate with overloads.
  */
-export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>>(
-  nameOrDescriptor: string | StackTemplateDescriptor,
+export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
+  nameOrDescriptor: StackTemplateName<TName> | StackTemplateDescriptor<TName>,
   factory: (input: TInput) => TResourceMap
-): StackTemplate<TInput, TResourceMap> {
-  const descriptor: StackTemplateDescriptor =
-    typeof nameOrDescriptor === 'string' ? { name: nameOrDescriptor } : nameOrDescriptor;
+): StackTemplate<TInput, TResourceMap, TName> {
+  const descriptor: StackTemplateDescriptor<TName> =
+    typeof nameOrDescriptor === 'string'
+      ? { name: nameOrDescriptor as StackTemplateName<TName> }
+      : nameOrDescriptor;
 
   // Inject coreVersion if metadata is provided
   // This ensures users cannot override it

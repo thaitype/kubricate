@@ -3,4 +3,5 @@ export * from './BaseProvider.js';
 export * from './BaseConnector.js';
 export * from './types.js';
 export * from './defineStackTemplate.js';
+export * from './StackTemplateName.type.js';
 export * from './version.js';
