@@ -83,6 +83,6 @@ describe('defineStackTemplate', () => {
 
     expect(template).toHaveProperty('name');
     expect(template).toHaveProperty('create');
-    expect(Object.keys(template).sort()).toEqual(['create', 'name']);
+    expect(Object.keys(template).sort()).toEqual(['create', 'metadata', 'name']);
   });
 });
