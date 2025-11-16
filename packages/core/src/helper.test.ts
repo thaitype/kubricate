@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { defineStackTemplate } from './helper.js';
+import { defineStackTemplate } from './defineStackTemplate.js';
 
 describe('defineStackTemplate', () => {
   it('returns a stack template with the provided name and factory', () => {
