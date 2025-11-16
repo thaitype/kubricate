@@ -167,8 +167,7 @@ export function validateStackTemplateName(name: string): void {
   // Additional validation: maximum length (Kubernetes annotation limit is 253 for annotation values)
   if (name.length > 253) {
     throw new Error(
-      `Stack template name too long: "${name}"\n` +
-        `Maximum length is 253 characters (got ${name.length})`
+      `Stack template name too long: "${name}"\n` + `Maximum length is 253 characters (got ${name.length})`
     );
   }
 }

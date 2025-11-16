@@ -47,33 +47,23 @@ describe('validateStackTemplateName', () => {
 
   describe('invalid names - pattern violations', () => {
     it('should reject name with spaces', () => {
-      expect(() => validateStackTemplateName('simple app')).toThrow(
-        /Invalid stack template name: "simple app"/
-      );
+      expect(() => validateStackTemplateName('simple app')).toThrow(/Invalid stack template name: "simple app"/);
     });
 
     it('should reject name with uppercase letters', () => {
-      expect(() => validateStackTemplateName('SimpleApp')).toThrow(
-        /Invalid stack template name: "SimpleApp"/
-      );
+      expect(() => validateStackTemplateName('SimpleApp')).toThrow(/Invalid stack template name: "SimpleApp"/);
     });
 
     it('should reject name with special characters', () => {
-      expect(() => validateStackTemplateName('simple@app')).toThrow(
-        /Invalid stack template name: "simple@app"/
-      );
+      expect(() => validateStackTemplateName('simple@app')).toThrow(/Invalid stack template name: "simple@app"/);
     });
 
     it('should reject name with exclamation mark', () => {
-      expect(() => validateStackTemplateName('simple-app!')).toThrow(
-        /Invalid stack template name: "simple-app!"/
-      );
+      expect(() => validateStackTemplateName('simple-app!')).toThrow(/Invalid stack template name: "simple-app!"/);
     });
 
     it('should reject name with hash', () => {
-      expect(() => validateStackTemplateName('simple#app')).toThrow(
-        /Invalid stack template name: "simple#app"/
-      );
+      expect(() => validateStackTemplateName('simple#app')).toThrow(/Invalid stack template name: "simple#app"/);
     });
 
     it('should reject org name with spaces', () => {
@@ -99,15 +89,11 @@ describe('validateStackTemplateName', () => {
     });
 
     it('should reject name starting with slash', () => {
-      expect(() => validateStackTemplateName('/simple-app')).toThrow(
-        /Invalid stack template name: "\/simple-app"/
-      );
+      expect(() => validateStackTemplateName('/simple-app')).toThrow(/Invalid stack template name: "\/simple-app"/);
     });
 
     it('should reject name ending with slash', () => {
-      expect(() => validateStackTemplateName('simple-app/')).toThrow(
-        /Invalid stack template name: "simple-app\/"/
-      );
+      expect(() => validateStackTemplateName('simple-app/')).toThrow(/Invalid stack template name: "simple-app\/"/);
     });
 
     it('should reject name with multiple slashes', () => {
@@ -117,9 +103,7 @@ describe('validateStackTemplateName', () => {
     });
 
     it('should reject @ without org name', () => {
-      expect(() => validateStackTemplateName('@/simple-app')).toThrow(
-        /Invalid stack template name: "@\/simple-app"/
-      );
+      expect(() => validateStackTemplateName('@/simple-app')).toThrow(/Invalid stack template name: "@\/simple-app"/);
     });
   });
 

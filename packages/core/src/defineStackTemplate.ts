@@ -143,9 +143,7 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
   factory: (input: TInput) => TResourceMap
 ): StackTemplate<TInput, TResourceMap, TName> {
   const descriptor: StackTemplateDescriptor<TName> =
-    typeof nameOrDescriptor === 'string'
-      ? { name: nameOrDescriptor as StackTemplateName<TName> }
-      : nameOrDescriptor;
+    typeof nameOrDescriptor === 'string' ? { name: nameOrDescriptor as StackTemplateName<TName> } : nameOrDescriptor;
 
   // Inject coreVersion if metadata is provided
   // This ensures users cannot override it
