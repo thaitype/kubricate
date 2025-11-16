@@ -26,8 +26,22 @@ export type ConfigureComposerFunction<Data, Entries extends Record<string, unkno
 export class Stack<Data, Entries extends Record<string, unknown>> extends BaseStack<
   ConfigureComposerFunction<Data, Entries>
 > {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _template?: StackTemplate<any, any>; // Store template reference for metadata access
+
   constructor(public builder: ConfigureComposerFunction<Data, Entries>) {
     super();
+  }
+
+  /**
+   * Gets the template that was used to create this stack (if any).
+   * Returns undefined for stacks created with fromStatic or manual constructor.
+   *
+   * @returns The StackTemplate or undefined
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  override getTemplate(): StackTemplate<any, any> | undefined {
+    return this._template;
   }
 
   /**
@@ -59,6 +73,7 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
   ): Stack<TInput, TResourceMap> {
     const builder = (data: TInput) => buildComposerFromObject(factory.create(data) as Record<string, ResourceManifest>);
     const stack = new Stack(builder);
+    stack._template = factory; // Store template reference for metadata access
     stack.setName(factory.name);
     stack.from(input);
     return stack;

@@ -1,10 +1,11 @@
 import c from 'ansis';
 import { cloneDeep, merge } from 'lodash-es';
 
-import type { BaseLogger } from '@kubricate/core';
+import type { BaseLogger, StackTemplate } from '@kubricate/core';
 
 import { YamlRenderer } from '../../domain/YamlRenderer.js';
-import { getClassName } from '../../internal/utils.js';
+import { getClassName, validateStackTemplateName } from '../../internal/utils.js';
+import type { BaseStack } from '../../stack/BaseStack.js';
 import type { KubricateConfig, ProjectMetadataOptions } from '../../types.js';
 import { version } from '../../version.js';
 import { MetadataInjector } from '../MetadataInjector.js';
@@ -45,16 +46,27 @@ export class Renderer {
 
   injectMetadata(
     resources: Record<string, unknown>,
-    options: { stackId?: string; stackName?: string }
+    options: { stackId?: string; stack: BaseStack }
   ): Record<string, unknown> {
+    // Get template and validate name if template exists
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const template = options.stack.getTemplate?.() as StackTemplate<any, any> | undefined;
+    if (template) {
+      validateStackTemplateName(template.name);
+    }
+
+    // Get stack template name (from template or fallback to class name)
+    const stackTemplateName = template?.name ?? options.stack.getName() ?? getClassName(options.stack) ?? 'unknown';
+
     const createInjector = (resourceId: string) =>
       new MetadataInjector({
         type: 'stack',
         kubricateVersion: version,
         managedAt: new Date().toISOString(),
         stackId: options.stackId,
-        stackName: options.stackName,
+        stackTemplateName, // NEW: Use stackTemplateName instead of stackName
         resourceId,
+        stackTemplateMetadata: template?.metadata, // NEW: Pass template metadata
         inject: {
           managedAt: this.metadata.injectManagedAt,
           resourceHash: this.metadata.injectResourceHash,
@@ -89,7 +101,7 @@ export class Renderer {
       if (this.metadata.inject === true) {
         builtResources = this.injectMetadata(stack.build(), {
           stackId,
-          stackName,
+          stack, // NEW: Pass the stack instance
         });
       } else {
         builtResources = stack.build();

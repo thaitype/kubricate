@@ -52,14 +52,52 @@ describe('constants', () => {
         'version',
         'managedAt',
         'stackId',
-        'stackName',
         'resourceId',
         'secretManagerId',
         'secretManagerName',
         'resourceHash',
+        // New stack template metadata fields
+        'stackTemplateName',
+        'stackTemplateVersion',
+        'stackTemplateAuthor',
+        'stackTemplateDescription',
+        'stackTemplateHomepage',
+        'stackTemplateRepository',
+        'stackTemplateCoreVersion',
+        // Deprecated (kept for backward compatibility)
+        'stackName',
       ];
 
       expect(Object.keys(LABELS).sort()).toEqual(expectedKeys.sort());
+    });
+
+    // New tests for stack template metadata labels
+    it('should have stackTemplateName label with framework prefix', () => {
+      expect(LABELS.stackTemplateName).toBe('kubricate.thaitype.dev/stack-template-name');
+    });
+
+    it('should have stackTemplateVersion label with framework prefix', () => {
+      expect(LABELS.stackTemplateVersion).toBe('kubricate.thaitype.dev/stack-template-version');
+    });
+
+    it('should have stackTemplateAuthor label with framework prefix', () => {
+      expect(LABELS.stackTemplateAuthor).toBe('kubricate.thaitype.dev/stack-template-author');
+    });
+
+    it('should have stackTemplateDescription label with framework prefix', () => {
+      expect(LABELS.stackTemplateDescription).toBe('kubricate.thaitype.dev/stack-template-description');
+    });
+
+    it('should have stackTemplateHomepage label with framework prefix', () => {
+      expect(LABELS.stackTemplateHomepage).toBe('kubricate.thaitype.dev/stack-template-homepage');
+    });
+
+    it('should have stackTemplateRepository label with framework prefix', () => {
+      expect(LABELS.stackTemplateRepository).toBe('kubricate.thaitype.dev/stack-template-repository');
+    });
+
+    it('should have stackTemplateCoreVersion label with framework prefix', () => {
+      expect(LABELS.stackTemplateCoreVersion).toBe('kubricate.thaitype.dev/stack-template-core-version');
     });
   });
 });

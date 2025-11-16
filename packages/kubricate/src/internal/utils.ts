@@ -118,6 +118,62 @@ export function validateId(input: string, subject = 'id'): void {
 }
 
 /**
+ * Validates stack template name format.
+ *
+ * Allowed patterns:
+ * 1. <templateName>
+ * 2. @<orgName>/<templateName>
+ * 3. @<orgName>/<packageName>/<templateName>
+ *
+ * Character set: a-z, 0-9, ., _, -
+ *
+ * @param name - The stack template name to validate
+ * @throws Error if the name doesn't match the allowed patterns
+ *
+ * @example
+ * ```typescript
+ * validateStackTemplateName('simple-app');  // OK
+ * validateStackTemplateName('@acme/simple-app');  // OK
+ * validateStackTemplateName('@acme/app-stacks/simple-app');  // OK
+ * validateStackTemplateName('Simple App');  // ERROR: has space
+ * validateStackTemplateName('SimpleApp');  // ERROR: has uppercase
+ * ```
+ */
+export function validateStackTemplateName(name: string): void {
+  // Pattern explanation:
+  // ^                              - Start of string
+  // (?:@[a-z0-9._-]+\/)?          - Optional: @ followed by org name and /
+  // (?:[a-z0-9._-]+\/)?           - Optional: package name and /
+  // [a-z0-9._-]+                  - Required: template name
+  // $                              - End of string
+  const pattern = /^(?:@[a-z0-9._-]+\/)?(?:[a-z0-9._-]+\/)?[a-z0-9._-]+$/;
+
+  if (!pattern.test(name)) {
+    throw new Error(
+      `Invalid stack template name: "${name}"\n\n` +
+        `Stack template names must match one of these patterns:\n` +
+        `  1. <templateName>\n` +
+        `  2. @<orgName>/<templateName>\n` +
+        `  3. @<orgName>/<packageName>/<templateName>\n\n` +
+        `Allowed characters: a-z, 0-9, . _ -\n` +
+        `No spaces or uppercase letters allowed.\n\n` +
+        `Examples:\n` +
+        `  - simple-app\n` +
+        `  - @acme/simple-app\n` +
+        `  - @acme/app-stacks/simple-app`
+    );
+  }
+
+  // Additional validation: maximum length (Kubernetes annotation limit is 253 for annotation values)
+  if (name.length > 253) {
+    throw new Error(
+      `Stack template name too long: "${name}"\n` +
+        `Maximum length is 253 characters (got ${name.length})`
+    );
+  }
+}
+
+/**
  * Censors secret values in a Kubernetes Secret payload for safe logging.
  * Replaces all values in the `data` and `stringData` fields with "***".
  *

@@ -193,6 +193,16 @@ export abstract class BaseStack<
   }
 
   /**
+   * Gets the template that was used to create this stack (if any).
+   * Override this method in derived classes (like Stack) to provide template access.
+   *
+   * @returns The StackTemplate or undefined
+   */
+  getTemplate(): unknown {
+    return undefined;
+  }
+
+  /**
    * @internal
    * This method is used to inject the logger into the stack.
    * It is called by the orchestrator to inject the logger into all components of the stack.
