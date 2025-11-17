@@ -10,7 +10,7 @@ export interface MyInput {
 /**
  * This cannot be used in real world, because the cronjob is not configured.
  */
-export const cronJobTemplate = defineStackTemplate('CronJob', (data: MyInput) => {
+export const cronJobTemplate = defineStackTemplate('cron-job', (data: MyInput) => {
   return {
     cronJob: kubeModel(CronJob, {
       metadata: {

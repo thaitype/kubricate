@@ -16,7 +16,7 @@ export interface ISimpleAppStack {
   env?: IContainer['env'];
 }
 
-export const simpleAppTemplate = defineStackTemplate('SimpleApp', (data: ISimpleAppStack) => {
+export const simpleAppTemplate = defineStackTemplate('@kubricate/stacks/simple-app', (data: ISimpleAppStack) => {
   const port = data.port ?? 80;
   const replicas = data.replicas ?? 1;
   const imageRegistry = data.imageRegistry ?? '';

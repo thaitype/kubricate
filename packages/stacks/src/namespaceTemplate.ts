@@ -7,7 +7,7 @@ export interface INamespaceStack {
   name: string;
 }
 
-export const namespaceTemplate = defineStackTemplate('Namespace', (data: INamespaceStack) => {
+export const namespaceTemplate = defineStackTemplate('@kubricate/stacks/namespace', (data: INamespaceStack) => {
   return {
     namespace: kubeModel(Namespace, {
       metadata: {
