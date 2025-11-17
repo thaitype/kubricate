@@ -96,7 +96,7 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
    *
    * @example
    * ```ts
-   * const stack = Stack.fromStatic('DefaultNS', {
+   * const stack = Stack.fromStatic('default-ns', {
    *   namespace: {
    *     metadata: { name: 'default' },
    *   },
@@ -143,10 +143,10 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
  * @example
  * ```ts
  * // ❌ Deprecated way
- * const legacyStack = createStack('MyStack', builderFn).from(input);
+ * const legacyStack = createStack('my-stack', builderFn).from(input);
  *
  * // ✅ Recommended way
- * const MyStackTemplate = defineStackTemplate('MyStack', builderFn);
+ * const MyStackTemplate = defineStackTemplate('my-stack', builderFn);
  * const stack = Stack.fromTemplate(MyStackTemplate, input);
  * ```
  */
