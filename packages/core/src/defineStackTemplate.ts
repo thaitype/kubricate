@@ -55,9 +55,9 @@ export interface StackTemplateMetadata extends StackTemplateMetadataInput {
 export interface StackTemplateDescriptor<TName extends string = string> {
   /**
    * Stack template name. Must match one of these patterns:
-   * - <templateName>
-   * - @<orgName>/<templateName>
-   * - @<orgName>/<packageName>/<templateName>
+   * - `<templateName>`
+   * - `@<orgName>/<templateName>`
+   * - `@<orgName>/<packageName>/<templateName>`
    *
    * Character set: a-z, 0-9, ., _, - (no spaces or uppercase)
    *
