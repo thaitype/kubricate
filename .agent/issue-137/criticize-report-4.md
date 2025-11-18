@@ -1,0 +1,1 @@
+validateStackTemplateName Renderer.injectMetadata, wired design of validation location

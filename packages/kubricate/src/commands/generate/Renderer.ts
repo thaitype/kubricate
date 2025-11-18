@@ -101,7 +101,7 @@ export class Renderer {
       if (this.metadata.inject === true) {
         builtResources = this.injectMetadata(stack.build(), {
           stackId,
-          stack, // NEW: Pass the stack instance
+          stack,
         });
       } else {
         builtResources = stack.build();
