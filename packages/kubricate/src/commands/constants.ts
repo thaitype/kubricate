@@ -10,7 +10,7 @@ export const LABELS = {
   secretManagerName: FRAMEWORK_LABEL + '/secret-manager-name',
   resourceHash: FRAMEWORK_LABEL + '/resource-hash',
 
-  // Stack template metadata (NEW in v0.23)
+  // Stack template metadata
   stackTemplateName: FRAMEWORK_LABEL + '/stack-template-name',
   stackTemplateVersion: FRAMEWORK_LABEL + '/stack-template-version',
   stackTemplateAuthor: FRAMEWORK_LABEL + '/stack-template-author',
@@ -19,6 +19,10 @@ export const LABELS = {
   stackTemplateRepository: FRAMEWORK_LABEL + '/stack-template-repository',
   stackTemplateCoreVersion: FRAMEWORK_LABEL + '/stack-template-core-version',
 
-  // DEPRECATED: Will be removed in v1.0 (kept for backward compatibility)
+  /**
+   * @deprecated use stackTemplateName instead
+   * 
+   * Will be removed in v1.0 (kept for backward compatibility)
+   */
   stackName: FRAMEWORK_LABEL + '/stack-name',
 };
