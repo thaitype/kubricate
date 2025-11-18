@@ -48,15 +48,15 @@ export class Renderer {
     resources: Record<string, unknown>,
     options: { stackId?: string; stack: BaseStack }
   ): Record<string, unknown> {
-    // Get template and validate name if template exists
+    // Get template
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const template = options.stack.getTemplate?.() as StackTemplate<any, any> | undefined;
-    if (template) {
-      validateStackTemplateName(template.name);
-    }
 
     // Get stack template name (from template or fallback to class name)
     const stackTemplateName = template?.name ?? options.stack.getName() ?? getClassName(options.stack) ?? 'unknown';
+
+    // Validate the actual stackTemplateName value being used
+    validateStackTemplateName(stackTemplateName);
 
     const createInjector = (resourceId: string) =>
       new MetadataInjector({

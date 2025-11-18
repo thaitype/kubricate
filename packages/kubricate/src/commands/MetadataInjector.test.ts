@@ -11,7 +11,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test-stack',
-        stackTemplateName: 'Test Stack',
+        stackTemplateName: 'test-stack',
         resourceId: 'deployment',
       });
 
@@ -23,7 +23,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test-stack',
-        stackTemplateName: 'Test Stack',
+        stackTemplateName: 'test-stack',
         resourceId: 'deployment',
       });
 
@@ -39,7 +39,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'my-stack',
-        stackTemplateName: 'My Stack',
+        stackTemplateName: 'my-stack',
         resourceId: 'my-deployment',
       });
 
@@ -48,7 +48,7 @@ describe('MetadataInjector', () => {
       const metadata = result.metadata as any;
 
       expect(metadata.labels[LABELS.stackId]).toBe('my-stack');
-      expect(metadata.annotations[LABELS.stackName]).toBe('My Stack');
+      expect(metadata.annotations[LABELS.stackName]).toBe('my-stack');
       expect(metadata.labels[LABELS.resourceId]).toBe('my-deployment');
     });
 
@@ -73,7 +73,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '2.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { version: true },
       });
@@ -91,7 +91,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         managedAt: fixedDate,
         inject: { managedAt: true },
@@ -109,7 +109,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { managedAt: true },
       });
@@ -127,7 +127,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -145,7 +145,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
       });
 
@@ -162,7 +162,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
       });
 
@@ -189,7 +189,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -211,7 +211,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -233,7 +233,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -272,7 +272,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -302,7 +302,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackTemplateName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
