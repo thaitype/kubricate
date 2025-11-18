@@ -16,58 +16,61 @@ export interface ISimpleAppStack {
   env?: IContainer['env'];
 }
 
-export const simpleAppTemplate = defineStackTemplate({
-  name: '@kubricate/stacks/simple-app',
-  metadata: {
-    version: '0.22.0',
-    author: 'Kubricate Team',
-    repository: 'https://github.com/thaitype/kubricate', 
+export const simpleAppTemplate = defineStackTemplate(
+  {
+    name: '@kubricate/stacks/simple-app',
+    metadata: {
+      version: '0.22.0',
+      author: 'Kubricate Team',
+      repository: 'https://github.com/thaitype/kubricate',
+    },
   },
-}, (data: ISimpleAppStack) => {
-  const port = data.port ?? 80;
-  const replicas = data.replicas ?? 1;
-  const imageRegistry = data.imageRegistry ?? '';
+  (data: ISimpleAppStack) => {
+    const port = data.port ?? 80;
+    const replicas = data.replicas ?? 1;
+    const imageRegistry = data.imageRegistry ?? '';
 
-  const metadata = { name: data.name, namespace: data.namespace };
-  const labels = { app: data.name };
+    const metadata = { name: data.name, namespace: data.namespace };
+    const labels = { app: data.name };
 
-  return {
-    deployment: kubeModel(Deployment, {
-      metadata,
-      spec: {
-        replicas,
-        selector: {
-          matchLabels: labels,
+    return {
+      deployment: kubeModel(Deployment, {
+        metadata,
+        spec: {
+          replicas,
+          selector: {
+            matchLabels: labels,
+          },
+          template: {
+            metadata: {
+              labels,
+            },
+            spec: {
+              containers: [
+                {
+                  image: joinPath(imageRegistry, data.imageName),
+                  name: data.name,
+                  ports: [{ containerPort: port }],
+                  env: data.env,
+                },
+              ],
+            },
+          },
         },
-        template: {
-          metadata: {
-            labels,
-          },
-          spec: {
-            containers: [
-              {
-                image: joinPath(imageRegistry, data.imageName),
-                name: data.name,
-                ports: [{ containerPort: port }],
-                env: data.env,
-              },
-            ],
-          },
+      }),
+      service: kubeModel(Service, {
+        metadata,
+        spec: {
+          selector: labels,
+          type: 'ClusterIP',
+          ports: [
+            {
+              port,
+              targetPort: port,
+            },
+          ],
         },
-      },
-    }),
-    service: kubeModel(Service, {
-      metadata,
-      spec: {
-        selector: labels,
-        type: 'ClusterIP',
-        ports: [
-          {
-            port,
-            targetPort: port,
-          },
-        ],
-      },
-    }),
-  };
-});
+      }),
+    };
+  }
+);
