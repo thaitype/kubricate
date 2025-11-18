@@ -7,16 +7,14 @@ export interface INamespaceStack {
   name: string;
 }
 
-export const namespaceTemplate = defineStackTemplate(
-  {
-    name: '@kubricate/stacks/namespace',
-    metadata: {
-      version: '0.22.0',
-      author: 'Kubricate Team',
-      repository: 'https://github.com/thaitype/kubricate',
-    },
+export const namespaceTemplate = defineStackTemplate({
+  name: '@kubricate/stacks/namespace',
+  metadata: {
+    version: '0.22.0',
+    author: 'Kubricate Team',
+    repository: 'https://github.com/thaitype/kubricate',
   },
-  (data: INamespaceStack) => {
+  build(data: INamespaceStack) {
     return {
       namespace: kubeModel(Namespace, {
         metadata: {
@@ -24,5 +22,5 @@ export const namespaceTemplate = defineStackTemplate(
         },
       }),
     };
-  }
-);
+  },
+});

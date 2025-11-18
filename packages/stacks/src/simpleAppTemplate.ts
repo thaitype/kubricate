@@ -16,16 +16,14 @@ export interface ISimpleAppStack {
   env?: IContainer['env'];
 }
 
-export const simpleAppTemplate = defineStackTemplate(
-  {
-    name: '@kubricate/stacks/simple-app',
-    metadata: {
-      version: '0.22.0',
-      author: 'Kubricate Team',
-      repository: 'https://github.com/thaitype/kubricate',
-    },
+export const simpleAppTemplate = defineStackTemplate({
+  name: '@kubricate/stacks/simple-app',
+  metadata: {
+    version: '0.22.0',
+    author: 'Kubricate Team',
+    repository: 'https://github.com/thaitype/kubricate',
   },
-  (data: ISimpleAppStack) => {
+  build(data: ISimpleAppStack) {
     const port = data.port ?? 80;
     const replicas = data.replicas ?? 1;
     const imageRegistry = data.imageRegistry ?? '';
@@ -72,5 +70,5 @@ export const simpleAppTemplate = defineStackTemplate(
         },
       }),
     };
-  }
-);
+  },
+});

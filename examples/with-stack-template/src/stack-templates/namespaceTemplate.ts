@@ -10,26 +10,27 @@ interface MyInput {
 /**
  * Namespace Stack Template
  *
- * This example demonstrates the new metadata API for stack templates.
+ * This example demonstrates the new single-argument config object API for stack templates.
  * You can provide rich metadata including version, author, homepage, repository, and description.
  * This metadata will be injected into the generated Kubernetes manifests as annotations.
+ *
+ * The new API combines name, metadata, and build function in a single declarative object,
+ * making templates easier to extend and maintain.
  */
-export const namespaceTemplate = defineStackTemplate(
-  {
-    name: 'namespace-template',
-    metadata: {
-      version: '1.0.0',
-      author: 'Kubricate Team',
-      description: 'A simple namespace template for Kubernetes',
-      homepage: 'https://github.com/thaitype/kubricate',
-      repository: 'https://github.com/thaitype/kubricate',
-    },
+export const namespaceTemplate = defineStackTemplate({
+  name: 'namespace-template',
+  metadata: {
+    version: '1.0.0',
+    author: 'Kubricate Team',
+    description: 'A simple namespace template for Kubernetes',
+    homepage: 'https://github.com/thaitype/kubricate',
+    repository: 'https://github.com/thaitype/kubricate',
   },
-  (data: MyInput) => {
+  build(data: MyInput) {
     return {
       namespace: kubeModel(Namespace, {
         metadata: { name: data.name },
       }),
     };
-  }
-);
+  },
+});

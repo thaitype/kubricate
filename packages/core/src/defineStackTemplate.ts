@@ -49,10 +49,14 @@ export interface StackTemplateMetadata extends StackTemplateMetadataInput {
 }
 
 /**
- * Descriptor for rich stack template definition.
- * Allows specifying name and metadata in a structured way.
+ * Configuration object for defining a stack template (preferred API).
+ * Combines name, metadata, and build function in a single declarative object.
  */
-export interface StackTemplateDescriptor<TName extends string = string> {
+export interface StackTemplateConfig<
+  TInput,
+  TResourceMap extends Record<string, unknown>,
+  TName extends string = string
+> {
   /**
    * Stack template name. Must match one of these patterns:
    * - `<templateName>`
@@ -73,6 +77,12 @@ export interface StackTemplateDescriptor<TName extends string = string> {
    * When provided, version is required.
    */
   metadata?: StackTemplateMetadataInput;
+
+  /**
+   * Build function that takes input and returns a map of Kubernetes resources.
+   * This function is called when the stack template is instantiated.
+   */
+  build: (input: TInput) => TResourceMap;
 }
 
 /**
@@ -85,7 +95,42 @@ export type StackTemplate<TInput, TResourceMap extends Record<string, unknown>, 
 };
 
 /**
+ * Defines a stack template with a declarative configuration object (preferred API).
+ *
+ * This is the recommended way to define stack templates. It combines name, metadata,
+ * and build function in a single object, making templates easy to extend and maintain.
+ *
+ * @param config - Configuration object with name, optional metadata, and build function.
+ * @returns A stack template.
+ *
+ * @example
+ * ```typescript
+ * const SimpleApp = defineStackTemplate({
+ *   name: '@acme/app-stacks/simple-app',
+ *   metadata: {
+ *     version: '1.0.0',
+ *     author: 'Platform Team',
+ *     homepage: 'https://docs.acme.com/simple-app',
+ *     repository: 'https://github.com/acme/app-stacks',
+ *   },
+ *   build(input) {
+ *     return {
+ *       deployment: new Deployment({ ... }),
+ *       service: new Service({ ... }),
+ *     };
+ *   },
+ * });
+ * ```
+ */
+export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
+  config: StackTemplateConfig<TInput, TResourceMap, TName>
+): StackTemplate<TInput, TResourceMap, TName>;
+
+/**
  * Defines a stack factory that creates a stack of resources based on the provided input.
+ *
+ * This is the legacy two-argument form for simple use cases.
+ * Consider using the single-argument config object form for templates with metadata.
  *
  * @param name - The name of the stack template.
  * @param factory - A function that takes an input and returns a map of resources.
@@ -105,55 +150,36 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
 ): StackTemplate<TInput, TResourceMap, TName>;
 
 /**
- * Defines a stack factory with rich metadata.
- *
- * @param descriptor - Stack template descriptor with name and optional metadata.
- * @param factory - A function that takes an input and returns a map of resources.
- * @returns A stack template.
- *
- * @example
- * ```typescript
- * const SimpleApp = defineStackTemplate(
- *   {
- *     name: '@acme/app-stacks/simple-app',
- *     metadata: {
- *       version: '1.0.0',
- *       author: 'Platform Team',
- *       homepage: 'https://docs.acme.com/simple-app',
- *       repository: 'https://github.com/acme/app-stacks',
- *     },
- *   },
- *   (input) => ({
- *     deployment: new Deployment({ ... }),
- *     service: new Service({ ... }),
- *   })
- * );
- * ```
- */
-export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
-  descriptor: StackTemplateDescriptor<TName>,
-  factory: (input: TInput) => TResourceMap
-): StackTemplate<TInput, TResourceMap, TName>;
-
-/**
  * Implementation of defineStackTemplate with overloads.
  */
 export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
-  nameOrDescriptor: StackTemplateName<TName> | StackTemplateDescriptor<TName>,
-  factory: (input: TInput) => TResourceMap
+  nameOrConfig: StackTemplateName<TName> | StackTemplateConfig<TInput, TResourceMap, TName>,
+  factory?: (input: TInput) => TResourceMap
 ): StackTemplate<TInput, TResourceMap, TName> {
-  const descriptor: StackTemplateDescriptor<TName> =
-    typeof nameOrDescriptor === 'string' ? { name: nameOrDescriptor as StackTemplateName<TName> } : nameOrDescriptor;
+  // Check if this is the new single-argument config object form
+  if (typeof nameOrConfig === 'object' && 'build' in nameOrConfig) {
+    const config = nameOrConfig as StackTemplateConfig<TInput, TResourceMap, TName>;
 
-  // Inject coreVersion if metadata is provided
-  // This ensures users cannot override it
-  const metadata: StackTemplateMetadata | undefined = descriptor.metadata
-    ? { ...descriptor.metadata, coreVersion }
-    : undefined;
+    // Inject coreVersion if metadata is provided
+    const metadata: StackTemplateMetadata | undefined = config.metadata
+      ? { ...config.metadata, coreVersion }
+      : undefined;
+
+    return {
+      name: config.name,
+      create: config.build,
+      metadata,
+    };
+  }
+
+  // Legacy two-argument form: (name, factory)
+  if (!factory) {
+    throw new Error('defineStackTemplate: factory function is required when using the two-argument form');
+  }
 
   return {
-    name: descriptor.name,
+    name: nameOrConfig as StackTemplateName<TName>,
     create: factory,
-    metadata,
+    metadata: undefined,
   };
 }
