@@ -21,7 +21,7 @@ export const LABELS = {
 
   /**
    * @deprecated use stackTemplateName instead
-   * 
+   *
    * Will be removed in v1.0 (kept for backward compatibility)
    */
   stackName: FRAMEWORK_LABEL + '/stack-name',

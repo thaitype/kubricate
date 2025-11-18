@@ -55,7 +55,7 @@ export interface StackTemplateMetadata extends StackTemplateMetadataInput {
 export interface StackTemplateConfig<
   TInput,
   TResourceMap extends Record<string, unknown>,
-  TName extends string = string
+  TName extends string = string,
 > {
   /**
    * Stack template name. Must match one of these patterns:
