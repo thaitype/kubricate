@@ -4,7 +4,7 @@ import { simpleAppTemplate } from './simpleAppTemplate.js';
 
 describe('simpleAppStackTemplate', () => {
   it('should generate Deployment and Service with defaults', () => {
-    const result = simpleAppTemplate.create({
+    const result = simpleAppTemplate.build({
       name: 'my-app',
       imageName: 'my-app',
     });
@@ -22,7 +22,7 @@ describe('simpleAppStackTemplate', () => {
   });
 
   it('should override defaults if values provided', () => {
-    const result = simpleAppTemplate.create({
+    const result = simpleAppTemplate.build({
       name: 'my-app',
       imageName: 'custom-image',
       imageRegistry: 'docker.io',

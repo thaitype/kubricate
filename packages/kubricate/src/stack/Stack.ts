@@ -54,8 +54,8 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
    * @template TInput - Input type for the stack template
    * @template TResourceMap - Output resource map from the stack template
    *
-   * @param factory - A `StackTemplate` containing the stack's name and builder function
-   * @param input - Input values required to create the resource map
+   * @param template - A `StackTemplate` containing the stack's name and build function
+   * @param input - Input values required to build the resource map
    * @returns A fully-initialized `Stack` ready for use
    *
    * @example
@@ -68,13 +68,13 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
    * ```
    */
   static fromTemplate<TInput, TResourceMap extends Record<string, unknown>>(
-    factory: StackTemplate<TInput, TResourceMap>,
+    template: StackTemplate<TInput, TResourceMap>,
     input: TInput
   ): Stack<TInput, TResourceMap> {
-    const builder = (data: TInput) => buildComposerFromObject(factory.create(data) as Record<string, ResourceManifest>);
+    const builder = (data: TInput) => buildComposerFromObject(template.build(data) as Record<string, ResourceManifest>);
     const stack = new Stack(builder);
-    stack._template = factory; // Store template reference for metadata access
-    stack.setName(factory.name);
+    stack._template = template; // Store template reference for metadata access
+    stack.setName(template.name);
     stack.from(input);
     return stack;
   }
@@ -132,7 +132,7 @@ export class Stack<Data, Entries extends Record<string, unknown>> extends BaseSt
 }
 
 /**
- * Factory function to create a `Stack` instance manually.
+ * Helper function to create a `Stack` instance manually.
  *
  * @deprecated Use `defineStackTemplate` together with `Stack.fromTemplate` instead.
  *

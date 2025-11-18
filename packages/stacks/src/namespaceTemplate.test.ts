@@ -6,7 +6,7 @@ import { namespaceTemplate } from './namespaceTemplate.js';
 describe('namespaceStackTemplate', () => {
   it('should return a plain object representing a Kubernetes Namespace', () => {
     // Generate the resource using the stack template
-    const resources = namespaceTemplate.create({ name: 'my-namespace' });
+    const resources = namespaceTemplate.build({ name: 'my-namespace' });
 
     // Ensure the returned object has a 'namespace' key
     expect(resources).toHaveProperty('namespace');

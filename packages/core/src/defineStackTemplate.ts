@@ -86,11 +86,11 @@ export interface StackTemplateConfig<
 }
 
 /**
- * Stack template type that combines name, create function, and optional metadata.
+ * Stack template type that combines name, build function, and optional metadata.
  */
 export type StackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string = string> = {
   name: StackTemplateName<TName>;
-  create: (input: TInput) => TResourceMap;
+  build: (input: TInput) => TResourceMap;
   metadata?: StackTemplateMetadata;
 };
 
@@ -127,13 +127,13 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
 ): StackTemplate<TInput, TResourceMap, TName>;
 
 /**
- * Defines a stack factory that creates a stack of resources based on the provided input.
+ * Defines a stack template that builds resources based on the provided input.
  *
  * This is the legacy two-argument form for simple use cases.
  * Consider using the single-argument config object form for templates with metadata.
  *
  * @param name - The name of the stack template.
- * @param factory - A function that takes an input and returns a map of resources.
+ * @param build - A function that takes an input and returns a map of resources.
  * @returns A stack template.
  *
  * @example
@@ -146,7 +146,7 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
  */
 export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
   name: StackTemplateName<TName>,
-  factory: (input: TInput) => TResourceMap
+  build: (input: TInput) => TResourceMap
 ): StackTemplate<TInput, TResourceMap, TName>;
 
 /**
@@ -154,7 +154,7 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
  */
 export function defineStackTemplate<TInput, TResourceMap extends Record<string, unknown>, TName extends string>(
   nameOrConfig: StackTemplateName<TName> | StackTemplateConfig<TInput, TResourceMap, TName>,
-  factory?: (input: TInput) => TResourceMap
+  buildFn?: (input: TInput) => TResourceMap
 ): StackTemplate<TInput, TResourceMap, TName> {
   // Check if this is the new single-argument config object form
   if (typeof nameOrConfig === 'object' && 'build' in nameOrConfig) {
@@ -167,19 +167,19 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
 
     return {
       name: config.name,
-      create: config.build,
+      build: config.build,
       metadata,
     };
   }
 
-  // Legacy two-argument form: (name, factory)
-  if (!factory) {
-    throw new Error('defineStackTemplate: factory function is required when using the two-argument form');
+  // Legacy two-argument form: (name, build)
+  if (!buildFn) {
+    throw new Error('defineStackTemplate: build function is required when using the two-argument form');
   }
 
   return {
     name: nameOrConfig as StackTemplateName<TName>,
-    create: factory,
+    build: buildFn,
     metadata: undefined,
   };
 }

@@ -3,37 +3,37 @@ import { describe, expect, it } from 'vitest';
 import { defineStackTemplate } from './defineStackTemplate.js';
 
 describe('defineStackTemplate', () => {
-  it('returns a stack template with the provided name and factory', () => {
-    const factory = (input: { replicas: number }) => ({
+  it('returns a stack template with the provided name and build function', () => {
+    const build = (input: { replicas: number }) => ({
       deployment: { replicas: input.replicas },
     });
 
-    const template = defineStackTemplate('test-stack', factory);
+    const template = defineStackTemplate('test-stack', build);
 
     expect(template.name).toBe('test-stack');
-    expect(template.create).toBe(factory);
+    expect(template.build).toBe(build);
   });
 
-  it('creates resources using the factory function', () => {
-    const factory = (input: { appName: string }) => ({
+  it('builds resources using the build function', () => {
+    const build = (input: { appName: string }) => ({
       deployment: { name: input.appName },
       service: { name: `${input.appName}-svc` },
     });
 
-    const template = defineStackTemplate('app-stack', factory);
-    const resources = template.create({ appName: 'my-app' });
+    const template = defineStackTemplate('app-stack', build);
+    const resources = template.build({ appName: 'my-app' });
 
     expect(resources.deployment).toEqual({ name: 'my-app' });
     expect(resources.service).toEqual({ name: 'my-app-svc' });
   });
 
   it('works with empty input type', () => {
-    const factory = () => ({
+    const build = () => ({
       configMap: { data: { key: 'value' } },
     });
 
-    const template = defineStackTemplate('static-stack', factory);
-    const resources = template.create(undefined);
+    const template = defineStackTemplate('static-stack', build);
+    const resources = template.build(undefined);
 
     expect(resources.configMap).toEqual({ data: { key: 'value' } });
   });
@@ -44,7 +44,7 @@ describe('defineStackTemplate', () => {
       resources: Array<{ name: string; type: string }>;
     }
 
-    const factory = (input: Input) => {
+    const build = (input: Input) => {
       const resourceMap: Record<string, unknown> = {};
       input.resources.forEach((resource, index) => {
         resourceMap[`resource-${index}`] = {
@@ -56,8 +56,8 @@ describe('defineStackTemplate', () => {
       return resourceMap;
     };
 
-    const template = defineStackTemplate<Input, Record<string, unknown>, 'complex-stack'>('complex-stack', factory);
-    const resources = template.create({
+    const template = defineStackTemplate<Input, Record<string, unknown>, 'complex-stack'>('complex-stack', build);
+    const resources = template.build({
       namespace: 'prod',
       resources: [
         { name: 'app1', type: 'deployment' },
@@ -78,11 +78,11 @@ describe('defineStackTemplate', () => {
   });
 
   it('preserves the template structure', () => {
-    const factory = (input: { value: number }) => ({ result: input.value * 2 });
-    const template = defineStackTemplate('math-stack', factory);
+    const build = (input: { value: number }) => ({ result: input.value * 2 });
+    const template = defineStackTemplate('math-stack', build);
 
     expect(template).toHaveProperty('name');
-    expect(template).toHaveProperty('create');
-    expect(Object.keys(template).sort()).toEqual(['create', 'metadata', 'name']);
+    expect(template).toHaveProperty('build');
+    expect(Object.keys(template).sort()).toEqual(['build', 'metadata', 'name']);
   });
 });
