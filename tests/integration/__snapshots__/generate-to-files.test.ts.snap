@@ -10,8 +10,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: Namespace
-    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 6ccfb32474de374740ea26c1a62289609d575b6777b25d95f35ef138812fc936
 ---
 
 apiVersion: apps/v1
@@ -24,8 +29,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: e0e99dc895c6a6cd20e9facbb6974b2ebfdcc78b6ec65f34125e9477367a41ee
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 0fcef65c1f415f60fa903b46838df70b24c27adecf50224010d235d17668dd69
 spec:
   replicas: 1
   selector:
@@ -66,8 +76,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 02cca01a4aa43a0cbe8d6890285b958a335bc324a51af9a530acd414230d44ca
 spec:
   selector:
     app: my-app
@@ -89,8 +104,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: Namespace
-    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 6ccfb32474de374740ea26c1a62289609d575b6777b25d95f35ef138812fc936
 ---
 
 apiVersion: apps/v1
@@ -103,8 +123,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 588ec9d92f3a0110384478f56d1a514d7e490c98b23abb7c48843dc14c2935b1
 spec:
   replicas: 1
   selector:
@@ -132,8 +157,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 02cca01a4aa43a0cbe8d6890285b958a335bc324a51af9a530acd414230d44ca
 spec:
   selector:
     app: my-app
@@ -156,8 +186,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 588ec9d92f3a0110384478f56d1a514d7e490c98b23abb7c48843dc14c2935b1
 spec:
   replicas: 1
   selector:
@@ -188,8 +223,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 02cca01a4aa43a0cbe8d6890285b958a335bc324a51af9a530acd414230d44ca
 spec:
   selector:
     app: my-app
@@ -211,8 +251,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: Namespace
-    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 6ccfb32474de374740ea26c1a62289609d575b6777b25d95f35ef138812fc936
 ---
 "
 `;
@@ -228,8 +273,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: deployment
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 588ec9d92f3a0110384478f56d1a514d7e490c98b23abb7c48843dc14c2935b1
 spec:
   replicas: 1
   selector:
@@ -257,8 +307,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: frontend
     kubricate.thaitype.dev/resource-id: service
   annotations:
-    kubricate.thaitype.dev/stack-name: SimpleApp
-    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/simple-app"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 02cca01a4aa43a0cbe8d6890285b958a335bc324a51af9a530acd414230d44ca
 spec:
   selector:
     app: my-app
@@ -280,8 +335,13 @@ metadata:
     kubricate.thaitype.dev/stack-id: namespace
     kubricate.thaitype.dev/resource-id: namespace
   annotations:
-    kubricate.thaitype.dev/stack-name: Namespace
-    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
+    kubricate.thaitype.dev/stack-template-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-name: "@kubricate/stacks/namespace"
+    kubricate.thaitype.dev/stack-template-core-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-version: 0.22.0
+    kubricate.thaitype.dev/stack-template-author: Kubricate Team
+    kubricate.thaitype.dev/stack-template-repository: https://github.com/thaitype/kubricate
+    kubricate.thaitype.dev/resource-hash: 6ccfb32474de374740ea26c1a62289609d575b6777b25d95f35ef138812fc936
 ---
 "
 `;
