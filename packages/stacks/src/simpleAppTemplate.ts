@@ -6,6 +6,8 @@ import { defineStackTemplate } from '@kubricate/core';
 import { kubeModel } from '@kubricate/kubernetes-models';
 import { joinPath } from '@kubricate/toolkit';
 
+import { metadata } from './metadata.gen.js';
+
 export interface ISimpleAppStack {
   name: string;
   namespace?: string;
@@ -19,7 +21,7 @@ export interface ISimpleAppStack {
 export const simpleAppTemplate = defineStackTemplate({
   name: '@kubricate/stacks/simple-app',
   metadata: {
-    version: '0.22.0',
+    version: metadata.version,
     author: 'Kubricate Team',
     repository: 'https://github.com/thaitype/kubricate',
   },
