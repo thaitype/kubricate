@@ -1,5 +1,5 @@
 import type { StackTemplateName } from './StackTemplateName.type.js';
-import { version as coreVersion } from './version.js';
+import { metadata as coreMetadata } from './metadata.gen.js';
 
 /**
  * User-facing metadata that stack template authors can provide.
@@ -162,7 +162,7 @@ export function defineStackTemplate<TInput, TResourceMap extends Record<string, 
 
     // Inject coreVersion if metadata is provided
     const metadata: StackTemplateMetadata | undefined = config.metadata
-      ? { ...config.metadata, coreVersion }
+      ? { ...config.metadata, coreVersion: coreMetadata.version }
       : undefined;
 
     return {

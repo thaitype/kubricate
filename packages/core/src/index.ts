@@ -4,4 +4,4 @@ export * from './BaseConnector.js';
 export * from './types.js';
 export * from './defineStackTemplate.js';
 export * from './StackTemplateName.type.js';
-export * from './version.js';
+export * from './metadata.gen.js';
