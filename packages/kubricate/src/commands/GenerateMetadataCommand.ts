@@ -1,6 +1,7 @@
 import c from 'ansis';
+import { mkdirSync } from 'node:fs';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import type { BaseLogger } from '@kubricate/core';
 
@@ -75,6 +76,10 @@ export class GenerateMetadataCommand {
       this.logger.debug(`Writing metadata file to: ${outfilePath}`);
 
       try {
+        // Ensure directory exists
+        const outfileDir = dirname(outfilePath);
+        mkdirSync(outfileDir, { recursive: true });
+
         writeFileSync(outfilePath, content, 'utf-8');
       } catch (error) {
         throw new Error(
