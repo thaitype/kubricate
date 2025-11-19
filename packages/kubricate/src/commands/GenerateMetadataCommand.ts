@@ -1,10 +1,10 @@
 import c from 'ansis';
-import { mkdirSync } from 'node:fs';
-import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 import type { BaseLogger } from '@kubricate/core';
 
+import type { IFileSystem } from '../domain/IFileSystem.js';
+import { NodeFileSystem } from '../domain/NodeFileSystem.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
 
 export interface GenerateMetadataCommandOptions extends GlobalConfigOptions {
@@ -30,14 +30,17 @@ export class GenerateMetadataCommand {
   private readonly cwd: string;
   private readonly outfile: string;
   private readonly field: string;
+  private readonly fileSystem: IFileSystem;
 
   constructor(
     private readonly options: GenerateMetadataCommandOptions,
-    private readonly logger: BaseLogger
+    private readonly logger: BaseLogger,
+    fileSystem?: IFileSystem
   ) {
     this.cwd = resolve(options.cwd || process.cwd());
     this.outfile = options.outfile || 'src/metadata.gen.ts';
     this.field = options.field || 'version';
+    this.fileSystem = fileSystem ?? new NodeFileSystem();
   }
 
   async execute(): Promise<void> {
@@ -50,7 +53,7 @@ export class GenerateMetadataCommand {
 
       let packageJson: Record<string, unknown>;
       try {
-        const content = readFileSync(packageJsonPath, 'utf-8');
+        const content = this.fileSystem.readFile(packageJsonPath);
         packageJson = JSON.parse(content);
       } catch (error) {
         throw new Error(
@@ -78,9 +81,11 @@ export class GenerateMetadataCommand {
       try {
         // Ensure directory exists
         const outfileDir = dirname(outfilePath);
-        mkdirSync(outfileDir, { recursive: true });
+        if (!this.fileSystem.exists(outfileDir)) {
+          this.fileSystem.mkdir(outfileDir, { recursive: true });
+        }
 
-        writeFileSync(outfilePath, content, 'utf-8');
+        this.fileSystem.writeFile(outfilePath, content);
       } catch (error) {
         throw new Error(
           `Failed to write ${outfilePath}: ${error instanceof Error ? error.message : String(error)}`
