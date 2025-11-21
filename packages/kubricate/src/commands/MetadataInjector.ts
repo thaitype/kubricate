@@ -36,6 +36,7 @@ export interface MetadataInjectorOptions {
     managedAt?: boolean;
     resourceHash?: boolean;
     version?: boolean;
+    templateMetadata?: boolean;
   };
 }
 
@@ -64,9 +65,12 @@ export class MetadataInjector {
       // DEPRECATED: Keep old stack-name for backward compatibility (will be removed in v1.0)
       metadata.annotations[LABELS.stackName] = this.options.stackTemplateName!;
 
-      // Inject stack template metadata if available
+      // Inject stack template metadata if available and enabled
+      // Default to true if not explicitly set to false
+      const shouldInjectTemplateMetadata = this.options.inject?.templateMetadata !== false;
       const templateMeta = this.options.stackTemplateMetadata;
-      if (templateMeta) {
+
+      if (shouldInjectTemplateMetadata && templateMeta) {
         // coreVersion is always injected when metadata exists
         metadata.annotations[LABELS.stackTemplateCoreVersion] = templateMeta.coreVersion;
 

@@ -25,6 +25,7 @@ const defaultMetadata: Required<ProjectMetadataOptions> = {
   injectManagedAt: true,
   injectResourceHash: true,
   injectVersion: true,
+  injectTemplateMetadata: true,
 };
 
 interface KubernetesMetadata {
@@ -71,6 +72,7 @@ export class Renderer {
           managedAt: this.metadata.injectManagedAt,
           resourceHash: this.metadata.injectResourceHash,
           version: this.metadata.injectVersion,
+          templateMetadata: this.metadata.injectTemplateMetadata,
         },
       });
 
