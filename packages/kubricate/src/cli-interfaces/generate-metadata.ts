@@ -1,9 +1,6 @@
 import type { ArgumentsCamelCase, CommandModule } from 'yargs';
 
-import {
-  GenerateMetadataCommand,
-  type GenerateMetadataCommandOptions,
-} from '../commands/GenerateMetadataCommand.js';
+import { GenerateMetadataCommand, type GenerateMetadataCommandOptions } from '../commands/GenerateMetadataCommand.js';
 import { handlerError } from '../internal/error.js';
 import { ConsoleLogger } from '../internal/logger.js';
 import type { GlobalConfigOptions } from '../internal/types.js';

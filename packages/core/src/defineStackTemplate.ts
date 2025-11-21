@@ -1,5 +1,5 @@
-import type { StackTemplateName } from './StackTemplateName.type.js';
 import { metadata as coreMetadata } from './metadata.gen.js';
+import type { StackTemplateName } from './StackTemplateName.type.js';
 
 /**
  * User-facing metadata that stack template authors can provide.

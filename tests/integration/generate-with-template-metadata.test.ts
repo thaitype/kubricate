@@ -183,9 +183,7 @@ export default defineConfig({
       .map(doc => parseYaml(doc));
 
     // Find all resources from the simple-app stack (Deployment and Service)
-    const appResources = yamlDocs.filter(doc =>
-      doc.metadata?.labels?.['kubricate.thaitype.dev/stack-id'] === 'app'
-    );
+    const appResources = yamlDocs.filter(doc => doc.metadata?.labels?.['kubricate.thaitype.dev/stack-id'] === 'app');
 
     expect(appResources.length).toBeGreaterThan(0);
 
@@ -218,12 +216,10 @@ export default defineConfig({
       .map(doc => parseYaml(doc));
 
     // Find resources from different stacks
-    const namespaceResources = yamlDocs.filter(doc =>
-      doc.metadata?.labels?.['kubricate.thaitype.dev/stack-id'] === 'namespace'
+    const namespaceResources = yamlDocs.filter(
+      doc => doc.metadata?.labels?.['kubricate.thaitype.dev/stack-id'] === 'namespace'
     );
-    const appResources = yamlDocs.filter(doc =>
-      doc.metadata?.labels?.['kubricate.thaitype.dev/stack-id'] === 'app'
-    );
+    const appResources = yamlDocs.filter(doc => doc.metadata?.labels?.['kubricate.thaitype.dev/stack-id'] === 'app');
 
     expect(namespaceResources.length).toBeGreaterThan(0);
     expect(appResources.length).toBeGreaterThan(0);

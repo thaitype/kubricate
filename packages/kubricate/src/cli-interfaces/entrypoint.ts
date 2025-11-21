@@ -6,8 +6,8 @@ import type { LogLevel } from '@kubricate/core';
 
 import { MARK_INFO } from '../internal/constant.js';
 import { ConsoleLogger } from '../internal/logger.js';
-import { generateCommand } from './generate.js';
 import { generateMetadataCommand } from './generate-metadata.js';
+import { generateCommand } from './generate.js';
 import { secretCommand } from './secret/index.js';
 
 export interface CliEntryPointOptions {

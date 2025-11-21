@@ -1,5 +1,6 @@
-import c from 'ansis';
 import { dirname, join, resolve } from 'node:path';
+
+import c from 'ansis';
 
 import type { BaseLogger } from '@kubricate/core';
 
@@ -87,9 +88,7 @@ export class GenerateMetadataCommand {
 
         this.fileSystem.writeFile(outfilePath, content);
       } catch (error) {
-        throw new Error(
-          `Failed to write ${outfilePath}: ${error instanceof Error ? error.message : String(error)}`
-        );
+        throw new Error(`Failed to write ${outfilePath}: ${error instanceof Error ? error.message : String(error)}`);
       }
 
       this.logger.info(`${c.green('✔')} Generated ${c.cyan(this.outfile)}`);
