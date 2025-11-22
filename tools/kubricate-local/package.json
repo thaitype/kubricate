@@ -34,10 +34,16 @@
     "lint:fix": "mono lint:fix",
     "check-types": "mono check-types"
   },
+  "dependencies": {
+    "ansis": "^3.17.0",
+    "yargs": "^17.7.2"
+  },
   "devDependencies": {
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",
-    "@kubricate/mono": "workspace:*"
+    "@kubricate/mono": "workspace:*",
+    "@types/node": "^22.13.9",
+    "@types/yargs": "^17.0.33"
   }
 }

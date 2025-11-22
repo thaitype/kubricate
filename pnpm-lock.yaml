@@ -484,7 +484,7 @@ importers:
         version: link:../../tools/mono
       kubricate-local:
         specifier: workspace:*
-        version: link:../../tools/local
+        version: link:../../tools/kubricate-local
 
   packages/kubernetes-models:
     devDependencies:
@@ -639,6 +639,9 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
+      kubricate-local:
+        specifier: workspace:*
+        version: link:../../tools/kubricate-local
 
   packages/toolkit:
     devDependencies:
@@ -698,7 +701,14 @@ importers:
         specifier: ^2.7.0
         version: 2.7.1
 
-  tools/local:
+  tools/kubricate-local:
+    dependencies:
+      ansis:
+        specifier: ^3.17.0
+        version: 3.17.0
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
     devDependencies:
       '@kubricate/config-eslint':
         specifier: workspace:*
@@ -712,6 +722,12 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../mono
+      '@types/node':
+        specifier: ^22.13.9
+        version: 22.13.14
+      '@types/yargs':
+        specifier: ^17.0.33
+        version: 17.0.33
 
   tools/mono:
     dependencies:

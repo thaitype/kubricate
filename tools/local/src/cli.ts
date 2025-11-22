@@ -1,1 +1,0 @@
-console.log('This is the kubricate-local CLI tool.');
