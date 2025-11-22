@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { BaseLogger } from '../types/logger.js';
 import { InMemoryFileSystem } from '../domain/InMemoryFileSystem.js';
+import type { BaseLogger } from '../types/logger.js';
 import { GenerateMetadataCommand, type GenerateMetadataCommandOptions } from './GenerateMetadataCommand.js';
 
 describe('GenerateMetadataCommand', () => {

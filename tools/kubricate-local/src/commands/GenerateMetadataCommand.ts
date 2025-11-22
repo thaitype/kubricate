@@ -2,10 +2,10 @@ import { dirname, join, resolve } from 'node:path';
 
 import c from 'ansis';
 
-import type { BaseLogger } from '../types/logger.js';
 import type { IFileSystem } from '../domain/IFileSystem.js';
 import { NodeFileSystem } from '../domain/NodeFileSystem.js';
 import type { GlobalConfigOptions } from '../internal/types.js';
+import type { BaseLogger } from '../types/logger.js';
 
 export interface GenerateMetadataCommandOptions extends GlobalConfigOptions {
   cwd?: string;

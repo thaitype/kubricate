@@ -1,7 +1,6 @@
 import c from 'ansis';
 
 import type { BaseLogger, LogLevel } from '../types/logger.js';
-
 import { MARK_ERROR, MARK_INFO, MARK_WARNING } from './constant.js';
 
 export class ConsoleLogger implements BaseLogger {

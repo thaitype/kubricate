@@ -1,5 +1,4 @@
 import type { BaseLogger } from '../types/logger.js';
-
 import { ConsoleLogger } from './logger.js';
 
 export function handlerError(error: unknown, logger: BaseLogger | undefined, exitCode = 3): void {
