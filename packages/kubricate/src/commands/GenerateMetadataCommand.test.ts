@@ -12,10 +12,10 @@ describe('GenerateMetadataCommand', () => {
   beforeEach(() => {
     logger = {
       level: 'info',
-      info: vi.fn(),
+      log: vi.fn(),
       warn: vi.fn(),
       error: vi.fn(),
-      log: vi.fn(),
+      info: vi.fn(),
       debug: vi.fn(),
     };
 
@@ -47,10 +47,10 @@ describe('GenerateMetadataCommand', () => {
       expect(generatedContent).toContain('DO NOT EDIT MANUALLY');
       expect(generatedContent).toContain('export const metadata = {');
 
-      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('generate-metadata'));
-      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Found version'));
-      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Generated'));
-      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Done'));
+      expect(logger.log).toHaveBeenCalledWith(expect.stringContaining('generate-metadata'));
+      expect(logger.log).toHaveBeenCalledWith(expect.stringContaining('Found version'));
+      expect(logger.log).toHaveBeenCalledWith(expect.stringContaining('Generated'));
+      expect(logger.log).toHaveBeenCalledWith(expect.stringContaining('Done'));
     });
 
     it('should use custom cwd option', async () => {
@@ -94,7 +94,7 @@ describe('GenerateMetadataCommand', () => {
 
       const generatedContent = fileSystem.readFile('/test/src/metadata.gen.ts');
       expect(generatedContent).toContain("version: 'custom-value'");
-      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Found customField'));
+      expect(logger.log).toHaveBeenCalledWith(expect.stringContaining('Found customField'));
     });
 
     it('should create output directory if it does not exist', async () => {
@@ -244,7 +244,7 @@ describe('GenerateMetadataCommand', () => {
   });
 
   describe('debug logging', () => {
-    it('should log debug information about file paths', async () => {
+    it('should log debug logrmation about file paths', async () => {
       const packageJson = createPackageJson({ version: '1.0.0' });
       fileSystem.mkdir('/test', { recursive: true });
       fileSystem.writeFile('/test/package.json', packageJson);
