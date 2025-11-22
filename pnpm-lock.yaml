@@ -482,6 +482,9 @@ importers:
       '@kubricate/mono':
         specifier: workspace:*
         version: link:../../tools/mono
+      kubricate-local:
+        specifier: workspace:*
+        version: link:../../tools/local
 
   packages/kubernetes-models:
     devDependencies:
@@ -694,6 +697,21 @@ importers:
       yaml:
         specifier: ^2.7.0
         version: 2.7.1
+
+  tools/local:
+    devDependencies:
+      '@kubricate/config-eslint':
+        specifier: workspace:*
+        version: link:../../configs/config-eslint
+      '@kubricate/config-typescript':
+        specifier: workspace:*
+        version: link:../../configs/config-typescript
+      '@kubricate/config-vitest':
+        specifier: workspace:*
+        version: link:../../configs/config-vitest
+      '@kubricate/mono':
+        specifier: workspace:*
+        version: link:../mono
 
   tools/mono:
     dependencies:
