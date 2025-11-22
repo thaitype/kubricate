@@ -46,7 +46,7 @@ export class GenerateMetadataCommand {
 
   async execute(): Promise<void> {
     try {
-      this.logger.info(c.bold(`\n${c.blue('kubricate')} generate-metadata\n`));
+      this.logger.log(c.bold(`\n${c.blue('kubricate')} generate-metadata\n`));
 
       // Read package.json
       const packageJsonPath = join(this.cwd, 'package.json');
@@ -70,7 +70,7 @@ export class GenerateMetadataCommand {
         );
       }
 
-      this.logger.info(`${c.cyan('ℹ')} Found ${this.field}: ${c.green(fieldValue)}`);
+      this.logger.log(`${c.cyan('ℹ')} Found ${this.field}: ${c.green(fieldValue)}`);
 
       // Generate metadata.gen.ts content
       const content = this.generateMetadataContent(fieldValue);
@@ -91,8 +91,8 @@ export class GenerateMetadataCommand {
         throw new Error(`Failed to write ${outfilePath}: ${error instanceof Error ? error.message : String(error)}`);
       }
 
-      this.logger.info(`${c.green('✔')} Generated ${c.cyan(this.outfile)}`);
-      this.logger.info(c.green(`${c.green('✔')} Done!\n`));
+      this.logger.log(`${c.green('✔')} Generated ${c.cyan(this.outfile)}`);
+      this.logger.log(c.green(`${c.green('✔')} Done!\n`));
     } catch (error) {
       this.logger.error(c.red(`✖ Error: ${error instanceof Error ? error.message : String(error)}`));
       throw error;
