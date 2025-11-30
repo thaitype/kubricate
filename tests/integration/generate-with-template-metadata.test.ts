@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { rimraf } from 'rimraf';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { parse as parseYaml } from 'yaml';
 
 import { executeKubricate } from '../helpers/execute-kubricate';
@@ -15,41 +15,9 @@ describe('generate with template metadata e2e', () => {
   const outputDir = path.join(fixtureDir, 'output');
   const outputFile = path.join(outputDir, 'stacks.yml');
 
-  beforeEach(async () => {
-    // Create fixture directory structure
-    await fs.mkdir(fixtureDir, { recursive: true });
-
-    // Create kubricate.config.ts that uses templates with metadata
-    const configContent = `import { defineConfig } from 'kubricate';
-import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
-import { Stack } from 'kubricate';
-
-export default defineConfig({
-  stacks: {
-    namespace: Stack.fromTemplate(namespaceTemplate, { name: 'test-namespace' }),
-    app: Stack.fromTemplate(simpleAppTemplate, {
-      name: 'test-app',
-      namespace: 'test-namespace',
-      imageName: 'nginx',
-    }),
-  },
-  generate: {
-    outputMode: 'flat',
-  },
-  metadata: {
-    // Disable dynamic fields for consistent testing
-    injectManagedAt: false,
-    injectVersion: false,
-  },
-});
-`;
-
-    await fs.writeFile(path.join(fixtureDir, 'kubricate.config.ts'), configContent, 'utf-8');
-  });
-
   afterEach(async () => {
-    // Clean up fixture directory
-    await rimraf(fixtureDir);
+    // Clean up generated output directory only
+    await rimraf(outputDir);
   });
 
   it('should generate YAML with stack template metadata annotations', async () => {

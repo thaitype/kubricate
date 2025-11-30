@@ -1,7 +1,7 @@
 import { execa, Options } from 'execa';
 
-export async function executeKubricate(args: string[], options?: Options) {
-  return execa('kubricate', args, options);
+export async function executeKubricate(args: string[], options?: Options): Promise<ReturnType<typeof execa>> {
+  return execa('kubricate', args, { preferLocal: true, ...options });
 }
 
 /**
