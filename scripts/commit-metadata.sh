@@ -24,7 +24,31 @@ if git diff --cached --quiet; then
   exit 0
 fi
 
-# 4. Commit
-git commit -m "chore: regenerate metadata.gen.ts"
+#!/bin/bash
+set -euo pipefail
 
-echo "Committed updated metadata.gen.ts files."
+echo "Regenerating metadata.gen.ts files..."
+pnpm generate:metadata
+
+# Check if there are any changes to metadata.gen.ts files
+if git diff --quiet '**/metadata.gen.ts'; then
+  echo "No changes to metadata.gen.ts files"
+  exit 0
+fi
+
+echo "Detected changes in metadata.gen.ts files:"
+git diff --name-only '**/metadata.gen.ts'
+
+# Stage the metadata files
+git add '**/metadata.gen.ts'
+
+# Check if there are staged changes
+if git diff --cached --quiet; then
+  echo "No staged changes to commit"
+  exit 0
+fi
+
+# Amend the previous commit (the version commit) instead of creating a new one
+git commit --amend --no-edit
+
+echo "✓ Metadata changes added to the version commit"
