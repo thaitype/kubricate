@@ -67,10 +67,10 @@ describe('CLI Integration (non-root directory)', () => {
   it('should generate expected files when run from different cwd', async () => {
     const differentCwd = path.join(fixturesRoot, fixture);
     const args = ['generate', '--root', './example'];
-    
-    const { stdout, exitCode } = await executeKubricate(args, { 
+
+    const { stdout, exitCode } = await executeKubricate(args, {
       reject: false,
-      cwd: differentCwd 
+      cwd: differentCwd,
     });
 
     expect(exitCode).toBe(0);
@@ -82,12 +82,12 @@ describe('CLI Integration (non-root directory)', () => {
   it('should generate expected files when --root is not provided (default to cwd)', async () => {
     const { stdout, exitCode } = await executeKubricate(['generate'], {
       reject: false,
-      cwd: fixturesDir
+      cwd: fixturesDir,
     });
 
     expect(exitCode).toBe(0);
     expect(stdout).toContain('Generating stacks');
 
     await snapshotDirectory(outputFixtureDir, `${fixture}/example/${outputDir}`);
-  })
+  });
 });

@@ -1,6 +1,5 @@
-import { defineConfig } from 'kubricate';
 import { namespaceTemplate, simpleAppTemplate } from '@kubricate/stacks';
-import { Stack } from 'kubricate';
+import { defineConfig, Stack } from 'kubricate';
 
 export default defineConfig({
   stacks: {
