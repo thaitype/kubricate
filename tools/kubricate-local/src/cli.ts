@@ -3,6 +3,8 @@ import { hideBin } from 'yargs/helpers';
 import yargs from 'yargs/yargs';
 
 import { generateMetadataCommand } from './cli-interfaces/generate-metadata.js';
+import { handlerError } from './internal/error.js';
+import { ConsoleLogger } from './internal/logger.js';
 
 /**
  * kubricate-local CLI entrypoint
@@ -26,7 +28,6 @@ async function main() {
     .parse();
 }
 
-main().catch(error => {
-  console.error('Fatal error:', error);
-  process.exit(1);
+main().catch(err => {
+  handlerError(err, new ConsoleLogger('error'), 99);
 });
