@@ -243,7 +243,7 @@ describe('GenerateMetadataCommand', () => {
   });
 
   describe('debug logging', () => {
-    it('should log debug logrmation about file paths', async () => {
+    it('should log debug information about file paths', async () => {
       const packageJson = createPackageJson({ version: '1.0.0' });
       fileSystem.mkdir('/test', { recursive: true });
       fileSystem.writeFile('/test/package.json', packageJson);
