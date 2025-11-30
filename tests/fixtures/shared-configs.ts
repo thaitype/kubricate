@@ -68,4 +68,5 @@ export const metadata = {
   // Disable DateTime & Version injection for snapshot testing
   injectManagedAt: false,
   injectVersion: false,
+  injectTemplateMetadata: false, // Disable template metadata for stable snapshots
 };

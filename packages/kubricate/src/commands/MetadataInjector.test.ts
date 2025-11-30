@@ -11,7 +11,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test-stack',
-        stackName: 'Test Stack',
+        stackTemplateName: 'test-stack',
         resourceId: 'deployment',
       });
 
@@ -23,7 +23,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test-stack',
-        stackName: 'Test Stack',
+        stackTemplateName: 'test-stack',
         resourceId: 'deployment',
       });
 
@@ -39,7 +39,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'my-stack',
-        stackName: 'My Stack',
+        stackTemplateName: 'my-stack',
         resourceId: 'my-deployment',
       });
 
@@ -48,7 +48,7 @@ describe('MetadataInjector', () => {
       const metadata = result.metadata as any;
 
       expect(metadata.labels[LABELS.stackId]).toBe('my-stack');
-      expect(metadata.annotations[LABELS.stackName]).toBe('My Stack');
+      expect(metadata.annotations[LABELS.stackName]).toBe('my-stack');
       expect(metadata.labels[LABELS.resourceId]).toBe('my-deployment');
     });
 
@@ -73,7 +73,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '2.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { version: true },
       });
@@ -91,7 +91,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         managedAt: fixedDate,
         inject: { managedAt: true },
@@ -109,7 +109,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { managedAt: true },
       });
@@ -127,7 +127,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -145,7 +145,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
       });
 
@@ -162,7 +162,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
       });
 
@@ -189,7 +189,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -211,7 +211,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -233,7 +233,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -272,7 +272,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -302,7 +302,7 @@ describe('MetadataInjector', () => {
         type: 'stack',
         kubricateVersion: '1.0.0',
         stackId: 'test',
-        stackName: 'Test',
+        stackTemplateName: 'test',
         resourceId: 'res',
         inject: { resourceHash: true },
       });
@@ -322,6 +322,251 @@ describe('MetadataInjector', () => {
 
       expect(hash).toBeDefined();
       expect(hash).toHaveLength(64);
+    });
+  });
+
+  describe('template metadata injection', () => {
+    it('should inject stack template metadata when provided', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        stackTemplateMetadata: {
+          version: '1.5.0',
+          coreVersion: '0.22.0',
+          author: 'Platform Team',
+          repository: 'https://github.com/acme/stacks',
+        },
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      expect(annotations[LABELS.stackTemplateVersion]).toBe('1.5.0');
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBe('0.22.0');
+      expect(annotations[LABELS.stackTemplateAuthor]).toBe('Platform Team');
+      expect(annotations[LABELS.stackTemplateRepository]).toBe('https://github.com/acme/stacks');
+    });
+
+    it('should inject all optional template metadata fields when provided', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        stackTemplateMetadata: {
+          version: '1.0.0',
+          coreVersion: '0.22.0',
+          author: 'Platform Team <platform@acme.com>',
+          description: 'Production-ready web application with monitoring',
+          homepage: 'https://docs.acme.com/stacks/simple-app',
+          repository: 'https://github.com/acme/app-stacks',
+        },
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      expect(annotations[LABELS.stackTemplateVersion]).toBe('1.0.0');
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBe('0.22.0');
+      expect(annotations[LABELS.stackTemplateAuthor]).toBe('Platform Team <platform@acme.com>');
+      expect(annotations[LABELS.stackTemplateDescription]).toBe('Production-ready web application with monitoring');
+      expect(annotations[LABELS.stackTemplateHomepage]).toBe('https://docs.acme.com/stacks/simple-app');
+      expect(annotations[LABELS.stackTemplateRepository]).toBe('https://github.com/acme/app-stacks');
+    });
+
+    it('should omit optional fields when not provided', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        stackTemplateMetadata: {
+          version: '1.0.0',
+          coreVersion: '0.22.0',
+          // No optional fields
+        },
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      // Required fields should exist
+      expect(annotations[LABELS.stackTemplateVersion]).toBe('1.0.0');
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBe('0.22.0');
+
+      // Optional fields should not exist
+      expect(annotations[LABELS.stackTemplateAuthor]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateDescription]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateHomepage]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateRepository]).toBeUndefined();
+    });
+
+    it('should omit individual optional fields when not provided', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        stackTemplateMetadata: {
+          version: '1.0.0',
+          coreVersion: '0.22.0',
+          author: 'Platform Team',
+          // No description, homepage, or repository
+        },
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      expect(annotations[LABELS.stackTemplateVersion]).toBe('1.0.0');
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBe('0.22.0');
+      expect(annotations[LABELS.stackTemplateAuthor]).toBe('Platform Team');
+      expect(annotations[LABELS.stackTemplateDescription]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateHomepage]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateRepository]).toBeUndefined();
+    });
+
+    it('should not inject template metadata when stackTemplateMetadata is not provided', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        // No stackTemplateMetadata
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      expect(annotations[LABELS.stackTemplateVersion]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateAuthor]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateDescription]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateHomepage]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateRepository]).toBeUndefined();
+    });
+
+    it('should still inject stackTemplateName when stackTemplateMetadata is not provided', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        // No stackTemplateMetadata
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      // stackTemplateName should always be injected
+      expect(annotations[LABELS.stackTemplateName]).toBe('@kubricate/stacks/simple-app');
+    });
+
+    it('should handle template metadata for secret type correctly', () => {
+      const injector = new MetadataInjector({
+        type: 'secret',
+        kubricateVersion: '1.0.0',
+        secretManagerId: 'secret-mgr',
+        secretManagerName: 'Secret Manager',
+        stackTemplateMetadata: {
+          version: '1.0.0',
+          coreVersion: '0.22.0',
+        },
+      });
+
+      const resource = { kind: 'Secret' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      // Template metadata should not be injected for secret type
+      expect(annotations[LABELS.stackTemplateVersion]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBeUndefined();
+    });
+
+    it('should inject template metadata alongside other metadata', () => {
+      const fixedDate = '2024-01-01T00:00:00.000Z';
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '2.0.0',
+        stackId: 'my-stack',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        managedAt: fixedDate,
+        stackTemplateMetadata: {
+          version: '1.5.0',
+          coreVersion: '0.22.0',
+          author: 'Platform Team',
+        },
+        inject: {
+          version: true,
+          managedAt: true,
+          resourceHash: true,
+        },
+      });
+
+      const resource = { kind: 'Deployment', spec: { replicas: 3 } };
+      const result = injector.inject(resource);
+      const metadata = result.metadata as any;
+
+      // Standard labels
+      expect(metadata.labels[LABELS.kubricate]).toBe('true');
+      expect(metadata.labels[LABELS.stackId]).toBe('my-stack');
+      expect(metadata.labels[LABELS.resourceId]).toBe('deployment');
+
+      // Standard annotations
+      expect(metadata.annotations[LABELS.stackTemplateName]).toBe('@kubricate/stacks/simple-app');
+      expect(metadata.annotations[LABELS.version]).toBe('2.0.0');
+      expect(metadata.annotations[LABELS.managedAt]).toBe(fixedDate);
+      expect(metadata.annotations[LABELS.resourceHash]).toBeDefined();
+
+      // Template metadata annotations
+      expect(metadata.annotations[LABELS.stackTemplateVersion]).toBe('1.5.0');
+      expect(metadata.annotations[LABELS.stackTemplateCoreVersion]).toBe('0.22.0');
+      expect(metadata.annotations[LABELS.stackTemplateAuthor]).toBe('Platform Team');
+    });
+
+    it('should NOT inject template metadata when inject.templateMetadata is false', () => {
+      const injector = new MetadataInjector({
+        type: 'stack',
+        kubricateVersion: '1.0.0',
+        stackId: 'test',
+        stackTemplateName: '@kubricate/stacks/simple-app',
+        resourceId: 'deployment',
+        stackTemplateMetadata: {
+          version: '1.5.0',
+          coreVersion: '0.22.0',
+          author: 'Platform Team',
+        },
+        inject: {
+          templateMetadata: false, // Explicitly disabled
+        },
+      });
+
+      const resource = { kind: 'Deployment' };
+      const result = injector.inject(resource);
+      const annotations = (result.metadata as any).annotations;
+
+      // stackTemplateName should still be injected
+      expect(annotations[LABELS.stackTemplateName]).toBe('@kubricate/stacks/simple-app');
+
+      // But template metadata should NOT be injected
+      expect(annotations[LABELS.stackTemplateVersion]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateCoreVersion]).toBeUndefined();
+      expect(annotations[LABELS.stackTemplateAuthor]).toBeUndefined();
     });
   });
 });

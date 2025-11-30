@@ -1,0 +1,49 @@
+{
+  "name": "kubricate-local",
+  "description": "Kubricate Local tool for automating scripts",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "kubricate-local": "./bin.mjs"
+  },  
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "mono dev",
+    "start": "mono start",
+    "build": "mono build",
+    "test": "mono test",
+    "test:watch": "mono test:watch",
+    "lint:check": "mono lint:check",
+    "lint:fix": "mono lint:fix",
+    "check-types": "mono check-types"
+  },
+  "dependencies": {
+    "ansis": "^3.17.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@kubricate/config-eslint": "workspace:*",
+    "@kubricate/config-typescript": "workspace:*",
+    "@kubricate/config-vitest": "workspace:*",
+    "@kubricate/mono": "workspace:*",
+    "@types/node": "^22.13.9",
+    "@types/yargs": "^17.0.33"
+  }
+}

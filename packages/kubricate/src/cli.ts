@@ -9,5 +9,5 @@ cliEntryPoint(process.argv, {
   version,
   scriptName: 'kbr',
 }).catch(err => {
-  handlerError(err, new ConsoleLogger('silent'), 99);
+  handlerError(err, new ConsoleLogger('error'), 99);
 });

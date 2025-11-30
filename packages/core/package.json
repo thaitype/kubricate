@@ -21,9 +21,12 @@
     "test:watch": "mono test:watch",
     "lint:check": "mono lint:check",
     "lint:fix": "mono lint:fix",
-    "check-types": "mono check-types"
+    "check-types": "mono check-types",
+    "generate:metadata": "kubricate-local generate-metadata",
+    "prepublishOnly": "pnpm generate:metadata"
   },
   "devDependencies": {
+    "kubricate-local": "workspace:*",
     "@kubricate/config-eslint": "workspace:*",
     "@kubricate/config-typescript": "workspace:*",
     "@kubricate/config-vitest": "workspace:*",

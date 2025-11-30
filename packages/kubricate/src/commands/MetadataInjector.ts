@@ -11,8 +11,19 @@ export interface MetadataInjectorOptions {
 
   // Stack fields
   stackId?: string;
-  stackName?: string;
+  stackTemplateName?: string; // NEW (renamed from stackName)
   resourceId?: string;
+
+  // Stack template metadata (NEW)
+  // Note: This is the full StackTemplateMetadata (includes coreVersion)
+  stackTemplateMetadata?: {
+    version: string; // Template version (required if metadata exists)
+    author?: string;
+    description?: string;
+    homepage?: string;
+    repository?: string;
+    coreVersion: string; // Always present when metadata exists
+  };
 
   // Secret fields
   secretManagerId?: string;
@@ -25,6 +36,7 @@ export interface MetadataInjectorOptions {
     managedAt?: boolean;
     resourceHash?: boolean;
     version?: boolean;
+    templateMetadata?: boolean;
   };
 }
 
@@ -45,8 +57,40 @@ export class MetadataInjector {
 
     if (this.options.type === 'stack') {
       metadata.labels[LABELS.stackId] = this.options.stackId!;
-      metadata.annotations[LABELS.stackName] = this.options.stackName!;
       metadata.labels[LABELS.resourceId] = this.options.resourceId!;
+
+      // NEW: Use stack-template-name instead of stack-name
+      metadata.annotations[LABELS.stackTemplateName] = this.options.stackTemplateName!;
+
+      // DEPRECATED: Keep old stack-name for backward compatibility (will be removed in v1.0)
+      metadata.annotations[LABELS.stackName] = this.options.stackTemplateName!;
+
+      // Inject stack template metadata if available and enabled
+      // Default to true if not explicitly set to false
+      const shouldInjectTemplateMetadata = this.options.inject?.templateMetadata !== false;
+      const templateMeta = this.options.stackTemplateMetadata;
+
+      if (shouldInjectTemplateMetadata && templateMeta) {
+        // coreVersion is always injected when metadata exists
+        metadata.annotations[LABELS.stackTemplateCoreVersion] = templateMeta.coreVersion;
+
+        // version is required when metadata exists
+        metadata.annotations[LABELS.stackTemplateVersion] = templateMeta.version;
+
+        // Optional fields (only inject if present)
+        if (templateMeta.author) {
+          metadata.annotations[LABELS.stackTemplateAuthor] = templateMeta.author;
+        }
+        if (templateMeta.description) {
+          metadata.annotations[LABELS.stackTemplateDescription] = templateMeta.description;
+        }
+        if (templateMeta.homepage) {
+          metadata.annotations[LABELS.stackTemplateHomepage] = templateMeta.homepage;
+        }
+        if (templateMeta.repository) {
+          metadata.annotations[LABELS.stackTemplateRepository] = templateMeta.repository;
+        }
+      }
     } else if (this.options.type === 'secret') {
       metadata.labels[LABELS.secretManagerId] = this.options.secretManagerId!;
       metadata.annotations[LABELS.secretManagerName] = this.options.secretManagerName!;

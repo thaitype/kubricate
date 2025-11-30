@@ -31,8 +31,9 @@ exports[`CLI output display ('Run no command with --h option') > should display 
 "kbr <command>
 
 Commands:
-  kbr generate          Generate a stack into yaml files
-  kbr secret [command]  Manage secrets with SecretManager
+  kbr generate           Generate a stack into yaml files
+  kbr generate-metadata  Generate metadata.gen.ts from package.json
+  kbr secret [command]   Manage secrets with SecretManager
 
 Options:
       --root     Root directory                                         [string]
@@ -48,8 +49,9 @@ exports[`CLI output display ('Run no command with --help option') > should displ
 "kbr <command>
 
 Commands:
-  kbr generate          Generate a stack into yaml files
-  kbr secret [command]  Manage secrets with SecretManager
+  kbr generate           Generate a stack into yaml files
+  kbr generate-metadata  Generate metadata.gen.ts from package.json
+  kbr secret [command]   Manage secrets with SecretManager
 
 Options:
       --root     Root directory                                         [string]
@@ -70,8 +72,9 @@ exports[`CLI output display ('Run no command') > should display expected output 
 kbr <command>
 
 Commands:
-  kbr generate          Generate a stack into yaml files
-  kbr secret [command]  Manage secrets with SecretManager
+  kbr generate           Generate a stack into yaml files
+  kbr generate-metadata  Generate metadata.gen.ts from package.json
+  kbr secret [command]   Manage secrets with SecretManager
 
 Options:
       --root     Root directory                                         [string]

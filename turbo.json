@@ -10,6 +10,9 @@
       "dependsOn": ["^generate"],
       "cache": false
     },
+    "generate:metadata": {
+      "dependsOn": ["^generate:metadata"]
+    },
     "test": {
       "dependsOn": ["build-tools", "^test"]
     },

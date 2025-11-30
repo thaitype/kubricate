@@ -83,6 +83,26 @@ export interface ProjectMetadataOptions {
    * @default true
    */
   injectVersion?: boolean;
+
+  /**
+   * Whether to inject stack template metadata annotations into each generated resource.
+   *
+   * When enabled, Kubricate will inject template-specific metadata such as:
+   * - `kubricate.thaitype.dev/stack-template-version`
+   * - `kubricate.thaitype.dev/stack-template-core-version`
+   * - `kubricate.thaitype.dev/stack-template-author`
+   * - `kubricate.thaitype.dev/stack-template-description`
+   * - `kubricate.thaitype.dev/stack-template-homepage`
+   * - `kubricate.thaitype.dev/stack-template-repository`
+   *
+   * Useful for tracking which template version was used to generate resources.
+   * Can be disabled in snapshot tests to avoid failures when template versions change.
+   *
+   * Defaults to `true` if omitted.
+   *
+   * @default true
+   */
+  injectTemplateMetadata?: boolean;
 }
 
 export interface KubricateConfig {
