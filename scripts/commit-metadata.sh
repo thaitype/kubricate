@@ -16,7 +16,7 @@ echo "Detected changes in metadata.gen.ts:"
 echo "$CHANGED_FILES"
 
 # 3. Stage the changed files
-git add **/metadata.gen.ts
+git add -- '**/metadata.gen.ts'
 
 # Double-check that staging actually contains changes
 if git diff --cached --quiet; then
