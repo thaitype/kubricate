@@ -83,7 +83,7 @@ describe('CLI Integration (non-root directory)', () => {
     const { stdout, exitCode } = await executeKubricate(['generate'], {
       reject: false,
       cwd: fixturesDir
-    })
+    });
 
     expect(exitCode).toBe(0);
     expect(stdout).toContain('Generating stacks');
