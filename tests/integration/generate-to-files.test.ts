@@ -53,3 +53,41 @@ describe.each(scenarios)('CLI Integration ($name)', ({ fixture }) => {
     await snapshotDirectory(outputFixtureDir, `${fixture}/${outputDir}`);
   });
 });
+
+describe('CLI Integration (non-root directory)', () => {
+  const fixture = 'generate-output-non-root-dir';
+  const fixturesDir = path.join(fixturesRoot, fixture, 'example');
+  const outputDir = 'output';
+  const outputFixtureDir = path.join(fixturesDir, outputDir);
+
+  afterEach(async () => {
+    await rimraf(outputFixtureDir);
+  });
+
+  it('should generate expected files when run from different cwd', async () => {
+    const differentCwd = path.join(fixturesRoot, fixture);
+    const args = ['generate', '--root', './example'];
+    
+    const { stdout, exitCode } = await executeKubricate(args, { 
+      reject: false,
+      cwd: differentCwd 
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain('Generating stacks');
+
+    await snapshotDirectory(outputFixtureDir, `${fixture}/example/${outputDir}`);
+  });
+
+  it('should generate expected files when --root is not provided (default to cwd)', async () => {
+    const { stdout, exitCode } = await executeKubricate(['generate'], {
+      reject: false,
+      cwd: fixturesDir
+    })
+
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain('Generating stacks');
+
+    await snapshotDirectory(outputFixtureDir, `${fixture}/example/${outputDir}`);
+  })
+});

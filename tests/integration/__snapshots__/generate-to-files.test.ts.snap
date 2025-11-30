@@ -285,3 +285,147 @@ metadata:
 ---
 "
 `;
+
+exports[`CLI Integration (non-root directory) > should generate expected files when --root is not provided (default to cwd) > generate-output-non-root-dir/example/output/frontend/Deployment_deployment.yml 1`] = `
+"apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: my-namespace
+  labels:
+    kubricate.thaitype.dev: "true"
+    kubricate.thaitype.dev/stack-id: frontend
+    kubricate.thaitype.dev/resource-id: deployment
+  annotations:
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - image: nginx
+          name: my-app
+          ports:
+            - containerPort: 80
+---
+"
+`;
+
+exports[`CLI Integration (non-root directory) > should generate expected files when --root is not provided (default to cwd) > generate-output-non-root-dir/example/output/frontend/Service_service.yml 1`] = `
+"apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  namespace: my-namespace
+  labels:
+    kubricate.thaitype.dev: "true"
+    kubricate.thaitype.dev/stack-id: frontend
+    kubricate.thaitype.dev/resource-id: service
+  annotations:
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
+spec:
+  selector:
+    app: my-app
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+---
+"
+`;
+
+exports[`CLI Integration (non-root directory) > should generate expected files when --root is not provided (default to cwd) > generate-output-non-root-dir/example/output/namespace/Namespace_namespace.yml 1`] = `
+"apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+  labels:
+    kubricate.thaitype.dev: "true"
+    kubricate.thaitype.dev/stack-id: namespace
+    kubricate.thaitype.dev/resource-id: namespace
+  annotations:
+    kubricate.thaitype.dev/stack-name: Namespace
+    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
+---
+"
+`;
+
+exports[`CLI Integration (non-root directory) > should generate expected files when run from different cwd > generate-output-non-root-dir/example/output/frontend/Deployment_deployment.yml 1`] = `
+"apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: my-namespace
+  labels:
+    kubricate.thaitype.dev: "true"
+    kubricate.thaitype.dev/stack-id: frontend
+    kubricate.thaitype.dev/resource-id: deployment
+  annotations:
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 84241ff01519b9522ccbd4f2cdf8d22d850a7c7af3aba576447dd0157ab07adf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - image: nginx
+          name: my-app
+          ports:
+            - containerPort: 80
+---
+"
+`;
+
+exports[`CLI Integration (non-root directory) > should generate expected files when run from different cwd > generate-output-non-root-dir/example/output/frontend/Service_service.yml 1`] = `
+"apiVersion: v1
+kind: Service
+metadata:
+  name: my-app
+  namespace: my-namespace
+  labels:
+    kubricate.thaitype.dev: "true"
+    kubricate.thaitype.dev/stack-id: frontend
+    kubricate.thaitype.dev/resource-id: service
+  annotations:
+    kubricate.thaitype.dev/stack-name: SimpleApp
+    kubricate.thaitype.dev/resource-hash: 89a63d5a0e71a81f00e668fd1fccee5103200d731e8b1a3546f31e06eb639fe7
+spec:
+  selector:
+    app: my-app
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+---
+"
+`;
+
+exports[`CLI Integration (non-root directory) > should generate expected files when run from different cwd > generate-output-non-root-dir/example/output/namespace/Namespace_namespace.yml 1`] = `
+"apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-namespace
+  labels:
+    kubricate.thaitype.dev: "true"
+    kubricate.thaitype.dev/stack-id: namespace
+    kubricate.thaitype.dev/resource-id: namespace
+  annotations:
+    kubricate.thaitype.dev/stack-name: Namespace
+    kubricate.thaitype.dev/resource-hash: 3492d8e193f760528e44917ab2f004d6a9eed4bae268a2f6fb965eb802d28914
+---
+"
+`;
